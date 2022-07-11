@@ -40,6 +40,9 @@ test_lines = """
 [CHAT WINDOW TEXT] [Mon Jul 11 01:16:34] Adult Red Dragon : Immune to Sneak Attacks.
 [CHAT WINDOW TEXT] [Mon Jul 11 01:16:34] Adult Red Dragon : Damage Reduction absorbs 3 damage
 [CHAT WINDOW TEXT] [Mon Jul 11 01:16:34] Adult Red Dragon : Damage Resistance absorbs 2 damage
+
+[CHAT WINDOW TEXT] [Mon Jul 11 17:52:32] Wait 10 seconds for hiding
+[CHAT WINDOW TEXT] [Mon Jul 11 17:52:33] Wait 9 seconds for hiding
 """
 
 

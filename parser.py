@@ -6,25 +6,80 @@ import tabulate
 from char import *
 
 
+def print_progress_bar(name: str, value: int, max_value: int, line_len: int, bar_sym: str) -> str:
+    if value >= 0:
+        header = '{}: {:>5d} '.format(name, value)
+        bar_len = int((line_len - len(header)) * value / max_value)
+        text = '\n{}{}'.format(header, bar_sym * bar_len)
+        return text
+    return ''
+
+
+def create_progress_bars(char: Character, line_size: int) -> str:
+    text = ''
+
+    # Knockdown cooldown
+    last_kd = char.last_knockdown
+    if last_kd:
+        value = KNOCKDOWN_PVE_CD - (get_ts() - last_kd.timestamp)
+        text += print_progress_bar('KD', value, KNOCKDOWN_PVE_CD, line_size, '=')
+
+    # Stuning fist duration
+    last_sf = char.last_stunning_fist
+    if last_sf and last_sf.throw and last_sf.throw.result == FAILURE:
+        value = STUNNING_FIST_DURATION - (get_ts() - last_sf.s_attack.timestamp)
+        text += print_progress_bar('SF', value, STUNNING_FIST_DURATION, line_size, '*')
+
+    last_sm = char.stealth_mode
+    if last_sm:
+        value = last_sm.cooldown - 1000 - (get_ts() - last_sm.timestamp)  # 1000 - поправка на сервер
+        text += print_progress_bar('SM', value, STEALTH_MODE_CD, line_size, '+')
+
+    return text
+
+
+def print_special_char(char: Character) -> list:
+    text = []
+    if char.last_knockdown:
+        text.append('KD: {:d}({})'.format(char.last_knockdown.value, char.last_knockdown.result))
+
+    if char.last_stunning_fist:
+        dc = char.last_stunning_fist.throw.dc if char.last_stunning_fist.throw else 0
+        text.append('SF: {:d}({})'.format(dc, char.last_stunning_fist.s_attack.result))
+    return text
+
+
+def print_char_without_name(char: Character) -> list:
+    # ab_list = [str(ab) for ab in sorted(set(char.ab_list), reverse=True)][:1]
+
+    cd = char.get_caused_damage()
+    rd = char.get_received_damage()
+    return [
+        'AC: {:d}/{:d}({:d})'.format(char.ac[0], char.ac[1], char.get_last_ac_attack_value()),
+        'AB: {:d}({:d})'.format(char.ab_list[0] if char.ab_list else 0, char.get_last_ab_attack_base()),
+        'FT: {:d}({:d})'.format(char.fortitude, char.last_fortitude_dc),
+        'WL: {:d}({:d})'.format(char.will, char.last_will_dc),
+        'CD: {:d}({:d})'.format(cd[0], cd[1]),
+        'RD: {:d}({:d}/{:d}/{:d})'.format(rd[0], rd[1], rd[2], rd[3]),
+    ]
+
+
+def print_char(char: Character) -> list:
+    return [char.name] + print_char_without_name(char)
+
+
 class Parser:
     def __init__(self, player_name: str):
-        self.text = ''
         self.characters = collections.defaultdict(Character)
-        self.player = None
-        self.player_name = player_name
+        self.player = self.get_char(player_name)
 
-    def get_char(self, name):
+    def get_char(self, name: str) -> Character:
         char = self.characters[name]
         char.name = name
         char.update_timestamp()
-        if not self.player and self.player_name == name:
-            self.player = char
         return char
 
-    def get_player(self):
-        return self.player
-
-    def push_line(self, line):
+    def push_line(self, line) -> None:
         logging.debug(line)
         attack = Attack.create(line)
         if attack:
@@ -44,9 +99,7 @@ class Parser:
             if FORTITUDE in throw.type:
                 target.fortitude = throw.base
                 target.last_fortitude_dc = throw.dc
-                player = self.get_player()
-                if player:
-                    player.on_fortitude_save(throw)
+                self.player.on_fortitude_save(throw)
 
             elif WILL in throw.type:
                 target.will = throw.base
@@ -81,8 +134,7 @@ class Parser:
 
             target = self.get_char(death.target_name)
             target.on_killed(death)
-            if self.player:
-                self.player.on_killed(death)
+            self.player.on_killed(death)
             return
 
         d_reduction = DamageReduction.create(line)
@@ -101,16 +153,22 @@ class Parser:
             target.on_damage_resistance(d_resistance)
             return
 
-    def sort_char(self, char: Character):
+        stealth_mode = StealthMode.create(line)
+        if stealth_mode:
+            logging.debug(str(stealth_mode))
+
+            self.player.stealth_mode = stealth_mode
+            return
+
+    def sort_char(self, char: Character) -> int:
         last_player_contact_ts = 0
-        if self.player:
-            if char.last_ab_attack and char.last_ab_attack.target_name == self.player.name:
-                last_player_contact_ts = max(last_player_contact_ts, char.last_ab_attack.timestamp)
-            if char.last_ac_attack and char.last_ac_attack.attacker_name == self.player.name:
-                last_player_contact_ts = max(last_player_contact_ts, char.last_ac_attack.timestamp)
+        if char.last_ab_attack and char.last_ab_attack.target_name == self.player.name:
+            last_player_contact_ts = max(last_player_contact_ts, char.last_ab_attack.timestamp)
+        if char.last_ac_attack and char.last_ac_attack.attacker_name == self.player.name:
+            last_player_contact_ts = max(last_player_contact_ts, char.last_ac_attack.timestamp)
         return last_player_contact_ts
 
-    def get_stat(self):
+    def get_stat(self) -> str:
         MAX_PRINT = 4
 
         chars = [char for char in self.characters.values() if char is not self.player]
@@ -119,13 +177,14 @@ class Parser:
         chars = chars[:MAX_PRINT]
         chars.sort(key=lambda x: x.name)
 
-        table = [char.to_print() for char in chars]
-
-        if self.player:
-            table.append(
-                ['{}\n'.format(' | '.join(self.player.to_player_print()))] + self.player.to_print_without_name())
+        table = [print_char(char) for char in chars]
+        table.append(['{}\n'.format(' | '.join(print_special_char(self.player)))]
+                     + print_char_without_name(self.player))
 
         df = pandas.DataFrame(table)
         text = str(tabulate.tabulate(df, tablefmt='plain', showindex=False))
+
+        line_size = len(text.splitlines()[0])
+        text += create_progress_bars(self.player, line_size)
 
         return text

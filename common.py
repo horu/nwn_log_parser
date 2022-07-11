@@ -1,10 +1,11 @@
 import time
 import os
 
-ROUND_DURATION = 6
-KNOCKDOWN_PVE_CD = 6
-KNOCKDOWN_PVP_CD = 12
-STUNNING_FIST_DURATION = 12
+ROUND_DURATION = 6000
+KNOCKDOWN_PVE_CD = 6000
+KNOCKDOWN_PVP_CD = 12000
+STUNNING_FIST_DURATION = 12000
+STEALTH_MODE_CD = 12000
 
 FAILURE = 'failure'
 
@@ -27,8 +28,9 @@ PLAYER_NAME = os.environ.get('PLAYER_NAME', default='Dunya Kulakova')
 
 DAMAGE_LIMIT = 10000
 
+
 def get_ts():
-    return int(time.time())
+    return int(time.time_ns() / 1000000)
 
 
 def append_fix_size(list_to_append, el, size):

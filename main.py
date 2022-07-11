@@ -14,9 +14,9 @@ if __name__ == "__main__":
     win = Window()
     win.show()
 
-    test(win)
+    #test(win)
 
-    #back = Backend(win, FILE)
+    back = Backend(win, FILE)
 
     sys.exit(app.exec_())
 

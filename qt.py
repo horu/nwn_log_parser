@@ -17,8 +17,8 @@ class Window(QMainWindow):
         super().__init__(parent)
         self.setWindowTitle("Python Menus & Toolbars")
         #self.resize(400, 100)
-        self.setGeometry(420, 0, 400, 70)
-        self.setWindowOpacity(0.6)
+      #  self.setGeometry(420, 0, 400, 70)
+      #  self.setWindowOpacity(0.6)
 
         self.setAttribute(Qt.WA_TranslucentBackground, True)
         self.setWindowFlags(Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint) # without window
@@ -55,4 +55,5 @@ class Backend:
             self.parser.push_line(line)
 
         text = self.parser.get_stat()
+        self.window.setGeometry(420, 0, 400, 70)
         self.window.setText(text)

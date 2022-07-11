@@ -18,8 +18,8 @@ class Character:
         self.will = 0
         self.last_will_dc = 0
 
-        self.last_knockdown = None
-        self.last_stunning_fist = None
+        self.last_knockdown: SpecialAttack = None
+        self.last_stunning_fist: StunningFirst = None
 
         # self.caused_damage_list = []
         # self.received_damage_list = []
@@ -30,6 +30,8 @@ class Character:
 
         # self.received_damage = 0
         self.last_received_damage = None
+
+        self.stealth_mode = None
 
         self.timestamp = 0  # last timestamp of action with the char
 
@@ -85,50 +87,6 @@ class Character:
     def on_fortitude_save(self, throw: SavingThrow):
         if self.last_stunning_fist and self.last_stunning_fist.s_attack.target_name == throw.target_name:
             self.last_stunning_fist.throw = throw
-
-    def __str__(self):
-        return str(self.to_print())
-
-    def to_player_print(self):
-        text = []
-        if self.last_knockdown:
-            knockdown_pve_cd = KNOCKDOWN_PVE_CD - (get_ts() - self.last_knockdown.timestamp)
-            knockdown_pvp_cd = KNOCKDOWN_PVP_CD - (get_ts() - self.last_knockdown.timestamp)
-            text.append('KD: {:d}({}) {}({})'.format(
-                self.last_knockdown.value,
-                self.last_knockdown.result,
-                knockdown_pve_cd if knockdown_pve_cd >= 0 else 0,
-                knockdown_pvp_cd if knockdown_pvp_cd >= 0 else 0))
-
-        if self.last_stunning_fist:
-            duration = 0
-            dc = 0
-            if self.last_stunning_fist.throw:
-                if self.last_stunning_fist.throw.result == FAILURE:
-                    duration = STUNNING_FIST_DURATION - (get_ts() - self.last_stunning_fist.s_attack.timestamp)
-                dc = self.last_stunning_fist.throw.dc
-            text.append('SF: {:d}({}) {}'.format(
-                dc,
-                self.last_stunning_fist.s_attack.result,
-                duration if duration >= 0 else 0))
-        return text
-
-    def to_print_without_name(self):
-        #ab_list = [str(ab) for ab in sorted(set(self.ab_list), reverse=True)][:1]
-
-        cd = self.get_caused_damage()
-        rd = self.get_received_damage()
-        return [
-            'AC: {:d}/{:d}({:d})'.format(self.ac[0], self.ac[1], self.get_last_ac_attack_value()),
-            'AB: {:d}({:d})'.format(self.ab_list[0] if self.ab_list else 0, self.get_last_ab_attack_base()),
-            'FT: {:d}({:d})'.format(self.fortitude, self.last_fortitude_dc),
-            'WL: {:d}({:d})'.format(self.will, self.last_will_dc),
-            'CD: {:d}({:d})'.format(cd[0], cd[1]),
-            'RD: {:d}({:d}/{:d}/{:d})'.format(rd[0], rd[1], rd[2], rd[3]),
-        ]
-
-    def to_print(self):
-        return [self.name] + self.to_print_without_name()
 
     def get_last_ac_attack_value(self):
         if self.last_ac_attack:
