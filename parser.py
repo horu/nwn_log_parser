@@ -20,6 +20,7 @@ class Parser:
     def push_line(self, line) -> None:
         logging.debug(line)
         attack = Attack.create(line)
+        #if attack and (attack.target_name == self.player.name or attack.attacker_name == self.player.name):
         if attack:
             logging.debug(str(attack))
 
@@ -45,6 +46,7 @@ class Parser:
             return
 
         s_attack = SpecialAttack.create(line)
+        #if s_attack and (s_attack.target_name == self.player.name or s_attack.attacker_name == self.player.name):
         if s_attack:
             logging.debug(str(s_attack))
             attacker = self.get_char(s_attack.attacker_name)

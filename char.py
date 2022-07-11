@@ -35,6 +35,9 @@ class Character:
 
         self.timestamp = 0  # last timestamp of action with the char
 
+    def __str__(self):
+        return str(self.__dict__)
+
     def update_ac(self, attack):
         if attack.roll == 1 or attack.roll == 20:
             return
@@ -47,7 +50,7 @@ class Character:
 
     def update_ab(self, attack):
         self.last_ab_attack = attack
-        append_fix_size(self.ab_list, attack, 15)
+        append_fix_size(self.ab_list, attack, 10)
 
     def update_timestamp(self):
         current_time = get_ts()
@@ -96,6 +99,18 @@ class Character:
     def get_last_ab_attack_base(self):
         if self.last_ab_attack:
             return self.last_ab_attack.base
+        return 0
+
+    def get_max_ab_attack_base(self):
+        if self.ab_list:
+            max_ab = sorted(self.ab_list, key=lambda x: x.base, reverse=True)[0]
+            return max_ab.base
+        return 0
+
+    def get_min_ab_attack_base(self):
+        if self.ab_list:
+            max_ab = sorted(self.ab_list, key=lambda x: x.base, reverse=False)[0]
+            return max_ab.base
         return 0
 
     def get_received_damage(self):

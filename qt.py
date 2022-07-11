@@ -10,6 +10,13 @@ import select
 from parser import *
 
 
+FILE_NAMES = [
+    'nwclientLog1.txt',
+    'nwclientLog2.txt',
+    'nwclientLog3.txt',
+    'nwclientLog4.txt',
+]
+
 class Window(QMainWindow):
     """Main Window."""
     def __init__(self, parent=None):
@@ -35,13 +42,17 @@ class Window(QMainWindow):
 
 
 class Backend:
-    def __init__(self, window, filename):
+    def __init__(self, window, directory):
         self.window = window
 
-        self.f = subprocess.Popen(['tail', '-f', filename], stdout=subprocess.PIPE,stderr=subprocess.PIPE)
-        fd = self.f.stdout.fileno()
-        fl = fcntl.fcntl(fd, fcntl.F_GETFL)
-        fcntl.fcntl(fd, fcntl.F_SETFL, fl | os.O_NONBLOCK)
+        self.processes = []
+        for file_name in FILE_NAMES:
+            # non block
+            p = subprocess.Popen(['tail', '-f', directory + file_name], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            fd = p.stdout.fileno()
+            fl = fcntl.fcntl(fd, fcntl.F_GETFL)
+            fcntl.fcntl(fd, fcntl.F_SETFL, fl | os.O_NONBLOCK)
+            self.processes.append(p)
 
         self.timer = QTimer()
         self.timer.timeout.connect(self.action)
@@ -50,9 +61,10 @@ class Backend:
         self.parser = Parser(PLAYER_NAME)
 
     def action(self):
-        line = self.f.stdout.readline().decode()
-        if line:
-            self.parser.push_line(line)
+        for p in self.processes:
+            for line in p.stdout.readlines():
+                decoded = line.decode()
+                self.parser.push_line(decoded)
 
         text = self.parser.get_stat()
         self.window.setGeometry(420, 0, 400, 70)

@@ -5,7 +5,7 @@ from qt import *
 
 # https://github.com/jakkn/nwn-logparser
 
-FILE = '/home/an.slyshik/.local/share/Neverwinter Nights/logs/nwclientLog1.txt'
+DIR = '/home/an.slyshik/.local/share/Neverwinter Nights/logs/'
 
 if __name__ == "__main__":
     logging.basicConfig(format='%(asctime)s: %(message)s', level=logging.DEBUG)
@@ -16,7 +16,7 @@ if __name__ == "__main__":
 
     #test(win)
 
-    back = Backend(win, FILE)
+    back = Backend(win, DIR)
 
     sys.exit(app.exec_())
 
