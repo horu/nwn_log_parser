@@ -122,8 +122,8 @@ class Parser:
         table = [char.to_print() for char in chars]
 
         if self.player:
-            table.insert(
-                0, ['{}\n'.format(' | '.join(self.player.to_player_print()))] + self.player.to_print_without_name())
+            table.append(
+                ['{}\n'.format(' | '.join(self.player.to_player_print()))] + self.player.to_print_without_name())
 
         df = pandas.DataFrame(table)
         text = str(tabulate.tabulate(df, tablefmt='plain', showindex=False))

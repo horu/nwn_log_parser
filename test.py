@@ -1,8 +1,7 @@
 from parser import *
+from qt import *
 
-
-def test():
-    lines = """
+test_lines = """
 [CHAT WINDOW TEXT] [Fri Jul  8 23:08:12] 10 AC - Undead - Chaotic Evil : Fortitude Save : *failure* : (9 + 1 = 10 vs. DC: 38)
 [CHAT WINDOW TEXT] [Fri Jul  8 23:16:38] Dunya Kulakova : Reflex Save vs. Electricity : *success* : (9 + 45 = 54 vs. DC: 24)
 [CHAT WINDOW TEXT] [Fri Jul  8 23:16:27] Dunya Kulakova : Reflex Save vs. Electricity : *success* : (13 + 45 = 58 vs. DC: 28)
@@ -43,9 +42,12 @@ def test():
 [CHAT WINDOW TEXT] [Mon Jul 11 01:16:34] Adult Red Dragon : Damage Resistance absorbs 2 damage
 """
 
+
+def test(win):
     parser = Parser('Dunya Kulakova')
-    for line in lines.splitlines():
+    for line in test_lines.splitlines():
         parser.push_line(line)
     text = '\n'
     text += parser.get_stat()
+    win.setText(text)
     logging.debug(text)

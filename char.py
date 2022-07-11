@@ -6,7 +6,7 @@ from actions import *
 class Character:
     def __init__(self):
         self.name = ''
-        self.ac = [0, 256]  # min/max passible ac
+        self.ac = [0, 99]  # min/max passible ac
         self.last_ac_attack = None  # last success attack to char
 
         self.ab_list = []  # 50/45/40/35
@@ -114,12 +114,13 @@ class Character:
         return text
 
     def to_print_without_name(self):
-        ab_list = [str(ab) for ab in sorted(set(self.ab_list), reverse=True)][:3]
+        #ab_list = [str(ab) for ab in sorted(set(self.ab_list), reverse=True)][:1]
+
         cd = self.get_caused_damage()
         rd = self.get_received_damage()
         return [
             'AC: {:d}/{:d}({:d})'.format(self.ac[0], self.ac[1], self.get_last_ac_attack_value()),
-            'AB: {}({:d})'.format('/'.join(ab_list), self.get_last_ab_attack_base()),
+            'AB: {:d}({:d})'.format(self.ab_list[0] if self.ab_list else 0, self.get_last_ab_attack_base()),
             'FT: {:d}({:d})'.format(self.fortitude, self.last_fortitude_dc),
             'WL: {:d}({:d})'.format(self.will, self.last_will_dc),
             'CD: {:d}({:d})'.format(cd[0], cd[1]),

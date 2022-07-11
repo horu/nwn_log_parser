@@ -17,7 +17,7 @@ class Window(QMainWindow):
         super().__init__(parent)
         self.setWindowTitle("Python Menus & Toolbars")
         #self.resize(400, 100)
-        self.setGeometry(420, 40, 400, 70)
+        self.setGeometry(420, 0, 400, 70)
         self.setWindowOpacity(0.6)
 
         self.setAttribute(Qt.WA_TranslucentBackground, True)
@@ -35,8 +35,8 @@ class Window(QMainWindow):
 
 
 class Backend:
-    def __init__(self, label, filename):
-        self.label = label
+    def __init__(self, window, filename):
+        self.window = window
 
         self.f = subprocess.Popen(['tail', '-f', filename], stdout=subprocess.PIPE,stderr=subprocess.PIPE)
         fd = self.f.stdout.fileno()
@@ -55,4 +55,4 @@ class Backend:
             self.parser.push_line(line)
 
         text = self.parser.get_stat()
-        self.label.setText(text)
+        self.window.setText(text)
