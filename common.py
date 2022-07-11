@@ -34,6 +34,6 @@ def get_ts():
 
 
 def append_fix_size(list_to_append, el, size):
-    list_to_append.insert(0, el)
+    list_to_append.append(el)
     if len(list_to_append) > size:
-        list_to_append.pop()
+        list_to_append.pop(0)

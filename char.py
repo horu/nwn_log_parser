@@ -47,7 +47,7 @@ class Character:
 
     def update_ab(self, attack):
         self.last_ab_attack = attack
-        append_fix_size(self.ab_list, attack.base, 10)
+        append_fix_size(self.ab_list, attack, 15)
 
     def update_timestamp(self):
         current_time = get_ts()
