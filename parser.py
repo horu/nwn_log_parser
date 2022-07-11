@@ -54,9 +54,10 @@ def print_char_without_name(char: Character) -> list:
 
     cd = char.get_caused_damage()
     rd = char.get_received_damage()
+    max_ab = sorted(char.ab_list, reverse=True)[0] if char.ab_list else 0
     return [
         'AC: {:d}/{:d}({:d})'.format(char.ac[0], char.ac[1], char.get_last_ac_attack_value()),
-        'AB: {:d}({:d})'.format(char.ab_list[0] if char.ab_list else 0, char.get_last_ab_attack_base()),
+        'AB: {:d}({:d})'.format(max_ab, char.get_last_ab_attack_base()),
         'FT: {:d}({:d})'.format(char.fortitude, char.last_fortitude_dc),
         'WL: {:d}({:d})'.format(char.will, char.last_will_dc),
         'CD: {:d}({:d})'.format(cd[0], cd[1]),
@@ -169,7 +170,7 @@ class Parser:
         return last_player_contact_ts
 
     def get_stat(self) -> str:
-        MAX_PRINT = 4
+        MAX_PRINT = 3
 
         chars = [char for char in self.characters.values() if char is not self.player]
         chars.sort(key=lambda x: x.timestamp, reverse=True)
