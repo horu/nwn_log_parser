@@ -67,10 +67,10 @@ class Character:
 
     def add_received_damage(self, damage: Damage):
         # append_fix_size(self.received_damage_list, damage, 30)
+        # self.received_damage += damage.value
         self.received_damage[damage.damager_name] += damage.value
         if self.received_damage[damage.target_name] >= DAMAGE_LIMIT:
             self.received_damage[damage.target_name] -= DAMAGE_LIMIT
-        # self.received_damage += damage.value
         self.last_received_damage = damage
 
     def on_damage_reduction(self, reduction: DamageReduction):
@@ -88,7 +88,8 @@ class Character:
             del self.received_damage[death.killer_name]
 
     def on_fortitude_save(self, throw: SavingThrow):
-        if self.last_stunning_fist and self.last_stunning_fist.s_attack.target_name == throw.target_name:
+        sf_target = self.last_stunning_fist.s_attack.target_name
+        if self.last_stunning_fist and self.last_stunning_fist.throw is None and sf_target == throw.target_name:
             self.last_stunning_fist.throw = throw
 
     def get_last_ac_attack_value(self):
