@@ -5,11 +5,15 @@ import tabulate
 
 from printer import *
 
+CHARS_TO_PRINT_LIMIT = 3
+CHARS_TO_PRINT_TIMEOUT = 3000
 
 class Parser:
     def __init__(self, player_name: str):
         self.characters = collections.defaultdict(Character)
         self.player = self.get_char(player_name)
+        self.chars_to_print: typing.List[Character] = []
+        self.chars_to_print_ts = 0
 
     def get_char(self, name: str) -> Character:
         char = self.characters[name]
@@ -102,22 +106,38 @@ class Parser:
 
     def sort_char(self, char: Character) -> int:
         last_player_contact_ts = 0
-        if char.last_ab_attack and char.last_ab_attack.target_name == self.player.name:
-            last_player_contact_ts = max(last_player_contact_ts, char.last_ab_attack.timestamp)
-        if char.last_ac_attack and char.last_ac_attack.attacker_name == self.player.name:
-            last_player_contact_ts = max(last_player_contact_ts, char.last_ac_attack.timestamp)
+
+        for attack in self.player.ab_attack_list:
+            if char.name == attack.target_name:
+                last_player_contact_ts = max(last_player_contact_ts, attack.timestamp)
+
+        for attack in self.player.ac_attack_list:
+            if char.name == attack.attacker_name:
+                last_player_contact_ts = max(last_player_contact_ts, attack.timestamp)
+
+        action = self.player.last_hit_ac_attack
+        if action and char.name == action.attacker_name:
+            last_player_contact_ts = max(last_player_contact_ts, action.timestamp)
+
+        action = self.player.last_received_damage
+        if action and action.damager_name == char.name:
+            last_player_contact_ts = max(last_player_contact_ts, action.timestamp)
+
+        action = self.player.last_caused_damage
+        if action and action.target_name == char.name:
+            last_player_contact_ts = max(last_player_contact_ts, action.timestamp)
+
         return last_player_contact_ts
 
     def get_stat(self) -> str:
-        MAX_PRINT = 3
+        ts = get_ts()
+        if ts - self.chars_to_print_ts > CHARS_TO_PRINT_TIMEOUT:
+            chars = [char for char in self.characters.values() if char is not self.player]
+            chars.sort(key=self.sort_char, reverse=True)
+            self.chars_to_print = chars[:CHARS_TO_PRINT_LIMIT]
+            self.chars_to_print_ts = ts
 
-        chars = [char for char in self.characters.values() if char is not self.player]
-        chars.sort(key=lambda x: x.timestamp, reverse=True)
-        chars.sort(key=self.sort_char, reverse=True)
-        chars = chars[:MAX_PRINT]
-        chars.sort(key=lambda x: x.name)
-
-        table = [print_char(char) for char in chars]
+        table = [print_char(char) for char in self.chars_to_print]
         table.append(['{}\n'.format(' | '.join(print_special_char(self.player)))]
                      + print_char_without_name(self.player))
 
