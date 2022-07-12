@@ -1,7 +1,7 @@
 from PyQt5.QtCore import QTimer, QDateTime
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QApplication, QLabel, QMainWindow
-from PyQt5.QtGui import QFont
+from PyQt5.QtGui import QFont, QMouseEvent
 
 from parser import *
 
@@ -17,8 +17,8 @@ class Window(QMainWindow):
         self.setWindowOpacity(0.75)
 
         self.setAttribute(Qt.WA_TranslucentBackground, True)
-        self.setWindowFlags(Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint) # without window
-        self.press = False
+
+        self.setWindowFlags(Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint)
 
         self.centralWidget = QLabel("")
         self.centralWidget.setFont(QFont('Monospace', 10))
@@ -44,12 +44,16 @@ class Backend:
         self.timer_reset_geometry.timeout.connect(self.reset_geometry)
         self.timer_reset_geometry.start(1000)
 
-        self.window.centralWidget.mousePressEvent = self.change_char_list
+        self.window.centralWidget.mousePressEvent = self.on_mouse_event
 
         self.parser = parser
 
-    def change_char_list(self, mouse):
-        self.parser.change_char_list()
+    def on_mouse_event(self, event: QMouseEvent):
+        button = event.button()
+        if button == Qt.MouseButton.LeftButton:
+            self.parser.change_char_list()
+        elif button == Qt.MouseButton.RightButton:
+            self.window.showMinimized()
 
     def read_log(self):
         for line in self.log_reader.read_lines():
