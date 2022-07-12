@@ -20,11 +20,12 @@ def create_progress_bars(char: Character, line_size: int) -> str:
         value = KNOCKDOWN_PVE_CD - (get_ts() - last_kd.timestamp)
         text += print_progress_bar('KD', value, 0, KNOCKDOWN_PVE_CD, line_size, '=')
 
-    # Stuning fist duration
-    last_sf = char.last_stunning_fist
-    if last_sf and last_sf.throw and last_sf.throw.result == FAILURE:
-        value = STUNNING_FIST_DURATION - (get_ts() - last_sf.s_attack.timestamp)
-        text += print_progress_bar('SF', value, 0, STUNNING_FIST_DURATION, line_size, '*')
+    # Stunning fist duration
+    for sf in reversed(char.stunning_fist_list):
+        value = sf.duration()
+        if value:
+            text += print_progress_bar('SF', value, 0, STUNNING_FIST_DURATION, line_size, '*')
+            break
 
     # Stealth mode cooldown
     last_sm = char.stealth_cooldown
@@ -48,9 +49,10 @@ def print_special_char(char: Character) -> list:
     if char.last_knockdown:
         text.append('KD: {:d}({})'.format(char.last_knockdown.value, char.last_knockdown.result))
 
-    if char.last_stunning_fist:
-        dc = char.last_stunning_fist.throw.dc if char.last_stunning_fist.throw else 0
-        text.append('SF: {:d}({})'.format(dc, char.last_stunning_fist.s_attack.result))
+    if char.stunning_fist_list:
+        last_sf = char.stunning_fist_list[-1]
+        dc = last_sf.throw.dc if last_sf.throw else 0
+        text.append('SF: {:d}({})'.format(dc, last_sf.s_attack.result))
     return text
 
 

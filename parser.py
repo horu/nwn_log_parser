@@ -56,7 +56,7 @@ class Parser:
             if KNOCKDOWN in s_attack.type:
                 attacker.last_knockdown = s_attack
             elif STUNNING_FIST in s_attack.type:
-                attacker.last_stunning_fist = StunningFirst(s_attack)
+                attacker.add_stunning_fist(StunningFirst(s_attack))
             return
 
         damage = Damage.create(line)

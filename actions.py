@@ -62,6 +62,13 @@ class StunningFirst(Action):
         self.s_attack = s_attack
         self.throw = None
 
+    def duration(self) -> int:  # ms
+        if self.throw and self.throw.result == FAILURE:
+            duration = STUNNING_FIST_DURATION - (get_ts() - self.s_attack.timestamp)
+            if duration > 0:
+                return duration
+        return 0
+
 
 class SavingThrow(Action):
     @staticmethod

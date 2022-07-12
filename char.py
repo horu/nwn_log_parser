@@ -22,7 +22,7 @@ class Character:
         self.last_will_dc = 0
 
         self.last_knockdown: typing.Optional[SpecialAttack] = None
-        self.last_stunning_fist: typing.Optional[StunningFirst] = None
+        self.stunning_fist_list: typing.List[StunningFirst] = []
 
         # self.caused_damage_list = []
         # self.received_damage_list = []
@@ -67,6 +67,11 @@ class Character:
         self.timestamp = current_time
         return current_time
 
+    def add_stunning_fist(self, sf: StunningFirst):
+        new_sf_list = [sf for sf in self.stunning_fist_list if sf.throw is None or sf.duration()]
+        self.stunning_fist_list = new_sf_list
+        self.stunning_fist_list.append(sf)
+
     def add_caused_damage(self, damage: Damage):
         # append_fix_size(self.caused_damage_list, damage, 30)
         # self.caused_damage += damage.value
@@ -98,9 +103,9 @@ class Character:
             del self.received_damage[death.killer_name]
 
     def on_fortitude_save(self, throw: SavingThrow):
-        sf = self.last_stunning_fist
-        if sf and sf.s_attack.target_name == throw.target_name and sf.throw is None:
-            sf.throw = throw
+        for sf in self.stunning_fist_list:
+            if sf.s_attack.target_name == throw.target_name and sf.throw is None:
+                sf.throw = throw
 
     def get_last_hit_ac_attack_value(self) -> int:
         if self.last_hit_ac_attack:
