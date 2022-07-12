@@ -10,7 +10,9 @@ class Action:
         if m:
             g = m.groups()
             logging.debug('{}'.format(g))
-            return action_type(g)
+            action = action_type(g)
+            logging.debug(str(action))
+            return action
 
         return None
 

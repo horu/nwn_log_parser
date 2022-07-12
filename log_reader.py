@@ -1,4 +1,5 @@
 import fcntl
+import logging
 import subprocess
 import os
 import typing
@@ -25,5 +26,9 @@ class LogReader:
     def read_lines(self):
         for p in self.processes:
             for line in p.stdout.readlines():
-                decoded = line.decode()
+                try:
+                    decoded = line.decode()
+                except Exception as e:
+                    logging.error("ERROR: {}".format(e))
+                    continue
                 yield decoded

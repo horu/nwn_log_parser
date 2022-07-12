@@ -37,16 +37,21 @@ class Backend:
         self.reset_geometry()
 
         self.timer_action = QTimer()
-        self.timer_action.timeout.connect(self.action)
+        self.timer_action.timeout.connect(self.read_log)
         self.timer_action.start(100)
 
         self.timer_reset_geometry = QTimer()
         self.timer_reset_geometry.timeout.connect(self.reset_geometry)
         self.timer_reset_geometry.start(1000)
 
+        self.window.centralWidget.mousePressEvent = self.change_char_list
+
         self.parser = parser
 
-    def action(self):
+    def change_char_list(self, mouse):
+        self.parser.change_char_list()
+
+    def read_log(self):
         for line in self.log_reader.read_lines():
             self.parser.push_line(line)
 
@@ -54,4 +59,4 @@ class Backend:
         self.window.set_text(text)
 
     def reset_geometry(self):
-        self.window.setGeometry(420, 0, 400, 70)
+        self.window.setGeometry(420, 0, 400, 40)
