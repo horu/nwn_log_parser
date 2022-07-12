@@ -25,6 +25,7 @@ KNOCKDOWN = 'Knockdown'
 STUNNING_FIST = 'Stunning Fist'
 
 PLAYER_NAME = os.environ.get('PLAYER_NAME', default='Dunya Kulakova')
+LOG_DIR = os.environ.get('LOG_DIR', default='{}/.local/share/Neverwinter Nights/logs/'.format(os.getenv('HOME')))
 
 DAMAGE_LIMIT = 10000
 

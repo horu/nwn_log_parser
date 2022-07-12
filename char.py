@@ -1,16 +1,19 @@
 import collections
+import typing
 
 from actions import *
+
+ATTACK_LIST_LIMIT = 10
 
 
 class Character:
     def __init__(self):
         self.name = ''
         self.ac = [0, 99]  # min/max passible ac
-        self.last_ac_attack = None  # last success attack to char
+        self.last_hit_ac_attack: typing.Optional[Attack] = None  # last success attack to char
+        self.ac_attack_list: typing.List[Attack] = []  # last attack in and of list 50/45/40/35
 
-        self.ab_list = []  # 50/45/40/35
-        self.last_ab_attack = None  # last attack
+        self.ab_attack_list: typing.List[Attack] = []  # last attack in and of list 50/45/40/35
 
         self.fortitude = 0
         self.last_fortitude_dc = 0
@@ -18,20 +21,20 @@ class Character:
         self.will = 0
         self.last_will_dc = 0
 
-        self.last_knockdown: SpecialAttack = None
-        self.last_stunning_fist: StunningFirst = None
+        self.last_knockdown: typing.Optional[SpecialAttack] = None
+        self.last_stunning_fist: typing.Optional[StunningFirst] = None
 
         # self.caused_damage_list = []
         # self.received_damage_list = []
         self.caused_damage = collections.defaultdict(int)  # {name: damage}
         self.received_damage = collections.defaultdict(int)  # {name: damage}
         # self.caused_damage = 0
-        self.last_caused_damage = None
+        self.last_caused_damage: typing.Optional[Damage] = None
 
         # self.received_damage = 0
-        self.last_received_damage = None
+        self.last_received_damage: typing.Optional[Damage] = None
 
-        self.stealth_mode = None
+        self.stealth_mode: typing.Optional[StealthMode] = None
 
         self.timestamp = 0  # last timestamp of action with the char
 
@@ -39,18 +42,17 @@ class Character:
         return str(self.__dict__)
 
     def update_ac(self, attack):
-        if attack.roll == 1 or attack.roll == 20:
-            return
+        append_fix_size(self.ac_attack_list, attack, ATTACK_LIST_LIMIT)
 
         if attack.result == MISS:
             self.ac[0] = max(self.ac[0], attack.value + 1)
         elif attack.result == HIT or attack.result == CRITICAL_HIT:
-            self.last_ac_attack = attack
-            self.ac[1] = min(self.ac[1], attack.value)
+            self.last_hit_ac_attack = attack
+            if attack.roll != 1 and attack.roll != 20:
+                self.ac[1] = min(self.ac[1], attack.value)
 
     def update_ab(self, attack):
-        self.last_ab_attack = attack
-        append_fix_size(self.ab_list, attack, 10)
+        append_fix_size(self.ab_attack_list, attack, ATTACK_LIST_LIMIT)
 
     def update_timestamp(self):
         current_time = get_ts()
@@ -88,29 +90,35 @@ class Character:
             del self.received_damage[death.killer_name]
 
     def on_fortitude_save(self, throw: SavingThrow):
-        sf_target = self.last_stunning_fist.s_attack.target_name
-        if self.last_stunning_fist and self.last_stunning_fist.throw is None and sf_target == throw.target_name:
-            self.last_stunning_fist.throw = throw
+        sf = self.last_stunning_fist
+        if sf and sf.s_attack.target_name == throw.target_name and sf.throw is None:
+            sf.throw = throw
 
-    def get_last_ac_attack_value(self):
-        if self.last_ac_attack:
-            return self.last_ac_attack.value
+    def get_last_hit_ac_attack_value(self) -> int:
+        if self.last_hit_ac_attack:
+            return self.last_hit_ac_attack.value
         return 0
 
-    def get_last_ab_attack_base(self):
-        if self.last_ab_attack:
-            return self.last_ab_attack.base
+    def get_last_ab_attack(self) -> typing.Optional[Attack]:
+        if self.ab_attack_list:
+            return self.ab_attack_list[-1]
+        return None
+
+    def get_last_ab_attack_base(self) -> int:
+        last_ab = self.get_last_ab_attack()
+        if last_ab:
+            return last_ab.base
         return 0
 
-    def get_max_ab_attack_base(self):
-        if self.ab_list:
-            max_ab = sorted(self.ab_list, key=lambda x: x.base, reverse=True)[0]
+    def get_max_ab_attack_base(self) -> int:
+        if self.ab_attack_list:
+            max_ab = sorted(self.ab_attack_list, key=lambda x: x.base, reverse=True)[0]
             return max_ab.base
         return 0
 
-    def get_min_ab_attack_base(self):
-        if self.ab_list:
-            max_ab = sorted(self.ab_list, key=lambda x: x.base, reverse=False)[0]
+    def get_min_ab_attack_base(self) -> int:
+        if self.ab_attack_list:
+            max_ab = sorted(self.ab_attack_list, key=lambda x: x.base, reverse=False)[0]
             return max_ab.base
         return 0
 

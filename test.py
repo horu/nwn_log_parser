@@ -52,5 +52,5 @@ def test(win):
         parser.push_line(line)
     text = '\n'
     text += parser.get_stat()
-    win.setText(text)
+    win.set_text(text)
     logging.debug(text)

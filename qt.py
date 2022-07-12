@@ -1,21 +1,10 @@
-import fcntl
-import subprocess
 from PyQt5.QtCore import QTimer, QDateTime
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QApplication, QLabel, QMainWindow
 from PyQt5.QtGui import QFont
 
-import select
-
 from parser import *
 
-
-FILE_NAMES = [
-    'nwclientLog1.txt',
-    'nwclientLog2.txt',
-    'nwclientLog3.txt',
-    'nwclientLog4.txt',
-]
 
 class Window(QMainWindow):
     """Main Window."""
@@ -25,7 +14,7 @@ class Window(QMainWindow):
         self.setWindowTitle("Python Menus & Toolbars")
         #self.resize(400, 100)
       #  self.setGeometry(420, 0, 400, 70)
-      #  self.setWindowOpacity(0.6)
+        self.setWindowOpacity(0.75)
 
         self.setAttribute(Qt.WA_TranslucentBackground, True)
         self.setWindowFlags(Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint) # without window
@@ -37,35 +26,32 @@ class Window(QMainWindow):
         self.centralWidget.setStyleSheet("background-color: black; color: white")
         self.setCentralWidget(self.centralWidget)
 
-    def setText(self, text):
+    def set_text(self, text):
         self.centralWidget.setText(text)
 
 
 class Backend:
-    def __init__(self, window, directory):
+    def __init__(self, window: Window, log_reader, parser: Parser):
         self.window = window
+        self.log_reader = log_reader
+        self.reset_geometry()
 
-        self.processes = []
-        for file_name in FILE_NAMES:
-            # non block
-            p = subprocess.Popen(['tail', '-f', directory + file_name], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-            fd = p.stdout.fileno()
-            fl = fcntl.fcntl(fd, fcntl.F_GETFL)
-            fcntl.fcntl(fd, fcntl.F_SETFL, fl | os.O_NONBLOCK)
-            self.processes.append(p)
+        self.timer_action = QTimer()
+        self.timer_action.timeout.connect(self.action)
+        self.timer_action.start(100)
 
-        self.timer = QTimer()
-        self.timer.timeout.connect(self.action)
-        self.timer.start(100)
+        self.timer_reset_geometry = QTimer()
+        self.timer_reset_geometry.timeout.connect(self.reset_geometry)
+        self.timer_reset_geometry.start(1000)
 
-        self.parser = Parser(PLAYER_NAME)
+        self.parser = parser
 
     def action(self):
-        for p in self.processes:
-            for line in p.stdout.readlines():
-                decoded = line.decode()
-                self.parser.push_line(decoded)
+        for line in self.log_reader.read_lines():
+            self.parser.push_line(line)
 
         text = self.parser.get_stat()
+        self.window.set_text(text)
+
+    def reset_geometry(self):
         self.window.setGeometry(420, 0, 400, 70)
-        self.window.setText(text)

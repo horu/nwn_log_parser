@@ -33,8 +33,8 @@ def create_progress_bars(char: Character, line_size: int) -> str:
         text += print_progress_bar('SM', value, 0, STEALTH_MODE_CD, line_size, '+')
 
     # Attacks min/max
-    ab_list = char.ab_list
-    if ab_list and (get_ts() - ab_list[-1].timestamp) <= 6000:
+    ab_attack_list = char.ab_attack_list
+    if ab_attack_list and (get_ts() - ab_attack_list[-1].timestamp) <= 6000:
         max_ab = char.get_max_ab_attack_base()
         min_ab = char.get_min_ab_attack_base()
         last_ab = char.get_last_ab_attack_base()
@@ -58,7 +58,7 @@ def print_char_without_name(char: Character) -> list:
     cd = char.get_caused_damage()
     rd = char.get_received_damage()
     return [
-        'AC: {:d}/{:d}({:d})'.format(char.ac[0], char.ac[1], char.get_last_ac_attack_value()),
+        'AC: {:d}/{:d}({:d})'.format(char.ac[0], char.ac[1], char.get_last_hit_ac_attack_value()),
         'AB: {:d}({:d})'.format(char.get_max_ab_attack_base(), char.get_last_ab_attack_base()),
         'FT: {:d}({:d})'.format(char.fortitude, char.last_fortitude_dc),
         'WL: {:d}({:d})'.format(char.will, char.last_will_dc),
