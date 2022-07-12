@@ -34,12 +34,20 @@ class Character:
         # self.received_damage = 0
         self.last_received_damage: typing.Optional[Damage] = None
 
-        self.stealth_mode: typing.Optional[StealthMode] = None
+        self.stealth_cooldown: typing.Optional[StealthCooldown] = None
+
+        self.initiative_roll: typing.Optional[InitiativeRoll] = None
 
         self.timestamp = 0  # last timestamp of action with the char
 
     def __str__(self):
         return str(self.__dict__)
+
+    def start_fight(self):
+        # uses to indicate start fight after stealth mode on next attack to start stealth cooldown
+        if self.initiative_roll:
+            self.initiative_roll = None
+            self.stealth_cooldown = StealthCooldown.explicit_create(STEALTH_MODE_CD)
 
     def update_ac(self, attack):
         append_fix_size(self.ac_attack_list, attack, ATTACK_LIST_LIMIT)

@@ -27,9 +27,9 @@ def create_progress_bars(char: Character, line_size: int) -> str:
         text += print_progress_bar('SF', value, 0, STUNNING_FIST_DURATION, line_size, '*')
 
     # Stealth mode cooldown
-    last_sm = char.stealth_mode
+    last_sm = char.stealth_cooldown
     if last_sm:
-        value = last_sm.cooldown - 1000 - (get_ts() - last_sm.timestamp)  # 1000 - поправка на сервер
+        value = last_sm.cooldown - (get_ts() - last_sm.timestamp)
         text += print_progress_bar('SM', value, 0, STEALTH_MODE_CD, line_size, '+')
 
     # Attacks min/max

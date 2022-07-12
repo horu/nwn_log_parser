@@ -137,12 +137,33 @@ class DamageResistance(Action):
 """
 
 
-class StealthMode(Action):
+class StealthCooldown(Action):
     @staticmethod
     def create(string):
         p = r'\[CHAT WINDOW TEXT\] \[.+\] Wait ([0-9]+) seconds for hiding'
-        return Action.base_create(string, p, StealthMode)
+        return Action.base_create(string, p, StealthCooldown)
+
+    @staticmethod
+    def explicit_create(cooldown: int):
+        return StealthCooldown([cooldown / 1000])
 
     def __init__(self, g):
         super().__init__()
         self.cooldown = int(g[0]) * 1000  # ms
+
+
+"""
+[CHAT WINDOW TEXT] [Wed Jul 13 00:35:34] Dunya Kulakova : Initiative Roll : 20 : (9 + 11 = 20)
+"""
+
+
+class InitiativeRoll(Action):
+    @staticmethod
+    def create(string):
+        p = r'\[CHAT WINDOW TEXT\] \[.+\] ([^:]+) \: Initiative Roll :'
+        return Action.base_create(string, p, InitiativeRoll)
+
+    def __init__(self, g):
+        super().__init__()
+        self.roller_name = g[0]
+

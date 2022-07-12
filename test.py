@@ -43,6 +43,9 @@ test_lines = """
 
 [CHAT WINDOW TEXT] [Mon Jul 11 17:52:32] Wait 10 seconds for hiding
 [CHAT WINDOW TEXT] [Mon Jul 11 17:52:33] Wait 9 seconds for hiding
+
+[CHAT WINDOW TEXT] [Wed Jul 13 00:35:34] Dunya Kulakova : Initiative Roll : 20 : (9 + 11 = 20)
+[CHAT WINDOW TEXT] [Wed Jul 13 00:40:26] Sneak Attack : Dunya Kulakova attacks Badger : *hit* : (3 + 39 = 42)
 """
 
 

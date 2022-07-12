@@ -27,10 +27,10 @@ class Parser:
     def push_line(self, line) -> None:
         logging.debug(line)
         attack = Attack.create(line)
-        #if attack and (attack.target_name == self.player.name or attack.attacker_name == self.player.name):
         if attack:
             attacker = self.get_char(attack.attacker_name)
             attacker.update_ab(attack)
+            attacker.start_fight()
 
             target = self.get_char(attack.target_name)
             target.update_ac(attack)
@@ -50,9 +50,9 @@ class Parser:
             return
 
         s_attack = SpecialAttack.create(line)
-        #if s_attack and (s_attack.target_name == self.player.name or s_attack.attacker_name == self.player.name):
         if s_attack:
             attacker = self.get_char(s_attack.attacker_name)
+            attacker.start_fight()
             if KNOCKDOWN in s_attack.type:
                 attacker.last_knockdown = s_attack
             elif STUNNING_FIST in s_attack.type:
@@ -88,9 +88,15 @@ class Parser:
             target.on_damage_resistance(d_resistance)
             return
 
-        stealth_mode = StealthMode.create(line)
-        if stealth_mode:
-            self.player.stealth_mode = stealth_mode
+        stealth_cooldown = StealthCooldown.create(line)
+        if stealth_cooldown:
+            self.player.stealth_cooldown = stealth_cooldown
+            return
+
+        initiative_roll = InitiativeRoll.create(line)
+        if initiative_roll:
+            roller = self.get_char(initiative_roll.roller_name)
+            roller.initiative_roll = initiative_roll
             return
 
     def sort_char(self, char: Character) -> int:
