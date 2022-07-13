@@ -6,6 +6,7 @@ from actions import *
 AB_ATTACK_LIST_LIMIT = 10
 HP_LIST_LIMIT = 10
 AC_ATTACK_LIST_LIMIT = 30
+DAMAGE_LIST_LIMIT = 20
 
 
 class ValueStatistic:
@@ -75,7 +76,7 @@ class Character:
         self.last_knockdown: typing.Optional[Knockdown] = None
         self.stunning_fist_list: typing.List[StunningFirst] = []
 
-        self.last_caused_damage: typing.Optional[Damage] = None
+        self.caused_damage_list: typing.List[Damage] = []
         self.last_received_damage: typing.Optional[Damage] = None
 
         self.stealth_cooldown = StealthCooldown.explicit_create(0)
@@ -152,14 +153,14 @@ class Character:
 
     def get_max_ab_attack_base(self) -> int:
         if self.ab_attack_list:
-            max_ab = sorted(self.ab_attack_list, key=lambda x: x.base, reverse=True)[0]
-            return max_ab.base
+            ab = sorted(self.ab_attack_list, key=lambda x: x.base, reverse=True)[0]
+            return ab.base
         return 0
 
     def get_min_ab_attack_base(self) -> int:
         if self.ab_attack_list:
-            max_ab = sorted(self.ab_attack_list, key=lambda x: x.base, reverse=False)[0]
-            return max_ab.base
+            ab = sorted(self.ab_attack_list, key=lambda x: x.base, reverse=False)[0]
+            return ab.base
         return 0
 
     def update_timestamp(self) -> None:
@@ -174,9 +175,26 @@ class Character:
         self.stunning_fist_list.append(sf)
 
     def add_caused_damage(self, damage: Damage) -> None:
-        self.last_caused_damage = damage
+        append_fix_size(self.caused_damage_list, damage, DAMAGE_LIST_LIMIT)
         self.stats_storage.increase(damage.target_name, 'caused_damage', 'sum', damage.value)
         self.stats_storage.increase(damage.target_name, 'caused_damage', 'count', 1)
+
+    def get_last_caused_damage(self):
+        if self.caused_damage_list:
+            return self.caused_damage_list[-1]
+        return None
+
+    def get_max_caused_damage(self) -> int:
+        if self.caused_damage_list:
+            cd = sorted(self.caused_damage_list, key=lambda x: x.value, reverse=True)[0]
+            return cd.value
+        return 0
+
+    def get_min_caused_damage(self) -> int:
+        if self.caused_damage_list:
+            cd = sorted(self.caused_damage_list, key=lambda x: x.value, reverse=False)[0]
+            return cd.value
+        return 0
 
     def add_received_damage(self, damage: Damage) -> None:
         self.last_received_damage = damage

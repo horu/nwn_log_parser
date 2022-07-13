@@ -1,3 +1,4 @@
+import logging
 import typing
 import collections
 from tabulate import tabulate
@@ -14,7 +15,7 @@ DAMAGE_PRINT_LIMIT = 10000
 
 
 def print_progress_bar(name: str, value: int, min_value: int, max_value: int, line_len: int, bar_symbol: str) -> str:
-    if value > min_value and (max_value - min_value) > 0:
+    if value >= min_value and (max_value - min_value) > 0:
         header = '{}: {:>5d} '.format(name, value)
         bar_len = int((line_len - len(header)) * (value - min_value) / (max_value - min_value))
         text = '\n{}{}'.format(header, bar_symbol * bar_len)
@@ -29,10 +30,11 @@ def create_progress_bars(char: Character, line_size: int) -> str:
     last_kd = char.last_knockdown
     if last_kd:
         value = last_kd.get_cooldown()
-        bar_symbol = '-'
-        if last_kd.s_attack.is_success():
-            bar_symbol = '+'
-        text += print_progress_bar('KD', value, 0, KNOCKDOWN_PVE_CD, line_size, bar_symbol)
+        if value:
+            bar_symbol = '-'
+            if last_kd.s_attack.is_success():
+                bar_symbol = '+'
+            text += print_progress_bar('KD', value, 0, KNOCKDOWN_PVE_CD, line_size, bar_symbol)
 
     # Stunning fist duration
     for sf in reversed(char.stunning_fist_list):
@@ -42,18 +44,27 @@ def create_progress_bars(char: Character, line_size: int) -> str:
             break
 
     # Stealth mode cooldown
-    last_sm = char.stealth_cooldown
-    if last_sm:
-        value = last_sm.get_duration()
+    value = char.stealth_cooldown.get_duration()
+    if value:
         text += print_progress_bar('SM', value, 0, STEALTH_MODE_CD, line_size, '=')
 
     # Attacks min/max
     ab_attack_list = char.ab_attack_list
-    if ab_attack_list and (get_ts() - ab_attack_list[-1].timestamp) <= 6000:
-        max_ab = char.get_max_ab_attack_base()
-        min_ab = char.get_min_ab_attack_base()
-        last_ab = char.get_last_ab_attack_base()
-        text += print_progress_bar('AB', last_ab, min_ab, max_ab, line_size, '|')
+    if ab_attack_list:
+        last_ab = char.get_last_ab_attack()
+        if get_ts() - last_ab.timestamp <= 6000:
+            max_ab = char.get_max_ab_attack_base()
+            min_ab = char.get_min_ab_attack_base()
+            text += print_progress_bar('AB', last_ab.base, min_ab, max_ab, line_size, '|')
+
+    # Damage min/max
+    caused_damage_list = char.caused_damage_list
+    if caused_damage_list:
+        last_cd = char.get_last_caused_damage()
+        if get_ts() - last_cd.timestamp <= 6000:
+            max_cd = char.get_max_caused_damage()
+            min_cd = char.get_min_caused_damage()
+            text += print_progress_bar('CD', last_cd.value, min_cd, max_cd, line_size, '"')
 
     return text
 
@@ -127,19 +138,20 @@ class Printer:
         all_stats = char.stats_storage.all_chars_stats
 
         sum_cd = 0
-        last_cd = 0
+        last_cd_value = 0
         stats = char.stats_storage.char_stats
-        if char.last_caused_damage:
-            sum_cd = stats[char.last_caused_damage.target_name].caused_damage.sum % DAMAGE_PRINT_LIMIT
-            last_cd = char.last_caused_damage.value
+        last_cd = char.get_last_caused_damage()
+        if last_cd:
+            sum_cd = stats[last_cd.target_name].caused_damage.sum % DAMAGE_PRINT_LIMIT
+            last_cd_value = last_cd.value
 
         sum_rd = 0
         last_rd = 0
-        last_ad = 0
+        last_ad_value = 0
         if char.last_received_damage:
             sum_rd = stats[char.last_received_damage.damager_name].received_damage.sum % DAMAGE_PRINT_LIMIT
             last_rd = char.last_received_damage.value
-            last_ad = sum([ad.value for ad in char.last_received_damage.damage_absorption_list])
+            last_ad_value = sum([ad.value for ad in char.last_received_damage.damage_absorption_list])
 
         hit_ab_attack = all_stats.hit_ab_attack
         per_ab = hit_ab_attack.count / hit_ab_attack.sum if hit_ab_attack.sum else 0
@@ -148,8 +160,8 @@ class Printer:
         avg_caused_damage = caused_damage.sum / caused_damage.count if caused_damage.count else 0
 
         return [
-            'CD: {:d}({:d})'.format(sum_cd, last_cd),
-            'RD: {:d}({:d}/{:d})'.format(sum_rd, last_rd, last_ad),
+            'CD: {:d}({:d})'.format(sum_cd, last_cd_value),
+            'RD: {:d}({:d}/{:d})'.format(sum_rd, last_rd, last_ad_value),
             'PER AB: {:d}%'.format(int(per_ab * 100)),
             'AVG CD: {:d}'.format(int(avg_caused_damage)),
         ]

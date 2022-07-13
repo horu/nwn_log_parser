@@ -86,7 +86,9 @@ class Knockdown(Action):
 
     def get_cooldown(self):
         value = KNOCKDOWN_PVE_CD - (get_ts() - self.s_attack.timestamp)
-        return value
+        if value > 0:
+            return value
+        return 0
 
 """
 [CHAT WINDOW TEXT] [Fri Jul  8 20:25:39] Dunya Kulakova attempts Stunning Fist on TRAINER : *failed* : (15 + 41 = 56)
