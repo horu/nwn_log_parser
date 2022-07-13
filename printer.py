@@ -139,7 +139,7 @@ class Printer:
         self.chars_to_print_ts = 0
         self.chars_to_print_limit = CHARS_TO_PRINT_LIMIT_NORM
 
-    def change_char_list(self):
+    def change_print_mode(self):
         if self.chars_to_print_limit == CHARS_TO_PRINT_LIMIT_NORM:
             self.chars_to_print_limit = CHARS_TO_PRINT_LIMIT_MAX
         else:

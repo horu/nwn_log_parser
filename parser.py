@@ -106,8 +106,8 @@ class Parser:
             self.player = roller
             return
 
-    def change_char_list(self):
-        self.printer.change_char_list()
+    def change_print_mode(self):
+        self.printer.change_print_mode()
 
     def print(self) -> str:
         chars = [char for char in self.characters.values()]
