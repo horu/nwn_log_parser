@@ -4,6 +4,7 @@ import typing
 from actions import *
 
 AB_ATTACK_LIST_LIMIT = 10
+HP_LIST_LIMIT = 10
 AC_ATTACK_LIST_LIMIT = 30
 
 
@@ -19,26 +20,33 @@ class Statistic:
         self.received_damage = ValueStatistic()
         self.hit_ab_attack = ValueStatistic()
         self.hit_ac_attack = ValueStatistic()
-        self.killed = False  # target killed
+        self.death: typing.Optional[Death] = None  # target killed
 
 
 class StatisticStorage:
     def __init__(self):
         self.char_stats = collections.defaultdict(Statistic)
         self.all_chars_stats = Statistic()
-        self.this_char_killed = False
+        self.this_char_death: typing.Optional[Death] = None
 
     def reset(self):
         self.char_stats = collections.defaultdict(Statistic)
         self.all_chars_stats = Statistic()
-        self.this_char_killed = False
+        self.this_char_death = None
 
     def increase(self, name: str, stat_name, counter_name, value: int):
-        if self.this_char_killed:
+        if self.this_char_death:
+            if get_ts() - self.this_char_death.timestamp < 1000:
+                # ignore damage and other actions after death
+                return
             self.reset()
 
         char_stats = self.char_stats[name]
-        if char_stats.killed:
+        if char_stats.death:
+            if get_ts() - char_stats.death.timestamp < 1000:
+                # ignore damage and other actions after death
+                return
+
             self.char_stats[name] = Statistic()
             char_stats = self.char_stats[name]
 
@@ -75,7 +83,7 @@ class Character:
         self.initiative_roll: typing.Optional[InitiativeRoll] = None
 
         self.stats_storage = StatisticStorage()
-        self.hp = 0
+        self.hp_list: typing.List[int] = []
 
         self.timestamp = 0  # last timestamp of action with the char
 
@@ -97,6 +105,13 @@ class Character:
             self.stealth_cooldown = StealthCooldown.explicit_create(STEALTH_MODE_CD)
             return
 
+    # ac
+    def add_ac(self, attack: Attack):
+        append_fix_size(self.ac_attack_list, attack, AC_ATTACK_LIST_LIMIT)
+        if attack.is_hit():
+            self.stats_storage.increase(attack.attacker_name, 'hit_ac_attack', 'count', 1)
+        self.stats_storage.increase(attack.attacker_name, 'hit_ac_attack', 'sum', 1)
+
     def get_max_miss_ac(self) -> int:
         miss_attacks = [attack for attack in self.ac_attack_list if attack.is_miss() and not attack.is_critical_roll()]
         if miss_attacks:
@@ -111,65 +126,18 @@ class Character:
             return miss_attacks[0].value
         return 0
 
-    def add_ac(self, attack: Attack):
-        append_fix_size(self.ac_attack_list, attack, AC_ATTACK_LIST_LIMIT)
-        if attack.is_hit():
-            self.stats_storage.increase(attack.attacker_name, 'hit_ac_attack', 'count', 1)
-        self.stats_storage.increase(attack.attacker_name, 'hit_ac_attack', 'sum', 1)
-
-    def add_ab(self, attack: Attack):
-        append_fix_size(self.ab_attack_list, attack, AB_ATTACK_LIST_LIMIT)
-        self.stats_storage.increase(attack.target_name, 'hit_ab_attack', 'sum', 1)
-        if attack.is_hit():
-            self.stats_storage.increase(attack.target_name, 'hit_ab_attack', 'count', 1)
-
-    def update_timestamp(self):
-        current_time = get_ts()
-        self.timestamp = current_time
-        return current_time
-
-    def add_stunning_fist(self, sf: StunningFirst):
-        new_sf_list = [
-            sf for sf in self.stunning_fist_list if sf.s_attack.is_success() and (sf.throw is None or sf.get_duration())]
-        self.stunning_fist_list = new_sf_list
-        self.stunning_fist_list.append(sf)
-
-    def add_caused_damage(self, damage: Damage):
-        self.last_caused_damage = damage
-        self.stats_storage.increase(damage.target_name, 'caused_damage', 'sum', damage.value)
-        self.stats_storage.increase(damage.target_name, 'caused_damage', 'count', 1)
-
-    def add_received_damage(self, damage: Damage):
-        self.last_received_damage = damage
-        self.stats_storage.increase(damage.damager_name, 'received_damage', 'sum', damage.value)
-        self.stats_storage.increase(damage.damager_name, 'received_damage', 'count', 1)
-
-    def add_damage_absorption(self, absorption: DamageAbsorption):
-        last_rd = self.last_received_damage
-        if last_rd:
-            last_rd.damage_absorption_list.append(absorption)
-
-    def on_killed(self, death: Death):
-        killed_stat = self.stats_storage.char_stats[death.target_name]
-        killed_stat.killed = True
-
-        if death.target_name == self.name:
-            if self.hp:
-                self.hp = min(self.hp, self.stats_storage.all_chars_stats.received_damage.sum)
-            else:
-                self.hp = self.stats_storage.all_chars_stats.received_damage.sum
-            self.stats_storage.this_char_killed = True
-
-    def on_fortitude_save(self, throw: SavingThrow):
-        for sf in self.stunning_fist_list:
-            if sf.s_attack.target_name == throw.target_name and sf.throw is None:
-                sf.throw = throw
-
     def get_last_hit_ac_attack_value(self) -> int:
         for attack in self.ac_attack_list:
             if attack.is_hit():
                 return attack.value
         return 0
+
+    # ab
+    def add_ab(self, attack: Attack):
+        append_fix_size(self.ab_attack_list, attack, AB_ATTACK_LIST_LIMIT)
+        self.stats_storage.increase(attack.target_name, 'hit_ab_attack', 'sum', 1)
+        if attack.is_hit():
+            self.stats_storage.increase(attack.target_name, 'hit_ab_attack', 'count', 1)
 
     def get_last_ab_attack(self) -> typing.Optional[Attack]:
         if self.ab_attack_list:
@@ -193,3 +161,50 @@ class Character:
             max_ab = sorted(self.ab_attack_list, key=lambda x: x.base, reverse=False)[0]
             return max_ab.base
         return 0
+
+    def update_timestamp(self) -> None:
+        current_time = get_ts()
+        self.timestamp = current_time
+        return current_time
+
+    def add_stunning_fist(self, sf: StunningFirst) -> None:
+        new_sf_list = [
+            sf for sf in self.stunning_fist_list if sf.s_attack.is_success() and (sf.throw is None or sf.get_duration())]
+        self.stunning_fist_list = new_sf_list
+        self.stunning_fist_list.append(sf)
+
+    def add_caused_damage(self, damage: Damage) -> None:
+        self.last_caused_damage = damage
+        self.stats_storage.increase(damage.target_name, 'caused_damage', 'sum', damage.value)
+        self.stats_storage.increase(damage.target_name, 'caused_damage', 'count', 1)
+
+    def add_received_damage(self, damage: Damage) -> None:
+        self.last_received_damage = damage
+        self.stats_storage.increase(damage.damager_name, 'received_damage', 'sum', damage.value)
+        self.stats_storage.increase(damage.damager_name, 'received_damage', 'count', 1)
+
+    def add_damage_absorption(self, absorption: DamageAbsorption) -> None:
+        last_rd = self.last_received_damage
+        if last_rd:
+            last_rd.damage_absorption_list.append(absorption)
+
+    def on_killed(self, death: Death) -> None:
+        if death.target_name == self.name:
+            hp = self.stats_storage.all_chars_stats.received_damage.sum
+            append_fix_size(self.hp_list, hp, HP_LIST_LIMIT)
+            self.stats_storage.this_char_death = death
+        else:
+            killed_stat = self.stats_storage.char_stats[death.target_name]
+            killed_stat.death = death
+
+    def on_fortitude_save(self, throw: SavingThrow) -> None:
+        for sf in self.stunning_fist_list:
+            if sf.s_attack.target_name == throw.target_name and sf.throw is None:
+                sf.throw = throw
+
+    def get_avg_hp(self) -> int:
+        avg_hp = 0
+        if self.hp_list:
+            avg_hp = sum(self.hp_list) / len(self.hp_list)
+        return int(avg_hp)
+

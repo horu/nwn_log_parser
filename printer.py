@@ -157,8 +157,9 @@ class Printer:
     def print_char_without_name(self, char: Character) -> list:
         max_ac = char.get_max_miss_ac()
         min_ac = char.get_min_hit_ac()
+        cur_hp = char.get_avg_hp() - char.stats_storage.all_chars_stats.received_damage.sum
         result = [
-            'HP: {:d}/{:d}'.format(char.hp - char.stats_storage.all_chars_stats.received_damage.sum, char.hp),
+            'HP: {:d}/{:d}'.format(cur_hp, char.get_avg_hp()),
             'AC: {:d}/{:d}({:d})'.format(min_ac, max_ac, char.get_last_hit_ac_attack_value()),
             'AB: {:d}({:d})'.format(char.get_max_ab_attack_base(), char.get_last_ab_attack_base()),
             'FT: {:d}({:d})'.format(char.fortitude, char.last_fortitude_dc),
