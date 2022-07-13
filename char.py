@@ -7,6 +7,7 @@ AB_ATTACK_LIST_LIMIT = 10
 HP_LIST_LIMIT = 10
 AC_ATTACK_LIST_LIMIT = 30
 DAMAGE_LIST_LIMIT = 20
+MAX_DPR_TIMEOUT = 60000
 
 
 class ValueStatistic:
@@ -24,20 +25,42 @@ class Statistic:
         self.death: typing.Optional[Death] = None  # target killed
 
 
+class DamagePerRound:
+    def __init__(self):
+        self.damage_list: typing.List[Damage] = []
+        self.max_dpr = 0
+        self.ts_max_dpr = 0
+        self.last_dpr = 0
+
+    def calculate_dpr(self) -> int:
+        self.filter_damage_list()
+        dpr = sum([damage.value for damage in self.damage_list])
+        ts = get_ts()
+        if dpr > self.max_dpr or ts - self.ts_max_dpr > MAX_DPR_TIMEOUT:
+            self.max_dpr = dpr
+            self.ts_max_dpr = ts
+        return dpr
+
+    def add_damage(self, damage: Damage) -> None:
+        append_fix_time_window(self.damage_list, damage, ROUND_DURATION)
+        self.last_dpr = self.calculate_dpr()
+
+    def filter_damage_list(self):
+        ts = get_ts()
+        self.damage_list = [damage for damage in self.damage_list if ts - damage.timestamp <= ROUND_DURATION]
+
+
 class StatisticStorage:
     def __init__(self):
         self.char_stats = collections.defaultdict(Statistic)
         self.all_chars_stats = Statistic()
         self.this_char_death: typing.Optional[Death] = None
+        self.caused_dpr = DamagePerRound()
 
     def reset(self):
         self.char_stats = collections.defaultdict(Statistic)
         self.all_chars_stats = Statistic()
         self.this_char_death = None
-
-    def increase_caused_damage(self, char_name: str, damage: Damage):
-        self.increase(damage.target_name, 'caused_damage', 'sum', damage.value)
-        self.increase(damage.target_name, 'caused_damage', 'count', 1)
 
     def increase(self, char_name: str, stat_name, counter_name, value: int):
         if self.this_char_death:
@@ -80,7 +103,7 @@ class Character:
         self.last_knockdown: typing.Optional[Knockdown] = None
         self.stunning_fist_list: typing.List[StunningFirst] = []
 
-        self.caused_damage_list: typing.List[Damage] = []
+        self.last_caused_damage: typing.Optional[Damage] = None
         self.last_received_damage: typing.Optional[Damage] = None
 
         self.stealth_cooldown = StealthCooldown.explicit_create(0)
@@ -179,26 +202,10 @@ class Character:
         self.stunning_fist_list.append(sf)
 
     def add_caused_damage(self, damage: Damage) -> None:
-        append_fix_size(self.caused_damage_list, damage, DAMAGE_LIST_LIMIT)
+        self.stats_storage.caused_dpr.add_damage(damage)
+        self.last_caused_damage = damage
         self.stats_storage.increase(damage.target_name, 'caused_damage', 'sum', damage.value)
         self.stats_storage.increase(damage.target_name, 'caused_damage', 'count', 1)
-
-    def get_last_caused_damage(self):
-        if self.caused_damage_list:
-            return self.caused_damage_list[-1]
-        return None
-
-    def get_max_caused_damage(self) -> int:
-        if self.caused_damage_list:
-            cd = sorted(self.caused_damage_list, key=lambda x: x.value, reverse=True)[0]
-            return cd.value
-        return 0
-
-    def get_min_caused_damage(self) -> int:
-        if self.caused_damage_list:
-            cd = sorted(self.caused_damage_list, key=lambda x: x.value, reverse=False)[0]
-            return cd.value
-        return 0
 
     def add_received_damage(self, damage: Damage) -> None:
         self.last_received_damage = damage

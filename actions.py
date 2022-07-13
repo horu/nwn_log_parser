@@ -26,6 +26,18 @@ class Action:
         return str(self.__dict__)
 
 
+def append_fix_time_window(actions_list: typing.List[Action], action: Action, window_duration) -> None:
+    actions_list.append(action)
+    window_end = 0
+    ts = get_ts()
+    for i, action in enumerate(actions_list):
+        if ts - action.timestamp <= window_duration:
+            window_end = i
+            break
+    logging.debug('Remove actions: {}'.format([str(action) for action in actions_list[0:window_end]]))
+    del actions_list[0:window_end]
+
+
 class Attack(Action):
     @staticmethod
     def create(string):

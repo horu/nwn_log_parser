@@ -26,12 +26,11 @@ def print_progress_bar(name: str, value: int, min_value: int, max_value: int, li
 def create_progress_bars(char: Character, line_size: int) -> str:
     text = ''
 
-    # Damage per 6 second
-    # ts = get_ts()
-    # cd_list_for_round = [cd for cd in char.caused_damage_list if ts - cd.timestamp <= 6000]
-    # if cd_list_for_round:
-    #     cd_sum = sum([cd.value for cd in cd_list_for_round])
-    #     text += print_progress_bar('CD', last_cd.value, 0, 100, line_size, '"')
+    # Damage per round
+    caused_dpr = char.stats_storage.caused_dpr
+    dpr = caused_dpr.calculate_dpr()
+    if caused_dpr.max_dpr and dpr:
+        text += print_progress_bar('DPR', dpr, 0, caused_dpr.max_dpr, line_size, 'D')
 
     # Knockdown cooldown
     last_kd = char.last_knockdown
@@ -133,15 +132,15 @@ class Printer:
         return self.chars_to_print_limit > CHARS_TO_PRINT_LIMIT_NORM
 
     def print_char_wide_stat(self, char: Character) -> list:
-        all_stats = char.stats_storage.all_chars_stats
+        storage = char.stats_storage
+        all_stats = storage.all_chars_stats
 
         sum_cd = 0
         last_cd_value = 0
-        stats = char.stats_storage.char_stats
-        last_cd = char.get_last_caused_damage()
-        if last_cd:
-            sum_cd = stats[last_cd.target_name].caused_damage.sum % DAMAGE_PRINT_LIMIT
-            last_cd_value = last_cd.value
+        stats = storage.char_stats
+        if char.last_caused_damage:
+            sum_cd = stats[char.last_caused_damage.target_name].caused_damage.sum % DAMAGE_PRINT_LIMIT
+            last_cd_value = char.last_caused_damage.value
 
         sum_rd = 0
         last_rd = 0
@@ -159,6 +158,7 @@ class Printer:
 
         return [
             'CD: {:d}({:d})'.format(sum_cd, last_cd_value),
+            'DPR: {:d}({:d})'.format(storage.caused_dpr.max_dpr, storage.caused_dpr.last_dpr),
             'RD: {:d}({:d}/{:d})'.format(sum_rd, last_rd, last_ad_value),
             'PER AB: {:d}%'.format(int(per_ab * 100)),
             'AVG CD: {:d}'.format(int(avg_caused_damage)),
@@ -169,7 +169,7 @@ class Printer:
         min_ac = char.get_min_hit_ac()
         cur_hp = char.get_avg_hp() - char.stats_storage.all_chars_stats.received_damage.sum
         result = [
-            'HP: {:d}/{:d}'.format(cur_hp, char.get_avg_hp()),
+            'HP: {:d}/{:d}'.format(cur_hp % DAMAGE_PRINT_LIMIT, char.get_avg_hp() % DAMAGE_PRINT_LIMIT),
             'AC: {:d}/{:d}({:d})'.format(max_ac, min_ac, char.get_last_hit_ac_attack_value()),
             'AB: {:d}({:d})'.format(char.get_max_ab_attack_base(), char.get_last_ab_attack_base()),
             'FT: {:d}({:d})'.format(char.fortitude, char.last_fortitude_dc),
