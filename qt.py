@@ -59,7 +59,7 @@ class Backend:
         for line in self.log_reader.read_lines():
             self.parser.push_line(line)
 
-        text = self.parser.get_stat()
+        text = self.parser.print()
         self.window.set_text(text)
 
     def reset_geometry(self):

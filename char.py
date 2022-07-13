@@ -49,17 +49,17 @@ class Character:
             self.initiative_roll = None
             self.stealth_cooldown = StealthCooldown.explicit_create(STEALTH_MODE_CD)
 
-    def update_ac(self, attack):
+    def add_ac(self, attack):
         append_fix_size(self.ac_attack_list, attack, ATTACK_LIST_LIMIT)
 
         if attack.result == MISS:
             self.ac[0] = max(self.ac[0], attack.value + 1)
-        elif attack.result == HIT or attack.result == CRITICAL_HIT:
+        elif attack.is_hit():
             self.last_hit_ac_attack = attack
             if attack.roll != 1 and attack.roll != 20:
                 self.ac[1] = min(self.ac[1], attack.value)
 
-    def update_ab(self, attack):
+    def add_ab(self, attack):
         append_fix_size(self.ab_attack_list, attack, ATTACK_LIST_LIMIT)
 
     def update_timestamp(self):

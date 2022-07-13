@@ -42,6 +42,9 @@ class Attack(Action):
         self.value = int(g[5])
         assert self.roll + self.base == self.value
 
+    def is_hit(self):
+        return self.result == HIT or self.result == CRITICAL_HIT
+
 
 class SpecialAttack(Attack):
     @staticmethod
@@ -132,6 +135,23 @@ class DamageResistance(Action):
     def create(string):
         p = r'\[CHAT WINDOW TEXT\] \[.+\] ([^:]+) \: Damage Resistance absorbs ([0-9]+) damage'
         return Action.base_create(string, p, DamageResistance)
+
+    def __init__(self, g):
+        super().__init__()
+        self.target_name = g[0]
+        self.value = int(g[1])
+
+
+"""
+[CHAT WINDOW TEXT] [Wed Jul 13 15:23:02] Epic Giant Demon : Damage Immunity absorbs 19 point(s) of Physical
+"""
+
+
+class DamageImmunity(Action):
+    @staticmethod
+    def create(string):
+        p = r'\[CHAT WINDOW TEXT\] \[.+\] ([^:]+) \: Damage Immunity absorbs ([0-9]+) point'
+        return Action.base_create(string, p, DamageImmunity)
 
     def __init__(self, g):
         super().__init__()

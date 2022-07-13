@@ -14,9 +14,7 @@ class Parser:
     def __init__(self, player_name: str):
         self.characters = collections.defaultdict(Character)
         self.player = self.get_char(player_name)
-        self.chars_to_print: typing.List[Character] = []
-        self.chars_to_print_ts = 0
-        self.chars_to_print_limit = CHARS_TO_PRINT_LIMIT_NORM
+        self.printer = Printer()
 
     def get_char(self, name: str) -> Character:
         char = self.characters[name]
@@ -29,11 +27,11 @@ class Parser:
         attack = Attack.create(line)
         if attack:
             attacker = self.get_char(attack.attacker_name)
-            attacker.update_ab(attack)
+            attacker.add_ab(attack)
             attacker.start_fight()
 
             target = self.get_char(attack.target_name)
-            target.update_ac(attack)
+            target.add_ac(attack)
             return
 
         throw = SavingThrow.create(line)
@@ -99,60 +97,10 @@ class Parser:
             roller.initiative_roll = initiative_roll
             return
 
-    def sort_char(self, char: Character) -> int:
-        last_player_contact_ts = 0
-
-        for attack in self.player.ab_attack_list:
-            if char.name == attack.target_name:
-                last_player_contact_ts = max(last_player_contact_ts, attack.timestamp)
-
-        for attack in self.player.ac_attack_list:
-            if char.name == attack.attacker_name:
-                last_player_contact_ts = max(last_player_contact_ts, attack.timestamp)
-
-        action = self.player.last_hit_ac_attack
-        if action and char.name == action.attacker_name:
-            last_player_contact_ts = max(last_player_contact_ts, action.timestamp)
-
-        action = self.player.last_received_damage
-        if action and action.damager_name == char.name:
-            last_player_contact_ts = max(last_player_contact_ts, action.timestamp)
-
-        action = self.player.last_caused_damage
-        if action and action.target_name == char.name:
-            last_player_contact_ts = max(last_player_contact_ts, action.timestamp)
-
-        return last_player_contact_ts
-
     def change_char_list(self):
-        if self.chars_to_print_limit == CHARS_TO_PRINT_LIMIT_NORM:
-            self.chars_to_print_limit = CHARS_TO_PRINT_LIMIT_MAX
-        else:
-            self.chars_to_print_limit = CHARS_TO_PRINT_LIMIT_NORM
-        self.chars_to_print_ts = 0
+        self.printer.change_char_list()
 
-    def get_stat(self) -> str:
-        ts = get_ts()
-        if ts - self.chars_to_print_ts > CHARS_TO_PRINT_TIMEOUT:
-            chars = [char for char in self.characters.values() if char is not self.player]
-            chars.sort(key=lambda x: x.timestamp, reverse=True)
-            chars.sort(key=self.sort_char, reverse=True)
-            self.chars_to_print = chars[:self.chars_to_print_limit]
-            self.chars_to_print.sort(key=lambda x: x.name)
-            self.chars_to_print_ts = ts
-
-        table = [print_char(char) for char in self.chars_to_print]
-        table.append(['{}\n'.format(' | '.join(print_special_char(self.player)))]
-                     + print_char_without_name(self.player))
-
-        df = pandas.DataFrame(table)
-        text = str(tabulate.tabulate(df, tablefmt='plain', showindex=False))
-
-        line_size = len(text.splitlines()[0])
-        text += create_progress_bars(self.player, line_size)
-
-        if self.chars_to_print_limit > CHARS_TO_PRINT_LIMIT_NORM:
-            text = '{}\n'.format('#' * line_size) + text
-            text += '\n{}'.format('#' * line_size)
-
+    def print(self) -> str:
+        chars = [char for char in self.characters.values()]
+        text = self.printer.print(self.player, chars)
         return text

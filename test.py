@@ -40,6 +40,7 @@ test_lines = """
 [CHAT WINDOW TEXT] [Mon Jul 11 01:16:34] Adult Red Dragon : Immune to Sneak Attacks.
 [CHAT WINDOW TEXT] [Mon Jul 11 01:16:34] Adult Red Dragon : Damage Reduction absorbs 3 damage
 [CHAT WINDOW TEXT] [Mon Jul 11 01:16:34] Adult Red Dragon : Damage Resistance absorbs 2 damage
+[CHAT WINDOW TEXT] [Wed Jul 13 15:23:02] Adult Red Dragon : Damage Immunity absorbs 19 point(s) of Physical
 
 [CHAT WINDOW TEXT] [Mon Jul 11 17:52:32] Wait 10 seconds for hiding
 [CHAT WINDOW TEXT] [Mon Jul 11 17:52:33] Wait 9 seconds for hiding
@@ -54,6 +55,6 @@ def test(win):
     for line in test_lines.splitlines():
         parser.push_line(line)
     text = '\n'
-    text += parser.get_stat()
+    text += parser.print()
     win.set_text(text)
     logging.debug(text)
