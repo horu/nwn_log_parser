@@ -44,6 +44,8 @@ test_lines = """
 [CHAT WINDOW TEXT] [Mon Jul 11 01:16:34] Adult Red Dragon : Damage Resistance absorbs 4 damage
 [CHAT WINDOW TEXT] [Wed Jul 13 15:23:02] Adult Red Dragon : Damage Immunity absorbs 19 point(s) of Physical
 
+[CHAT WINDOW TEXT] [Sun Jul 10 23:16:49] Adult Red Dragon damages Dunya Kulakova: 81 (81 Physical)
+
 [CHAT WINDOW TEXT] [Mon Jul 11 17:52:32] Wait 10 seconds for hiding
 [CHAT WINDOW TEXT] [Mon Jul 11 17:52:33] Wait 9 seconds for hiding
 

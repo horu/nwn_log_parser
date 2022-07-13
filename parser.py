@@ -63,16 +63,17 @@ class Parser:
             target = self.get_char(damage.target_name)
 
             # for player only
-            if damager is self.player or target is self.player:
-                damager.add_caused_damage(damage)
-                target.add_received_damage(damage)
+            # if damager is self.player or target is self.player:
+            damager.add_caused_damage(damage)
+            target.add_received_damage(damage)
             return
 
         death = Death.create(line)
         if death:
             target = self.get_char(death.target_name)
-            target.on_killed(death)
-            self.player.on_killed(death)
+            if target is not self.player:
+                target.on_killed(death)
+                self.player.on_killed(death)
             return
 
         d_reduction = DamageReduction.create(line)
@@ -105,6 +106,10 @@ class Parser:
             # find player name by Initiative Roll
             self.player = roller
             return
+
+    def reset_statistic(self):
+        for char in self.characters.values():
+            char.stats_storage = StatisticStorage()
 
     def change_print_mode(self):
         self.printer.change_print_mode()

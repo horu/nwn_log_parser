@@ -5,6 +5,7 @@ from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QApplication, QLabel, QMainWindow
 from PyQt5.QtGui import QFont, QMouseEvent
 
+from log_reader import *
 from parser import *
 
 
@@ -35,7 +36,7 @@ class Window(QMainWindow):
 
 
 class Backend:
-    def __init__(self, window: Window, log_reader, parser: Parser):
+    def __init__(self, window: Window, log_reader: LogReader, parser: Parser):
         self.window = window
         self.log_reader = log_reader
         self.reset_geometry()
@@ -65,6 +66,8 @@ class Backend:
         button = event.button()
         if button == Qt.MouseButton.RightButton:
             self.parser.change_print_mode()
+        elif button == Qt.MouseButton.MidButton:
+            self.parser.reset_statistic()
 
     def on_move_event(self, event: QMouseEvent):
         if event.buttons() == Qt.LeftButton:

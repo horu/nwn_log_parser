@@ -27,8 +27,6 @@ STUNNING_FIST = 'Stunning Fist'
 LOG_LEVEL = os.environ.get('LOG_LEVEL', default='DEBUG')
 LOG_DIR = os.environ.get('LOG_DIR', default='{}/.local/share/Neverwinter Nights/logs/'.format(os.getenv('HOME')))
 
-DAMAGE_LIMIT = 10000
-
 
 def get_ts():
     return int(time.time_ns() / 1000000)
