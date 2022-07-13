@@ -8,7 +8,6 @@ test_lines = """
 [CHAT WINDOW TEXT] [Fri Jul  8 23:16:27] Dunya Kulakova : Reflex Save vs. Electricity : *success* : (13 + 45 = 58 vs. DC: 28)
 [CHAT WINDOW TEXT] [Fri Jul  8 19:15:23] 10 AC - Chaotic Evil : Will Save vs. Mind Spells : *failure* : (3 + 1 = 4 vs. DC: 20)
 [CHAT WINDOW TEXT] [Fri Jul  8 23:20:05] Dunya Kulakova : Reflex Save vs. Spells : *success* : (12 + 45 = 57 vs. DC: 37)
-[CHAT WINDOW TEXT] [Fri Jul  8 23:20:06] Dunya Kulakova : Fortitude Save vs. Spells : *success* : (19 + 29 = 48 vs. DC: 34)
 
 
 [CHAT WINDOW TEXT] [Fri Jul  8 20:22:23] Off Hand : Sneak Attack : Dunya Kulakova attacks 10 AC - Undead - Chaotic Evil : *hit* : (6 + 49 = 55)
@@ -20,8 +19,10 @@ test_lines = """
 
 [CHAT WINDOW TEXT] [Fri Jul  8 19:23:22] Dunya Kulakova attacks TRAINER : *hit* : (2 + 52 = 54)
 
+[CHAT WINDOW TEXT] [Fri Jul  8 20:26:20] Sneak Attack : Dunya Kulakova attempts Stunning Fist on Chaotic Evil : *miss* : (6 + 41 = 47)
 [CHAT WINDOW TEXT] [Fri Jul  8 20:25:39] Dunya Kulakova attempts Stunning Fist on TRAINER : *failed* : (15 + 41 = 56)
 [CHAT WINDOW TEXT] [Fri Jul  8 20:26:20] Sneak Attack : Dunya Kulakova attempts Stunning Fist on 10 AC - Undead - Chaotic Evil : *hit* : (6 + 41 = 47)
+[CHAT WINDOW TEXT] [Fri Jul  8 23:20:06] 10 AC - Undead - Chaotic Evil : Fortitude Save vs. Spells : *success* : (19 + 29 = 48 vs. DC: 34)
 [CHAT WINDOW TEXT] [Fri Jul  8 20:27:48] Flurry of Blows : Sneak Attack : Dunya Kulakova attempts Stunning Fist on 10 AC - Undead - Chaotic Evil : *hit* : (19 + 39 = 58)
 
 [CHAT WINDOW TEXT] [Fri Jul  8 20:24:45] Flurry of Blows : Dunya Kulakova attacks TRAINER : *hit* : (13 + 47 = 60)
@@ -51,6 +52,7 @@ test_lines = """
 
 [CHAT WINDOW TEXT] [Wed Jul 13 00:35:34] Dunya Kulakova : Initiative Roll : 20 : (9 + 11 = 20)
 [CHAT WINDOW TEXT] [Wed Jul 13 00:40:26] Sneak Attack : Dunya Kulakova attacks Badger : *hit* : (3 + 39 = 42)
+[CHAT WINDOW TEXT] [Wed Jul 13 23:52:00] TEST m f s attempts Improved Knockdown on NORTHERN ORC KING : *resisted* : (2 + 44 = 46)
 """
 
 

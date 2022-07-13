@@ -40,6 +40,7 @@ class Parser:
             if FORTITUDE in throw.type:
                 target.fortitude = throw.base
                 target.last_fortitude_dc = throw.dc
+                # try to check features the player raised
                 self.player.on_fortitude_save(throw)
 
             elif WILL in throw.type:
@@ -52,9 +53,12 @@ class Parser:
             attacker = self.get_char(s_attack.attacker_name)
             attacker.start_fight(s_attack)
             if KNOCKDOWN in s_attack.type:
-                attacker.last_knockdown = s_attack
+                attacker.last_knockdown = Knockdown(s_attack)
             elif STUNNING_FIST in s_attack.type:
                 attacker.add_stunning_fist(StunningFirst(s_attack))
+
+            target = self.get_char(s_attack.target_name)
+            target.add_ac(s_attack)
             return
 
         damage = Damage.create(line)

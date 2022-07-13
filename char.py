@@ -3,7 +3,8 @@ import typing
 
 from actions import *
 
-ATTACK_LIST_LIMIT = 10
+AB_ATTACK_LIST_LIMIT = 10
+AC_ATTACK_LIST_LIMIT = 30
 
 
 class ValueStatistic:
@@ -54,10 +55,7 @@ class StatisticStorage:
 class Character:
     def __init__(self):
         self.name = ''
-        self.ac = [0, 99]  # min/max passible ac
-        self.last_hit_ac_attack: typing.Optional[Attack] = None  # last success attack to char
-        self.ac_attack_list: typing.List[Attack] = []  # last attack in and of list 50/45/40/35
-
+        self.ac_attack_list: typing.List[Attack] = []
         self.ab_attack_list: typing.List[Attack] = []  # last attack in and of list 50/45/40/35
 
         self.fortitude = 0
@@ -66,7 +64,7 @@ class Character:
         self.will = 0
         self.last_will_dc = 0
 
-        self.last_knockdown: typing.Optional[SpecialAttack] = None
+        self.last_knockdown: typing.Optional[Knockdown] = None
         self.stunning_fist_list: typing.List[StunningFirst] = []
 
         self.last_caused_damage: typing.Optional[Damage] = None
@@ -84,14 +82,14 @@ class Character:
     def __str__(self):
         return str(self.__dict__)
 
-    def start_fight(self, attack: Attack):
+    def start_fight(self, attack: Attack) -> None:
         # uses to indicate start fight after stealth mode on next attack to start stealth cooldown
         if self.initiative_roll:
             self.initiative_roll = None
             self.stealth_cooldown = StealthCooldown.explicit_create(STEALTH_MODE_CD)
             return
 
-        sm_cooldown = self.stealth_cooldown.duration()
+        sm_cooldown = self.stealth_cooldown.get_duration()
         is_sneak = SNEAK_ATTACK in attack.specials
         last_attack = self.get_last_ab_attack()
         if sm_cooldown == 0 and last_attack and attack.timestamp - last_attack.timestamp > 2000 and is_sneak:
@@ -99,20 +97,28 @@ class Character:
             self.stealth_cooldown = StealthCooldown.explicit_create(STEALTH_MODE_CD)
             return
 
-    def add_ac(self, attack: Attack):
-        append_fix_size(self.ac_attack_list, attack, ATTACK_LIST_LIMIT)
+    def get_max_miss_ac(self) -> int:
+        miss_attacks = [attack for attack in self.ac_attack_list if attack.is_miss() and not attack.is_critical_roll()]
+        if miss_attacks:
+            miss_attacks.sort(key=lambda x: x.value)
+            return miss_attacks[-1].value
+        return 0
 
-        if attack.result == MISS:
-            self.ac[0] = max(self.ac[0], attack.value + 1)
-        elif attack.is_hit():
-            self.last_hit_ac_attack = attack
-            if attack.roll != 1 and attack.roll != 20:
-                self.ac[1] = min(self.ac[1], attack.value)
+    def get_min_hit_ac(self) -> int:
+        miss_attacks = [attack for attack in self.ac_attack_list if attack.is_hit() and not attack.is_critical_roll()]
+        if miss_attacks:
+            miss_attacks.sort(key=lambda x: x.value)
+            return miss_attacks[0].value
+        return 0
+
+    def add_ac(self, attack: Attack):
+        append_fix_size(self.ac_attack_list, attack, AC_ATTACK_LIST_LIMIT)
+        if attack.is_hit():
             self.stats_storage.increase(attack.attacker_name, 'hit_ac_attack', 'count', 1)
         self.stats_storage.increase(attack.attacker_name, 'hit_ac_attack', 'sum', 1)
 
     def add_ab(self, attack: Attack):
-        append_fix_size(self.ab_attack_list, attack, ATTACK_LIST_LIMIT)
+        append_fix_size(self.ab_attack_list, attack, AB_ATTACK_LIST_LIMIT)
         self.stats_storage.increase(attack.target_name, 'hit_ab_attack', 'sum', 1)
         if attack.is_hit():
             self.stats_storage.increase(attack.target_name, 'hit_ab_attack', 'count', 1)
@@ -123,7 +129,8 @@ class Character:
         return current_time
 
     def add_stunning_fist(self, sf: StunningFirst):
-        new_sf_list = [sf for sf in self.stunning_fist_list if sf.throw is None or sf.duration()]
+        new_sf_list = [
+            sf for sf in self.stunning_fist_list if sf.s_attack.is_success() and (sf.throw is None or sf.get_duration())]
         self.stunning_fist_list = new_sf_list
         self.stunning_fist_list.append(sf)
 
@@ -159,8 +166,9 @@ class Character:
                 sf.throw = throw
 
     def get_last_hit_ac_attack_value(self) -> int:
-        if self.last_hit_ac_attack:
-            return self.last_hit_ac_attack.value
+        for attack in self.ac_attack_list:
+            if attack.is_hit():
+                return attack.value
         return 0
 
     def get_last_ab_attack(self) -> typing.Optional[Attack]:

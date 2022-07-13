@@ -37,7 +37,7 @@ class Attack(Action):
         s = g[0].split(' : ')
         self.attacker_name = s[-1]
         s.pop()
-        self.specials = s
+        self.specials = s  # Sneak Attack, Off hand, ...
         self.target_name = g[1]
         self.result = g[2]
         self.roll = int(g[3])
@@ -45,8 +45,15 @@ class Attack(Action):
         self.value = int(g[5])
         assert self.roll + self.base == self.value
 
+    # attack is hit to target for any type
     def is_hit(self):
-        return self.result == HIT or self.result == CRITICAL_HIT
+        return self.result == HIT or self.result == CRITICAL_HIT or self.result == RESISTED or self.result == FAILED
+
+    def is_miss(self):
+        return self.result == MISS
+
+    def is_critical_roll(self):
+        return self.roll == 1 or self.roll == 20
 
 
 class SpecialAttack(Attack):
@@ -61,6 +68,31 @@ class SpecialAttack(Attack):
         del g_list[1]
         super().__init__(g_list)
 
+    # special attack is hit to target and success
+    def is_success(self):
+        return self.result == HIT or self.result == CRITICAL_HIT
+
+
+"""
+[CHAT WINDOW TEXT] [Wed Jul 13 23:52:00] TEST m f s attempts Improved Knockdown on NORTHERN ORC KING : *resisted* : (2 + 44 = 46)
+[CHAT WINDOW TEXT] [Fri Jul  8 20:13:36] Sneak Attack : Dunya Kulakova attempts Improved Knockdown on 60 AC DUMMY : *miss* : (4 + 45 = 49)
+"""
+
+
+class Knockdown(Action):
+    def __init__(self, s_attack: SpecialAttack):
+        super().__init__()
+        self.s_attack = s_attack
+
+    def get_cooldown(self):
+        value = KNOCKDOWN_PVE_CD - (get_ts() - self.s_attack.timestamp)
+        return value
+
+"""
+[CHAT WINDOW TEXT] [Fri Jul  8 20:25:39] Dunya Kulakova attempts Stunning Fist on TRAINER : *failed* : (15 + 41 = 56)
+[CHAT WINDOW TEXT] [Fri Jul  8 20:26:20] Sneak Attack : Dunya Kulakova attempts Stunning Fist on Chaotic Evil : *hit* : (6 + 41 = 47)
+"""
+
 
 class StunningFirst(Action):
     def __init__(self, s_attack: SpecialAttack):
@@ -68,7 +100,7 @@ class StunningFirst(Action):
         self.s_attack = s_attack
         self.throw = None
 
-    def duration(self) -> int:  # ms
+    def get_duration(self) -> int:  # ms
         if self.throw and self.throw.result == FAILURE:
             duration = STUNNING_FIST_DURATION - (get_ts() - self.s_attack.timestamp)
             if duration > 0:
@@ -177,7 +209,7 @@ class StealthCooldown(Action):
     def explicit_create(cooldown: int):
         return StealthCooldown([cooldown / 1000])
 
-    def duration(self) -> int:  # ms
+    def get_duration(self) -> int:  # ms
         duration = self._cooldown - 1000 - (get_ts() - self.timestamp)  # 1000 - server fix
         if duration > 0:
             return duration

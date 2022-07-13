@@ -9,12 +9,15 @@ STEALTH_MODE_CD = 10000
 
 KNOCKDOWN_AB_PENALTY = 4
 
+SUCCESS = 'success'
 FAILURE = 'failure'
 
 MISS = 'miss'
 HIT = 'hit'
 FAILED = 'failed'
 CRITICAL_HIT = 'critical hit'
+RESISTED = 'resisted'
+TARGET_CONCEALED = 'target concealed'
 
 SNEAK_ATTACK = 'Sneak Attack'
 DEATH_ATTACK = 'Death Attack'
