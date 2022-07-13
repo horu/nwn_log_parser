@@ -10,7 +10,7 @@ from char import *
 
 CHARS_TO_PRINT_LIMIT_NORM = 1
 CHARS_TO_PRINT_LIMIT_MAX = 30
-CHARS_TO_PRINT_TIMEOUT = 3000
+CHARS_TO_PRINT_TIMEOUT = 500
 DAMAGE_PRINT_LIMIT = 10000
 
 
@@ -25,6 +25,13 @@ def print_progress_bar(name: str, value: int, min_value: int, max_value: int, li
 
 def create_progress_bars(char: Character, line_size: int) -> str:
     text = ''
+
+    # Damage per 6 second
+    # ts = get_ts()
+    # cd_list_for_round = [cd for cd in char.caused_damage_list if ts - cd.timestamp <= 6000]
+    # if cd_list_for_round:
+    #     cd_sum = sum([cd.value for cd in cd_list_for_round])
+    #     text += print_progress_bar('CD', last_cd.value, 0, 100, line_size, '"')
 
     # Knockdown cooldown
     last_kd = char.last_knockdown
@@ -56,15 +63,6 @@ def create_progress_bars(char: Character, line_size: int) -> str:
             max_ab = char.get_max_ab_attack_base()
             min_ab = char.get_min_ab_attack_base()
             text += print_progress_bar('AB', last_ab.base, min_ab, max_ab, line_size, '|')
-
-    # Damage min/max
-    caused_damage_list = char.caused_damage_list
-    if caused_damage_list:
-        last_cd = char.get_last_caused_damage()
-        if get_ts() - last_cd.timestamp <= 6000:
-            max_cd = char.get_max_caused_damage()
-            min_cd = char.get_min_caused_damage()
-            text += print_progress_bar('CD', last_cd.value, min_cd, max_cd, line_size, '"')
 
     return text
 
@@ -172,7 +170,7 @@ class Printer:
         cur_hp = char.get_avg_hp() - char.stats_storage.all_chars_stats.received_damage.sum
         result = [
             'HP: {:d}/{:d}'.format(cur_hp, char.get_avg_hp()),
-            'AC: {:d}/{:d}({:d})'.format(min_ac, max_ac, char.get_last_hit_ac_attack_value()),
+            'AC: {:d}/{:d}({:d})'.format(max_ac, min_ac, char.get_last_hit_ac_attack_value()),
             'AB: {:d}({:d})'.format(char.get_max_ab_attack_base(), char.get_last_ab_attack_base()),
             'FT: {:d}({:d})'.format(char.fortitude, char.last_fortitude_dc),
             'WL: {:d}({:d})'.format(char.will, char.last_will_dc),

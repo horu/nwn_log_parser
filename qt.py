@@ -59,6 +59,7 @@ class Backend:
         button = event.button()
         if button == Qt.MouseButton.LeftButton:
             self.window.showMinimized()
+        event.accept()
 
     def on_press_event(self, event: QMouseEvent):
         self.window.drag_position = event.globalPos()
@@ -68,6 +69,7 @@ class Backend:
             self.parser.change_print_mode()
         elif button == Qt.MouseButton.MidButton:
             self.parser.reset_statistic()
+        event.accept()
 
     def on_move_event(self, event: QMouseEvent):
         if event.buttons() == Qt.LeftButton:
@@ -79,6 +81,9 @@ class Backend:
         for line in self.log_reader.read_lines():
             self.parser.push_line(line)
 
+        self.print()
+
+    def print(self):
         text = self.parser.print()
         self.window.set_text(text)
 

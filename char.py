@@ -35,21 +35,25 @@ class StatisticStorage:
         self.all_chars_stats = Statistic()
         self.this_char_death = None
 
-    def increase(self, name: str, stat_name, counter_name, value: int):
+    def increase_caused_damage(self, char_name: str, damage: Damage):
+        self.increase(damage.target_name, 'caused_damage', 'sum', damage.value)
+        self.increase(damage.target_name, 'caused_damage', 'count', 1)
+
+    def increase(self, char_name: str, stat_name, counter_name, value: int):
         if self.this_char_death:
             if get_ts() - self.this_char_death.timestamp < 1000:
                 # ignore damage and other actions after death
                 return
             self.reset()
 
-        char_stats = self.char_stats[name]
+        char_stats = self.char_stats[char_name]
         if char_stats.death:
             if get_ts() - char_stats.death.timestamp < 1000:
                 # ignore damage and other actions after death
                 return
 
-            self.char_stats[name] = Statistic()
-            char_stats = self.char_stats[name]
+            self.char_stats[char_name] = Statistic()
+            char_stats = self.char_stats[char_name]
 
         self._increase_stat(char_stats, stat_name, counter_name, value)
         self._increase_stat(self.all_chars_stats, stat_name, counter_name, value)
@@ -128,7 +132,7 @@ class Character:
         return 0
 
     def get_last_hit_ac_attack_value(self) -> int:
-        for attack in self.ac_attack_list:
+        for attack in reversed(self.ac_attack_list):
             if attack.is_hit():
                 return attack.value
         return 0
