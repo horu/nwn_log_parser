@@ -53,7 +53,7 @@ test_lines = """
 
 
 def test(win):
-    parser = Parser('Dunya Kulakova')
+    parser = Parser()
     for line in test_lines.splitlines():
         parser.push_line(line)
     text = '\n'

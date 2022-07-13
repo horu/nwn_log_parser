@@ -24,7 +24,6 @@ REFLEX = 'Reflex'
 KNOCKDOWN = 'Knockdown'
 STUNNING_FIST = 'Stunning Fist'
 
-PLAYER_NAME = os.environ.get('PLAYER_NAME', default='Dunya Kulakova')
 LOG_LEVEL = os.environ.get('LOG_LEVEL', default='DEBUG')
 LOG_DIR = os.environ.get('LOG_DIR', default='{}/.local/share/Neverwinter Nights/logs/'.format(os.getenv('HOME')))
 

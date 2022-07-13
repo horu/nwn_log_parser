@@ -11,9 +11,9 @@ CHARS_TO_PRINT_TIMEOUT = 3000
 
 
 class Parser:
-    def __init__(self, player_name: str):
+    def __init__(self):
         self.characters = collections.defaultdict(Character)
-        self.player = self.get_char(player_name)
+        self.player = Character()
         self.printer = Printer()
 
     def get_char(self, name: str) -> Character:
@@ -62,6 +62,7 @@ class Parser:
             damager = self.get_char(damage.damager_name)
             target = self.get_char(damage.target_name)
 
+            # for player only
             if damager is self.player or target is self.player:
                 damager.add_caused_damage(damage)
                 target.add_received_damage(damage)
@@ -101,6 +102,8 @@ class Parser:
         if initiative_roll:
             roller = self.get_char(initiative_roll.roller_name)
             roller.initiative_roll = initiative_roll
+            # find player name by Initiative Roll
+            self.player = roller
             return
 
     def change_char_list(self):

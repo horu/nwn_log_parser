@@ -16,7 +16,7 @@ if __name__ == "__main__":
 
     test(win)
 
-    parser = Parser(PLAYER_NAME)
+    parser = Parser()
     reader = LogReader(LOG_DIR)
     back = Backend(win, reader, parser)
 
