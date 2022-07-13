@@ -152,6 +152,7 @@ class Printer:
             last_ad = sum([ad.value for ad in char.last_received_damage.damage_absorption_list])
 
         result = [
+            'HP: {:d}/{:d}'.format(char.hp - char.stats_storage.all_chars_stats.received_damage.sum, char.hp),
             'AC: {:d}/{:d}({:d})'.format(char.ac[0], char.ac[1], char.get_last_hit_ac_attack_value()),
             'AB: {:d}({:d})'.format(char.get_max_ab_attack_base(), char.get_last_ab_attack_base()),
             'FT: {:d}({:d})'.format(char.fortitude, char.last_fortitude_dc),

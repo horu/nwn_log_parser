@@ -77,6 +77,7 @@ class Character:
         self.initiative_roll: typing.Optional[InitiativeRoll] = None
 
         self.stats_storage = StatisticStorage()
+        self.hp = 0
 
         self.timestamp = 0  # last timestamp of action with the char
 
@@ -137,6 +138,10 @@ class Character:
         killed_stat.killed = True
 
         if death.target_name == self.name:
+            if self.hp:
+                self.hp = min(self.hp, self.stats_storage.all_chars_stats.received_damage.sum)
+            else:
+                self.hp = self.stats_storage.all_chars_stats.received_damage.sum
             self.stats_storage.this_char_killed = True
 
     def on_fortitude_save(self, throw: SavingThrow):
