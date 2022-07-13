@@ -72,7 +72,7 @@ class Character:
         self.last_caused_damage: typing.Optional[Damage] = None
         self.last_received_damage: typing.Optional[Damage] = None
 
-        self.stealth_cooldown: typing.Optional[StealthCooldown] = None
+        self.stealth_cooldown = StealthCooldown.explicit_create(0)
 
         self.initiative_roll: typing.Optional[InitiativeRoll] = None
 
@@ -84,11 +84,20 @@ class Character:
     def __str__(self):
         return str(self.__dict__)
 
-    def start_fight(self):
+    def start_fight(self, attack: Attack):
         # uses to indicate start fight after stealth mode on next attack to start stealth cooldown
         if self.initiative_roll:
             self.initiative_roll = None
             self.stealth_cooldown = StealthCooldown.explicit_create(STEALTH_MODE_CD)
+            return
+
+        sm_cooldown = self.stealth_cooldown.duration()
+        is_sneak = SNEAK_ATTACK in attack.specials
+        last_attack = self.get_last_ab_attack()
+        if sm_cooldown == 0 and last_attack and attack.timestamp - last_attack.timestamp > 2000 and is_sneak:
+            # maybe it is the first attack on stealth mode
+            self.stealth_cooldown = StealthCooldown.explicit_create(STEALTH_MODE_CD)
+            return
 
     def add_ac(self, attack: Attack):
         append_fix_size(self.ac_attack_list, attack, ATTACK_LIST_LIMIT)

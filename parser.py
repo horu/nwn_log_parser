@@ -27,8 +27,8 @@ class Parser:
         attack = Attack.create(line)
         if attack:
             attacker = self.get_char(attack.attacker_name)
+            attacker.start_fight(attack)
             attacker.add_ab(attack)
-            attacker.start_fight()
 
             target = self.get_char(attack.target_name)
             target.add_ac(attack)
@@ -50,7 +50,7 @@ class Parser:
         s_attack = SpecialAttack.create(line)
         if s_attack:
             attacker = self.get_char(s_attack.attacker_name)
-            attacker.start_fight()
+            attacker.start_fight(s_attack)
             if KNOCKDOWN in s_attack.type:
                 attacker.last_knockdown = s_attack
             elif STUNNING_FIST in s_attack.type:

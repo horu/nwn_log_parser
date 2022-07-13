@@ -177,9 +177,15 @@ class StealthCooldown(Action):
     def explicit_create(cooldown: int):
         return StealthCooldown([cooldown / 1000])
 
+    def duration(self) -> int:  # ms
+        duration = self._cooldown - 1000 - (get_ts() - self.timestamp)  # 1000 - server fix
+        if duration > 0:
+            return duration
+        return 0
+
     def __init__(self, g):
         super().__init__()
-        self.cooldown = int(g[0]) * 1000  # ms
+        self._cooldown = int(g[0]) * 1000  # ms
 
 
 """

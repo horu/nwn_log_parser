@@ -14,7 +14,7 @@ DAMAGE_PRINT_LIMIT = 10000
 
 
 def print_progress_bar(name: str, value: int, min_value: int, max_value: int, line_len: int, bar_symbol: str) -> str:
-    if value >= min_value and (max_value - min_value) > 0:
+    if value > min_value and (max_value - min_value) > 0:
         header = '{}: {:>5d} '.format(name, value)
         bar_len = int((line_len - len(header)) * (value - min_value) / (max_value - min_value))
         text = '\n{}{}'.format(header, bar_symbol * bar_len)
@@ -44,7 +44,7 @@ def create_progress_bars(char: Character, line_size: int) -> str:
     # Stealth mode cooldown
     last_sm = char.stealth_cooldown
     if last_sm:
-        value = last_sm.cooldown - 1000 - (get_ts() - last_sm.timestamp)  # 1000 - server fix
+        value = last_sm.duration()
         text += print_progress_bar('SM', value, 0, STEALTH_MODE_CD, line_size, '=')
 
     # Attacks min/max
@@ -152,7 +152,7 @@ class Printer:
             last_ad = sum([ad.value for ad in char.last_received_damage.damage_absorption_list])
 
         result = [
-            'HP: {:d}/{:d}'.format(char.hp - char.stats_storage.all_chars_stats.received_damage.sum, char.hp),
+            # 'HP: {:d}/{:d}'.format(char.hp - char.stats_storage.all_chars_stats.received_damage.sum, char.hp),
             'AC: {:d}/{:d}({:d})'.format(char.ac[0], char.ac[1], char.get_last_hit_ac_attack_value()),
             'AB: {:d}({:d})'.format(char.get_max_ab_attack_base(), char.get_last_ab_attack_base()),
             'FT: {:d}({:d})'.format(char.fortitude, char.last_fortitude_dc),
