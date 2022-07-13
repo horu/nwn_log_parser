@@ -2,6 +2,7 @@ from parser import *
 from qt import *
 
 test_lines = """
+[CHAT WINDOW TEXT] [Wed Jul 13 00:35:34] Dunya Kulakova : Initiative Roll : 20 : (9 + 11 = 20)
 [CHAT WINDOW TEXT] [Fri Jul  8 23:08:12] 10 AC - Undead - Chaotic Evil : Fortitude Save : *failure* : (9 + 1 = 10 vs. DC: 38)
 [CHAT WINDOW TEXT] [Fri Jul  8 23:16:38] Dunya Kulakova : Reflex Save vs. Electricity : *success* : (9 + 45 = 54 vs. DC: 24)
 [CHAT WINDOW TEXT] [Fri Jul  8 23:16:27] Dunya Kulakova : Reflex Save vs. Electricity : *success* : (13 + 45 = 58 vs. DC: 28)
@@ -40,6 +41,7 @@ test_lines = """
 [CHAT WINDOW TEXT] [Mon Jul 11 01:16:34] Adult Red Dragon : Immune to Sneak Attacks.
 [CHAT WINDOW TEXT] [Mon Jul 11 01:16:34] Adult Red Dragon : Damage Reduction absorbs 3 damage
 [CHAT WINDOW TEXT] [Mon Jul 11 01:16:34] Adult Red Dragon : Damage Resistance absorbs 2 damage
+[CHAT WINDOW TEXT] [Mon Jul 11 01:16:34] Adult Red Dragon : Damage Resistance absorbs 4 damage
 [CHAT WINDOW TEXT] [Wed Jul 13 15:23:02] Adult Red Dragon : Damage Immunity absorbs 19 point(s) of Physical
 
 [CHAT WINDOW TEXT] [Mon Jul 11 17:52:32] Wait 10 seconds for hiding

@@ -24,14 +24,10 @@ class Character:
         self.last_knockdown: typing.Optional[SpecialAttack] = None
         self.stunning_fist_list: typing.List[StunningFirst] = []
 
-        # self.caused_damage_list = []
-        # self.received_damage_list = []
         self.caused_damage = collections.defaultdict(int)  # {name: damage}
         self.received_damage = collections.defaultdict(int)  # {name: damage}
-        # self.caused_damage = 0
-        self.last_caused_damage: typing.Optional[Damage] = None
 
-        # self.received_damage = 0
+        self.last_caused_damage: typing.Optional[Damage] = None
         self.last_received_damage: typing.Optional[Damage] = None
 
         self.stealth_cooldown: typing.Optional[StealthCooldown] = None
@@ -88,13 +84,10 @@ class Character:
             self.received_damage[damage.target_name] -= DAMAGE_LIMIT
         self.last_received_damage = damage
 
-    def on_damage_reduction(self, reduction: DamageReduction):
-        if self.last_received_damage and self.last_received_damage.target_name == reduction.target_name:
-            self.last_received_damage.reduction = reduction
-
-    def on_damage_resistance(self, resistance: DamageResistance):
-        if self.last_received_damage and self.last_received_damage.target_name == resistance.target_name:
-            self.last_received_damage.resistance = resistance
+    def add_damage_absorption(self, absorption: DamageAbsorption):
+        last_rd = self.last_received_damage
+        if last_rd:
+            last_rd.damage_absorption_list.append(absorption)
 
     def on_killed(self, death: Death):
         if death.target_name in self.caused_damage:
@@ -134,18 +127,3 @@ class Character:
             max_ab = sorted(self.ab_attack_list, key=lambda x: x.base, reverse=False)[0]
             return max_ab.base
         return 0
-
-    def get_received_damage(self):
-        if self.last_received_damage:
-            return (
-                self.received_damage[self.last_received_damage.damager_name],
-                self.last_received_damage.value,
-                self.last_received_damage.reduction.value if self.last_received_damage.reduction else 0,
-                self.last_received_damage.resistance.value if self.last_received_damage.resistance else 0,
-            )
-        return 0, 0, 0, 0
-
-    def get_caused_damage(self):
-        if self.last_caused_damage:
-            return self.caused_damage[self.last_caused_damage.target_name], self.last_caused_damage.value
-        return 0, 0

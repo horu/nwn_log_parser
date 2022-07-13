@@ -70,15 +70,27 @@ def print_special_char(char: Character) -> list:
 
 
 def print_char_without_name(char: Character) -> list:
-    cd = char.get_caused_damage()
-    rd = char.get_received_damage()
+    sum_cd = 0
+    last_cd = 0
+    if char.last_caused_damage:
+        sum_cd = char.caused_damage[char.last_caused_damage.target_name]
+        last_cd = char.last_caused_damage.value
+
+    sum_rd = 0
+    last_rd = 0
+    last_ad = 0
+    if char.last_received_damage:
+        sum_rd = char.received_damage[char.last_received_damage.damager_name]
+        last_rd = char.last_received_damage.value
+        last_ad = sum([ad.value for ad in char.last_received_damage.damage_absorption_list])
+
     return [
         'AC: {:d}/{:d}({:d})'.format(char.ac[0], char.ac[1], char.get_last_hit_ac_attack_value()),
         'AB: {:d}({:d})'.format(char.get_max_ab_attack_base(), char.get_last_ab_attack_base()),
         'FT: {:d}({:d})'.format(char.fortitude, char.last_fortitude_dc),
         'WL: {:d}({:d})'.format(char.will, char.last_will_dc),
-        'CD: {:d}({:d})'.format(cd[0], cd[1]),
-        'RD: {:d}({:d}/{:d}/{:d})'.format(rd[0], rd[1], rd[2], rd[3]),
+        'CD: {:d}({:d})'.format(sum_cd, last_cd),
+        'RD: {:d}({:d}/{:d})'.format(sum_rd, last_rd, last_ad),
     ]
 
 

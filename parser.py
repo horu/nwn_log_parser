@@ -77,13 +77,19 @@ class Parser:
         d_reduction = DamageReduction.create(line)
         if d_reduction:
             target = self.get_char(d_reduction.target_name)
-            target.on_damage_reduction(d_reduction)
+            target.add_damage_absorption(d_reduction)
             return
 
         d_resistance = DamageResistance.create(line)
         if d_resistance:
             target = self.get_char(d_resistance.target_name)
-            target.on_damage_resistance(d_resistance)
+            target.add_damage_absorption(d_resistance)
+            return
+
+        d_immunity = DamageImmunity.create(line)
+        if d_immunity:
+            target = self.get_char(d_immunity.target_name)
+            target.add_damage_absorption(d_immunity)
             return
 
         stealth_cooldown = StealthCooldown.create(line)

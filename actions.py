@@ -1,5 +1,8 @@
 import re
 import logging
+
+import typing
+
 from common import *
 
 
@@ -102,8 +105,7 @@ class Damage(Action):
         self.damager_name = g[0]
         self.target_name = g[1]
         self.value = int(g[2])
-        self.reduction = None
-        self.resistance = None
+        self.damage_absorption_list: typing.List[DamageAbsorption] = []
 
 
 class Death(Action):
@@ -118,28 +120,31 @@ class Death(Action):
         self.target_name = g[1]
 
 
-class DamageReduction(Action):
+class DamageAbsorption(Action):
+    def __init__(self, g):
+        super().__init__()
+        self.target_name = g[0]
+        self.value = int(g[1])
+
+
+class DamageReduction(DamageAbsorption):
     @staticmethod
     def create(string):
         p = r'\[CHAT WINDOW TEXT\] \[.+\] ([^:]+) \: Damage Reduction absorbs ([0-9]+) damage'
         return Action.base_create(string, p, DamageReduction)
 
     def __init__(self, g):
-        super().__init__()
-        self.target_name = g[0]
-        self.value = int(g[1])
+        super().__init__(g)
 
 
-class DamageResistance(Action):
+class DamageResistance(DamageAbsorption):
     @staticmethod
     def create(string):
         p = r'\[CHAT WINDOW TEXT\] \[.+\] ([^:]+) \: Damage Resistance absorbs ([0-9]+) damage'
         return Action.base_create(string, p, DamageResistance)
 
     def __init__(self, g):
-        super().__init__()
-        self.target_name = g[0]
-        self.value = int(g[1])
+        super().__init__(g)
 
 
 """
@@ -147,16 +152,14 @@ class DamageResistance(Action):
 """
 
 
-class DamageImmunity(Action):
+class DamageImmunity(DamageAbsorption):
     @staticmethod
     def create(string):
         p = r'\[CHAT WINDOW TEXT\] \[.+\] ([^:]+) \: Damage Immunity absorbs ([0-9]+) point'
         return Action.base_create(string, p, DamageImmunity)
 
     def __init__(self, g):
-        super().__init__()
-        self.target_name = g[0]
-        self.value = int(g[1])
+        super().__init__(g)
 
 
 """
