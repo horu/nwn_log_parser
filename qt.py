@@ -14,9 +14,9 @@ class Window(QMainWindow):
     def __init__(self, parent=None):
         """Initializer."""
         super().__init__(parent)
-        self.setWindowTitle("Python Menus & Toolbars")
-        self.move(420, 0)
-        self.setWindowOpacity(0.9)
+        self.setWindowTitle("Nwn log parser")
+        self.move(420, 37)
+        self.setWindowOpacity(1)
 
         self.setAttribute(Qt.WA_TranslucentBackground, True)
 
@@ -25,7 +25,7 @@ class Window(QMainWindow):
         self.centralWidget = QLabel("")
         self.centralWidget.setFont(QFont('Monospace', 10))
         self.centralWidget.setAlignment(Qt.AlignLeft | Qt.AlignTop)
-        self.centralWidget.setStyleSheet("background-color: black; color: white")
+        self.centralWidget.setStyleSheet("background-color: rgba(0,0,0,30%); color: white")
         self.setCentralWidget(self.centralWidget)
 
         # position for move window
