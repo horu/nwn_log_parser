@@ -5,9 +5,7 @@ import tabulate
 
 from printer import *
 
-CHARS_TO_PRINT_LIMIT_NORM = 2
-CHARS_TO_PRINT_LIMIT_MAX = 30
-CHARS_TO_PRINT_TIMEOUT = 3000
+EXPERIENCE_TIMEOUT = 2000
 
 
 class Parser:
@@ -15,6 +13,8 @@ class Parser:
         self.characters = collections.defaultdict(Character)
         self.player = Character()
         self.printer = Printer()
+
+        self.experience_list: typing.List[Experience] = []
 
     def get_char(self, name: str) -> Character:
         char = self.characters[name]
@@ -78,6 +78,8 @@ class Parser:
             if target is not self.player:
                 target.on_killed(action)
                 self.player.on_killed(action)
+            if self.experience_list:
+                target.experience = self.experience_list.pop(0)
             return
 
         action: DamageReduction = DamageReduction.create(line)
@@ -122,6 +124,11 @@ class Parser:
         if action:
             target = self.get_char(action.target_name)
             target.add_heal(action.value)
+            return
+
+        action: Experience = Experience.create(line)
+        if action:
+            append_fix_time_window(self.experience_list, action, EXPERIENCE_TIMEOUT)
             return
 
     def reset_statistic(self):

@@ -296,3 +296,19 @@ class Heal(Action):
         super().__init__()
         self.target_name = g[0]
         self.value = int(g[1])
+
+
+"""
+[CHAT WINDOW TEXT] [Thu Jul 14 23:24:05] Experience Points Gained:  535
+"""
+
+
+class Experience(Action):
+    @classmethod
+    def create(cls, string):
+        p = r'\[CHAT WINDOW TEXT\] \[.+\] Experience Points Gained\:[ ]+([0-9]+)'
+        return Action.base_create(string, p, cls)
+
+    def __init__(self, g):
+        super().__init__()
+        self.value = int(g[0])

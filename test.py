@@ -35,7 +35,10 @@ test_lines = """
 [CHAT WINDOW TEXT] [Sun Jul 10 23:02:12] 10 AC DUMMY - Chaotic Evil - Boss Damage Reduction : Damage Immunity absorbs 15 point(s) of Physical
 
 [CHAT WINDOW TEXT] [Sun Jul 10 23:16:49] Dunya Kulakova damages Lich Apprentice: 28 (22 Physical 6 Sonic)
+
+[CHAT WINDOW TEXT] [Thu Jul 14 23:24:05] Experience Points Gained:  535
 [CHAT WINDOW TEXT] [Sun Jul 10 23:16:49] Dunya Kulakova killed Lich Apprentice
+
 [CHAT WINDOW TEXT] [Sun Jul 10 23:16:49] Dunya Kulakova damages Lich Apprentice: 281 (281 Physical 6 Sonic)
 
 [CHAT WINDOW TEXT] [Mon Jul 11 01:16:34] Dunya Kulakova damages Adult Red Dragon: 4 (4 Physical 0 Sonic)

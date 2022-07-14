@@ -111,6 +111,8 @@ class Character:
 
         self.timestamp = 0  # last timestamp of action with the char
 
+        self.experience: typing.Optional[Experience] = None
+
     def __str__(self):
         return str(self.__dict__)
 
@@ -219,7 +221,7 @@ class Character:
 
     def on_killed(self, death: Death) -> None:
         if death.target_name == self.name:
-            hp = self.stats_storage.all_chars_stats.received_damage.sum
+            hp = self.get_received_damage_sum()
             append_fix_size(self.hp_list, hp, HP_LIST_LIMIT)
             self.stats_storage.this_char_death = death
         else:

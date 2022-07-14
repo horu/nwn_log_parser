@@ -11,12 +11,18 @@ from char import *
 CHARS_TO_PRINT_LIMIT_NORM = 1
 CHARS_TO_PRINT_LIMIT_MAX = 30
 CHARS_TO_PRINT_TIMEOUT = 500
-DAMAGE_PRINT_LIMIT = 10000
+DAMAGE_PRINT_LIMIT = 1000
+
+
+def convert_damage(value: int) -> str:
+    if abs(value) > DAMAGE_PRINT_LIMIT:
+        return '{:.1f}'.format(value / DAMAGE_PRINT_LIMIT)
+    return str(value)
 
 
 def print_progress_bar(name: str, value: int, min_value: int, max_value: int, line_len: int, bar_symbol: str) -> str:
     if value >= min_value and (max_value - min_value) > 0:
-        header = '{}: {:>5d} '.format(name, value)
+        header = '{:>3}: {:>5d} {}'.format(name, value, bar_symbol)
         bar_len = int((line_len - len(header)) * (value - min_value) / (max_value - min_value))
         text = '\n{}{}'.format(header, bar_symbol * bar_len)
         return text
@@ -140,10 +146,10 @@ class Printer:
         all_stats = storage.all_chars_stats
 
         stats = storage.char_stats
-        sum_cd = stats[char.last_caused_damage.target_name].caused_damage.sum % DAMAGE_PRINT_LIMIT
+        sum_cd = stats[char.last_caused_damage.target_name].caused_damage.sum
         last_cd = char.last_caused_damage.value
 
-        sum_rd = stats[char.last_received_damage.damager_name].received_damage.sum % DAMAGE_PRINT_LIMIT
+        sum_rd = stats[char.last_received_damage.damager_name].received_damage.sum
         last_rd = char.last_received_damage.value
         last_ad = sum([ad.value for ad in char.last_received_damage.damage_absorption_list])
 
@@ -154,9 +160,10 @@ class Printer:
         avg_caused_damage = caused_damage.sum / caused_damage.count if caused_damage.count else 0
 
         return [
-            'CD: {:d}({:d})'.format(sum_cd, last_cd),
-            'DPR: {:d}({:d})'.format(storage.caused_dpr.max_dpr, storage.caused_dpr.last_dpr),
-            'RD: {:d}({:d}/{:d})'.format(sum_rd, last_rd, last_ad),
+            'CD: {}({})'.format(convert_damage(sum_cd), convert_damage(last_cd)),
+            'DPR: {}({})'.format(
+                convert_damage(storage.caused_dpr.max_dpr), convert_damage(storage.caused_dpr.last_dpr)),
+            'RD: {}({}/{})'.format(convert_damage(sum_rd), convert_damage(last_rd), last_ad),
             'PER AB: {:d}%'.format(int(per_ab * 100)),
             'AVG CD: {:d}'.format(int(avg_caused_damage)),
         ]
@@ -165,12 +172,8 @@ class Printer:
         max_ac = char.get_max_miss_ac()
         min_ac = char.get_min_hit_ac()
         cur_hp = char.get_avg_hp() - char.get_received_damage_sum() + char.stats_storage.healed_points
-        if cur_hp >= 0:
-            cur_hp = cur_hp % DAMAGE_PRINT_LIMIT
-        else:
-            cur_hp = cur_hp % -DAMAGE_PRINT_LIMIT
         result = [
-            'HP: {:d}/{:d}'.format(cur_hp, char.get_avg_hp() % DAMAGE_PRINT_LIMIT),
+            'HP: {}/{}'.format(convert_damage(cur_hp), convert_damage(char.get_avg_hp())),
             'AC: {:d}/{:d}({:d})'.format(max_ac, min_ac, char.get_last_hit_ac_attack_value()),
             'AB: {:d}({:d})'.format(char.get_max_ab_attack_base(), char.get_last_ab_attack_base()),
             'FT: {:d}({:d})'.format(char.fortitude, char.last_fortitude_dc),
@@ -183,7 +186,10 @@ class Printer:
         return result
 
     def print_char(self, char: Character) -> list:
-        return [char.name] + self.print_char_without_name(char)
+        name = char.name
+        if char.experience:
+            name = '{} ({:d})'.format(name, char.experience.value)
+        return [name] + self.print_char_without_name(char)
 
     def print(self, player: Character, chars: typing.List[Character]) -> str:
         ts = get_ts()
