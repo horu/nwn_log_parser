@@ -23,7 +23,7 @@ class Parser:
         return char
 
     def push_line(self, line) -> None:
-        logging.debug(line)
+        logging.debug('LINE: {}'.format(line[0:-1]))
         attack = Attack.create(line)
         if attack:
             attacker = self.get_char(attack.attacker_name)

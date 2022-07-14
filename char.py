@@ -97,11 +97,11 @@ class Character:
         self.will = 0
         self.last_will_dc = 0
 
-        self.last_knockdown: typing.Optional[Knockdown] = None
+        self.last_knockdown = Knockdown(SpecialAttack.explicit_create())
         self.stunning_fist_list: typing.List[StunningFirst] = []
 
-        self.last_caused_damage: typing.Optional[Damage] = None
-        self.last_received_damage: typing.Optional[Damage] = None
+        self.last_caused_damage = Damage.explicit_create()
+        self.last_received_damage = Damage.explicit_create()
 
         self.stealth_cooldown = StealthCooldown.explicit_create(0)
 
@@ -213,9 +213,7 @@ class Character:
         self.stats_storage.increase(damage.damager_name, 'received_damage', 'count', 1)
 
     def add_damage_absorption(self, absorption: DamageAbsorption) -> None:
-        last_rd = self.last_received_damage
-        if last_rd:
-            last_rd.damage_absorption_list.append(absorption)
+        self.last_received_damage.damage_absorption_list.append(absorption)
 
     def on_killed(self, death: Death) -> None:
         if death.target_name == self.name:

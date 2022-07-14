@@ -7,8 +7,8 @@ from common import *
 
 
 class Action:
-    @staticmethod
-    def base_create(string, pattern, action_type):
+    @classmethod
+    def base_create(cls, string, pattern, action_type):
         m = re.match(pattern, string)
         if m:
             g = m.groups()
@@ -34,15 +34,19 @@ def append_fix_time_window(actions_list: typing.List[Action], action: Action, wi
         if ts - action.timestamp <= window_duration:
             window_end = i
             break
-    logging.debug('Remove actions: {}'.format([str(action) for action in actions_list[0:window_end]]))
+    # logging.debug('Remove actions: {}'.format([str(action) for action in actions_list[0:window_end]]))
     del actions_list[0:window_end]
 
 
 class Attack(Action):
-    @staticmethod
-    def create(string):
+    @classmethod
+    def create(cls, string):
         p = r'\[CHAT WINDOW TEXT\] \[.+\] (.+) attacks ([^:]+) \: \*(.+)\* \: \(([0-9]+) \+ ([0-9]+) \= ([0-9]+)'
-        return Action.base_create(string, p, Attack)
+        return Action.base_create(string, p, cls)
+
+    @classmethod
+    def explicit_create(cls):
+        return cls(['', '', '', '0', '0', '0'])
 
     def __init__(self, g):
         super().__init__()
@@ -69,10 +73,14 @@ class Attack(Action):
 
 
 class SpecialAttack(Attack):
-    @staticmethod
-    def create(string):
+    @classmethod
+    def create(cls, string):
         p = r'\[CHAT WINDOW TEXT\] \[.+\] (.+) attempts ([^:]+) on ([^:]+) \: \*(.+)\* \: \(([0-9]+) \+ ([0-9]+) \= ([0-9]+)'
-        return Action.base_create(string, p, SpecialAttack)
+        return Action.base_create(string, p, cls)
+
+    @classmethod
+    def explicit_create(cls):
+        return cls(['', '', '', '', '0', '0', '0'])
 
     def __init__(self, g):
         g_list = list(g)
@@ -123,10 +131,10 @@ class StunningFirst(Action):
 
 
 class SavingThrow(Action):
-    @staticmethod
-    def create(string):
+    @classmethod
+    def create(cls, string):
         p = r'\[CHAT WINDOW TEXT\] \[.+\] ([^:]+) \: ([^:]+) \: \*(.+)\* \: \(([0-9]+) \+ ([0-9]+) \= ([0-9]+) vs. DC: ([0-9]+)\)'
-        return Action.base_create(string, p, SavingThrow)
+        return Action.base_create(string, p, cls)
 
     def __init__(self, g):
         super().__init__()
@@ -141,10 +149,14 @@ class SavingThrow(Action):
 
 
 class Damage(Action):
-    @staticmethod
-    def create(string):
+    @classmethod
+    def create(cls, string):
         p = r'\[CHAT WINDOW TEXT\] \[.+\] ([^:]+) damages ([^:]+)\: ([0-9]+)'
-        return Action.base_create(string, p, Damage)
+        return Action.base_create(string, p, cls)
+
+    @classmethod
+    def explicit_create(cls):
+        return cls(['', '', '0'])
 
     def __init__(self, g):
         super().__init__()
@@ -155,10 +167,10 @@ class Damage(Action):
 
 
 class Death(Action):
-    @staticmethod
-    def create(string):
+    @classmethod
+    def create(cls, string):
         p = r'\[CHAT WINDOW TEXT\] \[.+\] ([^:]+) killed ([^:^\n]+)'
-        return Action.base_create(string, p, Death)
+        return Action.base_create(string, p, cls)
 
     def __init__(self, g):
         super().__init__()
@@ -174,20 +186,20 @@ class DamageAbsorption(Action):
 
 
 class DamageReduction(DamageAbsorption):
-    @staticmethod
-    def create(string):
+    @classmethod
+    def create(cls, string):
         p = r'\[CHAT WINDOW TEXT\] \[.+\] ([^:]+) \: Damage Reduction absorbs ([0-9]+) damage'
-        return Action.base_create(string, p, DamageReduction)
+        return Action.base_create(string, p, cls)
 
     def __init__(self, g):
         super().__init__(g)
 
 
 class DamageResistance(DamageAbsorption):
-    @staticmethod
-    def create(string):
+    @classmethod
+    def create(cls, string):
         p = r'\[CHAT WINDOW TEXT\] \[.+\] ([^:]+) \: Damage Resistance absorbs ([0-9]+) damage'
-        return Action.base_create(string, p, DamageResistance)
+        return Action.base_create(string, p, cls)
 
     def __init__(self, g):
         super().__init__(g)
@@ -199,10 +211,10 @@ class DamageResistance(DamageAbsorption):
 
 
 class DamageImmunity(DamageAbsorption):
-    @staticmethod
-    def create(string):
+    @classmethod
+    def create(cls, string):
         p = r'\[CHAT WINDOW TEXT\] \[.+\] ([^:]+) \: Damage Immunity absorbs ([0-9]+) point'
-        return Action.base_create(string, p, DamageImmunity)
+        return Action.base_create(string, p, cls)
 
     def __init__(self, g):
         super().__init__(g)
@@ -214,14 +226,16 @@ class DamageImmunity(DamageAbsorption):
 
 
 class StealthCooldown(Action):
-    @staticmethod
-    def create(string):
+    @classmethod
+    def create(cls, string):
         p = r'\[CHAT WINDOW TEXT\] \[.+\] Wait ([0-9]+) seconds for hiding'
-        return Action.base_create(string, p, StealthCooldown)
+        return Action.base_create(string, p, cls)
 
-    @staticmethod
-    def explicit_create(cooldown: int):
-        return StealthCooldown([cooldown / 1000])
+    @classmethod
+    def explicit_create(cls, cooldown: int):  # ms
+        sc = cls(['0'])
+        sc._cooldown = cooldown
+        return sc
 
     def get_duration(self) -> int:  # ms
         duration = self._cooldown - 1000 - (get_ts() - self.timestamp)  # 1000 - server fix
@@ -240,10 +254,10 @@ class StealthCooldown(Action):
 
 
 class InitiativeRoll(Action):
-    @staticmethod
-    def create(string):
+    @classmethod
+    def create(cls, string):
         p = r'\[CHAT WINDOW TEXT\] \[.+\] ([^:]+) \: Initiative Roll :'
-        return Action.base_create(string, p, InitiativeRoll)
+        return Action.base_create(string, p, cls)
 
     def __init__(self, g):
         super().__init__()

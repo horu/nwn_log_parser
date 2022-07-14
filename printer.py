@@ -39,13 +39,12 @@ def create_progress_bars(char: Character, line_size: int) -> str:
 
     # Knockdown cooldown
     last_kd = char.last_knockdown
-    if last_kd:
-        value = last_kd.get_cooldown()
-        if value:
-            bar_symbol = '-'
-            if last_kd.s_attack.is_success():
-                bar_symbol = '+'
-            text += print_progress_bar('KD', value, 0, KNOCKDOWN_PVE_CD, line_size, bar_symbol)
+    value = last_kd.get_cooldown()
+    if value:
+        bar_symbol = '-'
+        if last_kd.s_attack.is_success():
+            bar_symbol = '+'
+        text += print_progress_bar('KD', value, 0, KNOCKDOWN_PVE_CD, line_size, bar_symbol)
 
     # Stunning fist duration
     for sf in reversed(char.stunning_fist_list):
@@ -73,9 +72,9 @@ def create_progress_bars(char: Character, line_size: int) -> str:
 
 def print_special_char(char: Character) -> list:
     text = []
+
     kd = char.last_knockdown
-    if kd:
-        text.append('KD: {:d}({})'.format(kd.s_attack.value, kd.s_attack.result))
+    text.append('KD: {:d}({})'.format(kd.s_attack.value, kd.s_attack.result))
 
     if char.stunning_fist_list:
         last_sf = char.stunning_fist_list[-1]
@@ -140,20 +139,13 @@ class Printer:
         storage = char.stats_storage
         all_stats = storage.all_chars_stats
 
-        sum_cd = 0
-        last_cd_value = 0
         stats = storage.char_stats
-        if char.last_caused_damage:
-            sum_cd = stats[char.last_caused_damage.target_name].caused_damage.sum % DAMAGE_PRINT_LIMIT
-            last_cd_value = char.last_caused_damage.value
+        sum_cd = stats[char.last_caused_damage.target_name].caused_damage.sum % DAMAGE_PRINT_LIMIT
+        last_cd = char.last_caused_damage.value
 
-        sum_rd = 0
-        last_rd = 0
-        last_ad_value = 0
-        if char.last_received_damage:
-            sum_rd = stats[char.last_received_damage.damager_name].received_damage.sum % DAMAGE_PRINT_LIMIT
-            last_rd = char.last_received_damage.value
-            last_ad_value = sum([ad.value for ad in char.last_received_damage.damage_absorption_list])
+        sum_rd = stats[char.last_received_damage.damager_name].received_damage.sum % DAMAGE_PRINT_LIMIT
+        last_rd = char.last_received_damage.value
+        last_ad = sum([ad.value for ad in char.last_received_damage.damage_absorption_list])
 
         hit_ab_attack = all_stats.hit_ab_attack
         per_ab = hit_ab_attack.count / hit_ab_attack.sum if hit_ab_attack.sum else 0
@@ -162,9 +154,9 @@ class Printer:
         avg_caused_damage = caused_damage.sum / caused_damage.count if caused_damage.count else 0
 
         return [
-            'CD: {:d}({:d})'.format(sum_cd, last_cd_value),
+            'CD: {:d}({:d})'.format(sum_cd, last_cd),
             'DPR: {:d}({:d})'.format(storage.caused_dpr.max_dpr, storage.caused_dpr.last_dpr),
-            'RD: {:d}({:d}/{:d})'.format(sum_rd, last_rd, last_ad_value),
+            'RD: {:d}({:d}/{:d})'.format(sum_rd, last_rd, last_ad),
             'PER AB: {:d}%'.format(int(per_ab * 100)),
             'AVG CD: {:d}'.format(int(avg_caused_damage)),
         ]
