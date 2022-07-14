@@ -41,28 +41,28 @@ def create_progress_bars(char: Character, line_size: int) -> str:
         if duration_without_attack <= ROUND_DURATION:
             dpr = int(dpr * (ROUND_DURATION - duration_without_attack) / ROUND_DURATION)
             if dpr:
-                text += print_progress_bar('DPR', dpr, 0, caused_dpr.max_dpr, line_size, 'D')
+                text += print_progress_bar('DPR', dpr, 0, caused_dpr.max_dpr, line_size, '\u2591')
 
     # Knockdown cooldown
     last_kd = char.last_knockdown
     value = last_kd.get_cooldown()
     if value:
-        bar_symbol = '-'
+        bar_symbol = '\u2596'
         if last_kd.s_attack.is_success():
-            bar_symbol = '+'
+            bar_symbol = '\u259e'
         text += print_progress_bar('KD', value, 0, KNOCKDOWN_PVE_CD, line_size, bar_symbol)
 
     # Stunning fist duration
     for sf in reversed(char.stunning_fist_list):
         value = sf.get_duration()
         if value:
-            text += print_progress_bar('SF', value, 0, STUNNING_FIST_DURATION, line_size, '*')
+            text += print_progress_bar('SF', value, 0, STUNNING_FIST_DURATION, line_size, '\u2588')  # full bar
             break
 
     # Stealth mode cooldown
     value = char.stealth_cooldown.get_duration()
     if value:
-        text += print_progress_bar('SM', value, 0, STEALTH_MODE_CD, line_size, '=')
+        text += print_progress_bar('SM', value, 0, STEALTH_MODE_CD, line_size, '\u2592')
 
     # Attacks min/max
     ab_attack_list = char.ab_attack_list
@@ -71,7 +71,7 @@ def create_progress_bars(char: Character, line_size: int) -> str:
         if get_ts() - last_ab.timestamp <= 6000:
             max_ab = char.get_max_ab_attack_base()
             min_ab = char.get_min_ab_attack_base()
-            text += print_progress_bar('AB', last_ab.base, min_ab, max_ab, line_size, '|')
+            text += print_progress_bar('AB', last_ab.base, min_ab, max_ab, line_size, '\u2584')
 
     return text
 
