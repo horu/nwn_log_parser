@@ -1,9 +1,10 @@
 import collections
+import logging
 import typing
 
 from actions import *
 
-AB_ATTACK_LIST_LIMIT = 10
+AB_ATTACK_LIST_LIMIT = 12
 HP_LIST_LIMIT = 10
 AC_ATTACK_LIST_LIMIT = 30
 DAMAGE_LIST_LIMIT = 20
@@ -31,23 +32,19 @@ class DamagePerRound:
         self.max_dpr = 0
         self.ts_max_dpr = 0
         self.last_dpr = 0
+        self.ts_last_dpr = 0
 
-    def calculate_dpr(self) -> int:
-        self.filter_damage_list()
-        dpr = sum([damage.value for damage in self.damage_list])
+    def calculate_dpr(self):
         ts = get_ts()
-        if dpr > self.max_dpr or ts - self.ts_max_dpr > MAX_DPR_TIMEOUT:
-            self.max_dpr = dpr
+        self.last_dpr = sum([damage.value for damage in self.damage_list])
+        self.ts_last_dpr = ts
+        if self.last_dpr > self.max_dpr or ts - self.ts_max_dpr > MAX_DPR_TIMEOUT:
+            self.max_dpr = self.last_dpr
             self.ts_max_dpr = ts
-        return dpr
 
     def add_damage(self, damage: Damage) -> None:
         append_fix_time_window(self.damage_list, damage, ROUND_DURATION)
-        self.last_dpr = self.calculate_dpr()
-
-    def filter_damage_list(self):
-        ts = get_ts()
-        self.damage_list = [damage for damage in self.damage_list if ts - damage.timestamp <= ROUND_DURATION]
+        self.calculate_dpr()
 
 
 class StatisticStorage:
@@ -128,10 +125,13 @@ class Character:
         sm_cooldown = self.stealth_cooldown.get_duration()
         is_sneak = SNEAK_ATTACK in attack.specials
         last_attack = self.get_last_ab_attack()
-        if sm_cooldown == 0 and last_attack and attack.timestamp - last_attack.timestamp > 2000 and is_sneak:
-            # maybe it is the first attack on stealth mode
-            self.stealth_cooldown = StealthCooldown.explicit_create(STEALTH_MODE_CD)
-            return
+        if last_attack:
+            time_since_last_attack = attack.timestamp - last_attack.timestamp
+            logging.debug('Start fight: {} {} {}'.format(sm_cooldown, is_sneak, time_since_last_attack))
+            if sm_cooldown == 0 and time_since_last_attack > 2500 and is_sneak:
+                # maybe it is the first attack on stealth mode
+                self.stealth_cooldown = StealthCooldown.explicit_create(STEALTH_MODE_CD)
+                return
 
     # ac
     def add_ac(self, attack: Attack):
@@ -152,11 +152,11 @@ class Character:
         if miss_attacks:
             miss_attacks.sort(key=lambda x: x.value)
             return miss_attacks[0].value
-        return 0
+        return 99
 
     def get_last_hit_ac_attack_value(self) -> int:
         for attack in reversed(self.ac_attack_list):
-            if attack.is_hit():
+            if attack.is_hit() and not attack.is_critical_roll():
                 return attack.value
         return 0
 

@@ -28,9 +28,14 @@ def create_progress_bars(char: Character, line_size: int) -> str:
 
     # Damage per round
     caused_dpr = char.stats_storage.caused_dpr
-    dpr = caused_dpr.calculate_dpr()
+    dpr = caused_dpr.last_dpr
     if caused_dpr.max_dpr and dpr:
-        text += print_progress_bar('DPR', dpr, 0, caused_dpr.max_dpr, line_size, 'D')
+        ts = get_ts()
+        duration_without_attack = ts - caused_dpr.ts_last_dpr
+        if duration_without_attack <= ROUND_DURATION:
+            dpr = int(dpr * (ROUND_DURATION - duration_without_attack) / ROUND_DURATION)
+            if dpr:
+                text += print_progress_bar('DPR', dpr, 0, caused_dpr.max_dpr, line_size, 'D')
 
     # Knockdown cooldown
     last_kd = char.last_knockdown
