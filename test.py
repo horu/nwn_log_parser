@@ -53,6 +53,10 @@ test_lines = """
 [CHAT WINDOW TEXT] [Wed Jul 13 00:35:34] Dunya Kulakova : Initiative Roll : 20 : (9 + 11 = 20)
 [CHAT WINDOW TEXT] [Wed Jul 13 00:40:26] Sneak Attack : Dunya Kulakova attacks Badger : *hit* : (3 + 39 = 42)
 [CHAT WINDOW TEXT] [Wed Jul 13 23:52:00] TEST m f s attempts Improved Knockdown on NORTHERN ORC KING : *resisted* : (2 + 44 = 46)
+
+[CHAT WINDOW TEXT] [Thu Jul 14 19:29:37] TEST rogue ch : Healed 2 hit points.
+[CHAT WINDOW TEXT] [Thu Jul 14 19:29:38] Moore Guardian uses Potion of Heal
+
 """
 
 

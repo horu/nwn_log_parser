@@ -249,3 +249,7 @@ class InitiativeRoll(Action):
         super().__init__()
         self.roller_name = g[0]
 
+"""
+[CHAT WINDOW TEXT] [Thu Jul 14 19:29:37] TEST rogue ch : Healed 2 hit points.
+[CHAT WINDOW TEXT] [Thu Jul 14 19:29:38] Moore Guardian uses Potion of Heal
+"""

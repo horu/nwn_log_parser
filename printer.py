@@ -173,8 +173,12 @@ class Printer:
         max_ac = char.get_max_miss_ac()
         min_ac = char.get_min_hit_ac()
         cur_hp = char.get_avg_hp() - char.stats_storage.all_chars_stats.received_damage.sum
+        if cur_hp >= 0:
+            cur_hp = cur_hp % DAMAGE_PRINT_LIMIT
+        else:
+            cur_hp = cur_hp % -DAMAGE_PRINT_LIMIT
         result = [
-            'HP: {:d}/{:d}'.format(cur_hp % DAMAGE_PRINT_LIMIT, char.get_avg_hp() % DAMAGE_PRINT_LIMIT),
+            'HP: {:d}/{:d}'.format(cur_hp, char.get_avg_hp() % DAMAGE_PRINT_LIMIT),
             'AC: {:d}/{:d}({:d})'.format(max_ac, min_ac, char.get_last_hit_ac_attack_value()),
             'AB: {:d}({:d})'.format(char.get_max_ab_attack_base(), char.get_last_ab_attack_base()),
             'FT: {:d}({:d})'.format(char.fortitude, char.last_fortitude_dc),
