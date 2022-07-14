@@ -16,7 +16,7 @@ class Window(QMainWindow):
         super().__init__(parent)
         self.setWindowTitle("Python Menus & Toolbars")
         self.move(420, 0)
-        self.setWindowOpacity(0.75)
+        self.setWindowOpacity(0.9)
 
         self.setAttribute(Qt.WA_TranslucentBackground, True)
 

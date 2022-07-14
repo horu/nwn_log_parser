@@ -24,98 +24,104 @@ class Parser:
 
     def push_line(self, line) -> None:
         logging.debug('LINE: {}'.format(line[0:-1]))
-        attack = Attack.create(line)
-        if attack:
-            attacker = self.get_char(attack.attacker_name)
-            attacker.start_fight(attack)
-            attacker.add_ab(attack)
+        action: Attack = Attack.create(line)
+        if action:
+            attacker = self.get_char(action.attacker_name)
+            attacker.start_fight(action)
+            attacker.add_ab(action)
 
-            target = self.get_char(attack.target_name)
-            target.add_ac(attack)
+            target = self.get_char(action.target_name)
+            target.add_ac(action)
             return
 
-        throw = SavingThrow.create(line)
-        if throw:
-            target = self.get_char(throw.target_name)
-            if FORTITUDE in throw.type:
-                target.fortitude = throw.base
-                target.last_fortitude_dc = throw.dc
+        action: SavingThrow = SavingThrow.create(line)
+        if action:
+            target = self.get_char(action.target_name)
+            if FORTITUDE in action.type:
+                target.fortitude = action.base
+                target.last_fortitude_dc = action.dc
                 # try to check features the player raised
-                self.player.on_fortitude_save(throw)
+                self.player.on_fortitude_save(action)
 
-            elif WILL in throw.type:
-                target.will = throw.base
-                target.last_will_dc = throw.dc
+            elif WILL in action.type:
+                target.will = action.base
+                target.last_will_dc = action.dc
             return
 
-        s_attack = SpecialAttack.create(line)
-        if s_attack:
-            attacker = self.get_char(s_attack.attacker_name)
-            attacker.start_fight(s_attack)
-            if KNOCKDOWN in s_attack.type:
-                attacker.last_knockdown = Knockdown(s_attack)
-            elif STUNNING_FIST in s_attack.type:
-                attacker.add_stunning_fist(StunningFirst(s_attack))
+        action: SpecialAttack = SpecialAttack.create(line)
+        if action:
+            attacker = self.get_char(action.attacker_name)
+            attacker.start_fight(action)
+            if KNOCKDOWN in action.type:
+                attacker.last_knockdown = Knockdown(action)
+            elif STUNNING_FIST in action.type:
+                attacker.add_stunning_fist(StunningFirst(action))
 
-            target = self.get_char(s_attack.target_name)
-            target.add_ac(s_attack)
+            target = self.get_char(action.target_name)
+            target.add_ac(action)
             return
 
-        damage = Damage.create(line)
-        if damage:
-            damager = self.get_char(damage.damager_name)
-            target = self.get_char(damage.target_name)
+        action: Damage = Damage.create(line)
+        if action:
+            damager = self.get_char(action.damager_name)
+            target = self.get_char(action.target_name)
 
             # for player only
             # if damager is self.player or target is self.player:
-            damager.add_caused_damage(damage)
-            target.add_received_damage(damage)
+            damager.add_caused_damage(action)
+            target.add_received_damage(action)
             return
 
-        death = Death.create(line)
-        if death:
-            target = self.get_char(death.target_name)
+        action: Death = Death.create(line)
+        if action:
+            target = self.get_char(action.target_name)
             if target is not self.player:
-                target.on_killed(death)
-                self.player.on_killed(death)
+                target.on_killed(action)
+                self.player.on_killed(action)
             return
 
-        d_reduction = DamageReduction.create(line)
-        if d_reduction:
-            target = self.get_char(d_reduction.target_name)
-            target.add_damage_absorption(d_reduction)
+        action: DamageReduction = DamageReduction.create(line)
+        if action:
+            target = self.get_char(action.target_name)
+            target.add_damage_absorption(action)
             return
 
-        d_resistance = DamageResistance.create(line)
-        if d_resistance:
-            target = self.get_char(d_resistance.target_name)
-            target.add_damage_absorption(d_resistance)
+        action: DamageResistance = DamageResistance.create(line)
+        if action:
+            target = self.get_char(action.target_name)
+            target.add_damage_absorption(action)
             return
 
-        d_immunity = DamageImmunity.create(line)
-        if d_immunity:
-            target = self.get_char(d_immunity.target_name)
-            target.add_damage_absorption(d_immunity)
+        action: DamageImmunity = DamageImmunity.create(line)
+        if action:
+            target = self.get_char(action.target_name)
+            target.add_damage_absorption(action)
             return
 
-        stealth_cooldown = StealthCooldown.create(line)
-        if stealth_cooldown:
-            self.player.stealth_cooldown = stealth_cooldown
+        action: StealthCooldown = StealthCooldown.create(line)
+        if action:
+            self.player.stealth_cooldown = action
             return
 
-        initiative_roll = InitiativeRoll.create(line)
-        if initiative_roll:
-            roller = self.get_char(initiative_roll.roller_name)
-            roller.initiative_roll = initiative_roll
+        action: InitiativeRoll = InitiativeRoll.create(line)
+        if action:
+            roller = self.get_char(action.roller_name)
+            roller.initiative_roll = action
             # find player name by Initiative Roll
             self.player = roller
             return
 
-        usage = Usage.create(line)
-        if usage:
-            user = self.get_char(usage.user)
-            if usage.item == ITEM_POTION_OF_HEAL:
+        action: Usage = Usage.create(line)
+        if action:
+            user = self.get_char(action.user_name)
+            if action.item == ITEM_POTION_OF_HEAL:
                 user.add_heal(user.get_received_damage_sum())
+            return
+        
+        action: Heal = Heal.create(line)
+        if action:
+            target = self.get_char(action.target_name)
+            target.add_heal(action.value)
             return
 
     def reset_statistic(self):

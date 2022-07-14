@@ -23,7 +23,7 @@ class Action:
         self.timestamp = get_ts()
 
     def __str__(self):
-        return str(self.__dict__)
+        return '{}: {}'.format(self.__class__.__name__, str(self.__dict__))
 
 
 def append_fix_time_window(actions_list: typing.List[Action], action: Action, window_duration) -> None:
@@ -263,8 +263,8 @@ class InitiativeRoll(Action):
         super().__init__()
         self.roller_name = g[0]
 
+
 """
-[CHAT WINDOW TEXT] [Thu Jul 14 19:29:37] TEST rogue ch : Healed 2 hit points.
 [CHAT WINDOW TEXT] [Thu Jul 14 19:29:38] Moore Guardian uses Potion of Heal
 """
 
@@ -277,5 +277,22 @@ class Usage(Action):
 
     def __init__(self, g):
         super().__init__()
-        self.user = g[0]
+        self.user_name = g[0]
         self.item = g[1]
+
+
+"""
+[CHAT WINDOW TEXT] [Thu Jul 14 19:29:37] Dunya Kulakova : Healed 2 hit points.
+"""
+
+
+class Heal(Action):
+    @classmethod
+    def create(cls, string):
+        p = r'\[CHAT WINDOW TEXT\] \[.+\] ([^:]+) \: Healed ([0-9]+) hit points.'
+        return Action.base_create(string, p, cls)
+
+    def __init__(self, g):
+        super().__init__()
+        self.target_name = g[0]
+        self.value = int(g[1])
