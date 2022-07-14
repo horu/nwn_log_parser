@@ -12,7 +12,7 @@ class Action:
         m = re.match(pattern, string)
         if m:
             g = m.groups()
-            logging.debug('{}'.format(g))
+            # logging.debug('{}'.format(g))
             action = action_type(g)
             logging.debug(str(action))
             return action

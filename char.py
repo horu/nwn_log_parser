@@ -222,6 +222,7 @@ class Character:
     def on_killed(self, death: Death) -> None:
         if death.target_name == self.name:
             hp = self.get_received_damage_sum()
+            logging.debug('HP: {}'.format(hp))
             append_fix_size(self.hp_list, hp, HP_LIST_LIMIT)
             self.stats_storage.this_char_death = death
         else:

@@ -149,10 +149,6 @@ class Printer:
         sum_cd = stats[char.last_caused_damage.target_name].caused_damage.sum
         last_cd = char.last_caused_damage.value
 
-        sum_rd = stats[char.last_received_damage.damager_name].received_damage.sum
-        last_rd = char.last_received_damage.value
-        last_ad = sum([ad.value for ad in char.last_received_damage.damage_absorption_list])
-
         hit_ab_attack = all_stats.hit_ab_attack
         per_ab = hit_ab_attack.count / hit_ab_attack.sum if hit_ab_attack.sum else 0
 
@@ -163,7 +159,6 @@ class Printer:
             'CD: {}({})'.format(convert_damage(sum_cd), convert_damage(last_cd)),
             'DPR: {}({})'.format(
                 convert_damage(storage.caused_dpr.max_dpr), convert_damage(storage.caused_dpr.last_dpr)),
-            'RD: {}({}/{})'.format(convert_damage(sum_rd), convert_damage(last_rd), last_ad),
             'PER AB: {:d}%'.format(int(per_ab * 100)),
             'AVG CD: {:d}'.format(int(avg_caused_damage)),
         ]
@@ -172,12 +167,19 @@ class Printer:
         max_ac = char.get_max_miss_ac()
         min_ac = char.get_min_hit_ac()
         cur_hp = char.get_avg_hp() - char.get_received_damage_sum() + char.stats_storage.healed_points
+
+        stats = char.stats_storage.char_stats
+        sum_rd = stats[char.last_received_damage.damager_name].received_damage.sum
+        last_rd = char.last_received_damage.value
+        last_ad = sum([ad.value for ad in char.last_received_damage.damage_absorption_list])
+
         result = [
             'HP: {}/{}'.format(convert_damage(cur_hp), convert_damage(char.get_avg_hp())),
             'AC: {:d}/{:d}({:d})'.format(max_ac, min_ac, char.get_last_hit_ac_attack_value()),
             'AB: {:d}({:d})'.format(char.get_max_ab_attack_base(), char.get_last_ab_attack_base()),
             'FT: {:d}({:d})'.format(char.fortitude, char.last_fortitude_dc),
             'WL: {:d}({:d})'.format(char.will, char.last_will_dc),
+            'RD: {}({}/{})'.format(convert_damage(sum_rd), convert_damage(last_rd), last_ad),
         ]
 
         if self.is_wide_mode():
@@ -192,15 +194,22 @@ class Printer:
         return [name] + self.print_char_without_name(char)
 
     def print(self, player: Character, chars: typing.List[Character]) -> str:
-        ts = get_ts()
-        if ts - self.chars_to_print_ts > CHARS_TO_PRINT_TIMEOUT:
-            chars_without_player = [char for char in chars if char is not player]
-            sorter = CharSorter(player)
-            sorted_chars = sorter.sort(chars_without_player)
+        # ts = get_ts()
+        # if ts - self.chars_to_print_ts > CHARS_TO_PRINT_TIMEOUT:
+        chars_without_player = [char for char in chars if char is not player]
+        # sorter = CharSorter(player)
+        # sorted_chars = sorter.sort(chars_without_player)
 
-            self.chars_to_print = sorted_chars[:self.chars_to_print_limit]
+        if self.is_wide_mode():
+            self.chars_to_print = chars_without_player[:self.chars_to_print_limit]
             self.chars_to_print.sort(key=lambda x: x.name)
-            self.chars_to_print_ts = ts
+        else:
+            last_player_ab = player.get_last_ab_attack()
+            if last_player_ab:
+                self.chars_to_print = [char for char in chars_without_player if char.name == last_player_ab.target_name]
+            else:
+                self.chars_to_print = chars_without_player[0:1]
+        # self.chars_to_print_ts = ts
 
         table = [self.print_char(char) for char in self.chars_to_print]
         player_special = ['{}\n'.format(' | '.join(print_special_char(player)))]
