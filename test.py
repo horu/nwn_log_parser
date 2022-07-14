@@ -55,7 +55,9 @@ test_lines = """
 [CHAT WINDOW TEXT] [Wed Jul 13 23:52:00] TEST m f s attempts Improved Knockdown on NORTHERN ORC KING : *resisted* : (2 + 44 = 46)
 
 [CHAT WINDOW TEXT] [Thu Jul 14 19:29:37] TEST rogue ch : Healed 2 hit points.
+[CHAT WINDOW TEXT] [Sun Jul 10 23:16:49] Adult Red Dragon damages Moore Guardian: 81 (81 Physical)
 [CHAT WINDOW TEXT] [Thu Jul 14 19:29:38] Moore Guardian uses Potion of Heal
+[CHAT WINDOW TEXT] [Sun Jul 10 23:16:49] Adult Red Dragon damages Moore Guardian: 11 (11 Physical)
 
 """
 
@@ -64,7 +66,9 @@ def test(win):
     parser = Parser()
     for line in test_lines.splitlines():
         parser.push_line(line)
-    text = '\n'
-    text += parser.print()
+    text = parser.print()
     win.set_text(text)
-    logging.debug(text)
+    parser.change_print_mode()
+    text += '\n{}'.format(parser.print())
+    logging.debug('\n{}'.format(text))
+    win.set_text(text)

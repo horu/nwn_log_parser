@@ -164,7 +164,7 @@ class Printer:
     def print_char_without_name(self, char: Character) -> list:
         max_ac = char.get_max_miss_ac()
         min_ac = char.get_min_hit_ac()
-        cur_hp = char.get_avg_hp() - char.stats_storage.all_chars_stats.received_damage.sum
+        cur_hp = char.get_avg_hp() - char.get_received_damage_sum() + char.stats_storage.healed_points
         if cur_hp >= 0:
             cur_hp = cur_hp % DAMAGE_PRINT_LIMIT
         else:

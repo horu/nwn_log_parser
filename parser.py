@@ -111,6 +111,13 @@ class Parser:
             self.player = roller
             return
 
+        usage = Usage.create(line)
+        if usage:
+            user = self.get_char(usage.user)
+            if usage.item == ITEM_POTION_OF_HEAL:
+                user.add_heal(user.get_received_damage_sum())
+            return
+
     def reset_statistic(self):
         for char in self.characters.values():
             char.stats_storage = StatisticStorage()

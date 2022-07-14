@@ -30,6 +30,8 @@ REFLEX = 'Reflex'
 KNOCKDOWN = 'Knockdown'
 STUNNING_FIST = 'Stunning Fist'
 
+ITEM_POTION_OF_HEAL = 'Potion of Heal'
+
 LOG_LEVEL = os.environ.get('LOG_LEVEL', default='DEBUG')
 LOG_DIR = os.environ.get('LOG_DIR', default='{}/.local/share/Neverwinter Nights/logs/'.format(os.getenv('HOME')))
 

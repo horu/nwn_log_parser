@@ -267,3 +267,15 @@ class InitiativeRoll(Action):
 [CHAT WINDOW TEXT] [Thu Jul 14 19:29:37] TEST rogue ch : Healed 2 hit points.
 [CHAT WINDOW TEXT] [Thu Jul 14 19:29:38] Moore Guardian uses Potion of Heal
 """
+
+
+class Usage(Action):
+    @classmethod
+    def create(cls, string):
+        p = r'\[CHAT WINDOW TEXT\] \[.+\] ([^:]+) uses (.+)'
+        return Action.base_create(string, p, cls)
+
+    def __init__(self, g):
+        super().__init__()
+        self.user = g[0]
+        self.item = g[1]

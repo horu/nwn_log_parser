@@ -53,11 +53,10 @@ class StatisticStorage:
         self.all_chars_stats = Statistic()
         self.this_char_death: typing.Optional[Death] = None
         self.caused_dpr = DamagePerRound()
+        self.healed_points = 0
 
     def reset(self):
-        self.char_stats = collections.defaultdict(Statistic)
-        self.all_chars_stats = Statistic()
-        self.this_char_death = None
+        self.__init__()
 
     def increase(self, char_name: str, stat_name, counter_name, value: int):
         if self.this_char_death:
@@ -212,6 +211,9 @@ class Character:
         self.stats_storage.increase(damage.damager_name, 'received_damage', 'sum', damage.value)
         self.stats_storage.increase(damage.damager_name, 'received_damage', 'count', 1)
 
+    def get_received_damage_sum(self) -> int:
+        return self.stats_storage.all_chars_stats.received_damage.sum
+
     def add_damage_absorption(self, absorption: DamageAbsorption) -> None:
         self.last_received_damage.damage_absorption_list.append(absorption)
 
@@ -234,4 +236,8 @@ class Character:
         if self.hp_list:
             avg_hp = sum(self.hp_list) / len(self.hp_list)
         return int(avg_hp)
+
+    def add_heal(self, points: int) -> None:
+        self.stats_storage.healed_points += points
+
 
