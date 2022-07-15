@@ -53,27 +53,12 @@ class StatisticStorage:
         self.all_chars_stats = Statistic()
         self.this_char_death: typing.Optional[Death] = None
         self.caused_dpr = DamagePerRound()
-        self.healed_points = 0
 
     def reset(self):
         self.__init__()
 
     def increase(self, char_name: str, stat_name, counter_name, value: int):
-        if self.this_char_death:
-            if get_ts() - self.this_char_death.timestamp < 700:
-                # ignore damage and other actions after death
-                # 300 ms between attacks in a series for 2 attacks.
-                return
-            self.reset()
-
         char_stats = self.char_stats[char_name]
-        if char_stats.death:
-            if get_ts() - char_stats.death.timestamp < 700:
-                # ignore damage and other actions after death
-                return
-
-            self.char_stats[char_name] = Statistic()
-            char_stats = self.char_stats[char_name]
 
         self._increase_stat(char_stats, stat_name, counter_name, value)
         self._increase_stat(self.all_chars_stats, stat_name, counter_name, value)
@@ -102,10 +87,10 @@ class Character:
 
         self.last_caused_damage = Damage.explicit_create()
         self.last_received_damage = Damage.explicit_create()
+        self.sum_received_damage = 0
+        self.healed_points = 0
 
-        self.stealth_cooldown = StealthCooldown.explicit_create(0)
-
-        self.initiative_roll: typing.Optional[InitiativeRoll] = None
+        self.death: typing.Optional[Death] = None
 
         self.stats_storage = StatisticStorage()
         self.hp_list: typing.List[int] = []
@@ -116,24 +101,6 @@ class Character:
 
     def __str__(self):
         return str(self.__dict__)
-
-    def start_fight(self, attack: Attack) -> None:
-        # uses to indicate start fight after stealth mode on next attack to start stealth cooldown
-        if self.initiative_roll:
-            self.initiative_roll = None
-            self.stealth_cooldown = StealthCooldown.explicit_create(STEALTH_MODE_CD)
-            return
-
-        sm_cooldown = self.stealth_cooldown.get_duration()
-        is_sneak = SNEAK_ATTACK in attack.specials
-        last_attack = self.get_last_ab_attack()
-        if last_attack:
-            time_since_last_attack = attack.timestamp - last_attack.timestamp
-            logging.debug('Start fight: {} {} {}'.format(sm_cooldown, is_sneak, time_since_last_attack))
-            if sm_cooldown == 0 and time_since_last_attack > 2500 and is_sneak:
-                # maybe it is the first attack on stealth mode
-                self.stealth_cooldown = StealthCooldown.explicit_create(STEALTH_MODE_CD)
-                return
 
     # ac
     def add_ac(self, attack: Attack):
@@ -210,25 +177,28 @@ class Character:
         self.stats_storage.increase(damage.target_name, 'caused_damage', 'count', 1)
 
     def add_received_damage(self, damage: Damage) -> None:
+        if self.death:
+            if get_ts() - self.death.timestamp < 700:
+                # ignore damage and other actions after death
+                # 300 ms between attacks in a series for 2 attacks.
+                return
+            self.death = None
+            self.sum_received_damage = 0
+            self.healed_points = 0
+
+        self.sum_received_damage += damage.value
         self.last_received_damage = damage
         self.stats_storage.increase(damage.damager_name, 'received_damage', 'sum', damage.value)
         self.stats_storage.increase(damage.damager_name, 'received_damage', 'count', 1)
-
-    def get_received_damage_sum(self) -> int:
-        return self.stats_storage.all_chars_stats.received_damage.sum
 
     def add_damage_absorption(self, absorption: DamageAbsorption) -> None:
         self.last_received_damage.damage_absorption_list.append(absorption)
 
     def on_killed(self, death: Death) -> None:
-        if death.target_name == self.name:
-            hp = self.get_received_damage_sum()
-            logging.debug('HP: {}'.format(hp))
-            append_fix_size(self.hp_list, hp, HP_LIST_LIMIT)
-            self.stats_storage.this_char_death = death
-        else:
-            killed_stat = self.stats_storage.char_stats[death.target_name]
-            killed_stat.death = death
+        hp = self.sum_received_damage
+        logging.debug('HP: {}'.format(hp))
+        append_fix_size(self.hp_list, hp, HP_LIST_LIMIT)
+        self.death = death
 
     def on_fortitude_save(self, throw: SavingThrow) -> None:
         for sf in self.stunning_fist_list:
@@ -242,10 +212,31 @@ class Character:
         return int(avg_hp)
 
     def get_cur_hp(self) -> int:
-        cur_hp = self.get_avg_hp() - self.get_received_damage_sum() + self.stats_storage.healed_points
+        cur_hp = self.get_avg_hp() - self.sum_received_damage + self.healed_points
         return cur_hp
 
-    def add_heal(self, points: int) -> None:
-        self.stats_storage.healed_points += points
 
+class Player(Character):
+    def __init__(self):
+        super(Player, self).__init__()
 
+        self.stealth_cooldown = StealthCooldown.explicit_create(0)
+        self.initiative_roll: typing.Optional[InitiativeRoll] = None
+
+    def start_fight(self, attack: Attack) -> None:
+        # uses to indicate start fight after stealth mode on next attack to start stealth cooldown
+        if self.initiative_roll:
+            self.initiative_roll = None
+            self.stealth_cooldown = StealthCooldown.explicit_create(STEALTH_MODE_CD)
+            return
+
+        sm_cooldown = self.stealth_cooldown.get_duration()
+        is_sneak = SNEAK_ATTACK in attack.specials
+        last_attack = self.get_last_ab_attack()
+        if last_attack:
+            time_since_last_attack = attack.timestamp - last_attack.timestamp
+            logging.debug('Start fight: {} {} {}'.format(sm_cooldown, is_sneak, time_since_last_attack))
+            if sm_cooldown == 0 and time_since_last_attack > 2500 and is_sneak:
+                # maybe it is the first attack on stealth mode
+                self.stealth_cooldown = StealthCooldown.explicit_create(STEALTH_MODE_CD)
+                return

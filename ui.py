@@ -27,12 +27,12 @@ class UserInterface:
 
         self.progress_bar_dict: typing.Dict[ProgressBarType, QProgressBar] = {
             ProgressBarType.PLAYER_HP: self.create_progress_bar(
-                '%p% HP', PLAYER_HP, 0, PLAYER_HP,
+                '%p% HP', 0, 0, 1,
                 UserInterface._get_style('#ffff0000'),
                 True),
             ProgressBarType.TARGET_HP: self.create_progress_bar(
                 '%p% TARGET HP', 0, 0, 1,
-                UserInterface._get_style('#ff0000ff'),
+                UserInterface._get_style('#ffff910c'),
                 True),
         }
 

@@ -74,9 +74,9 @@ class Printer:
                 return
         self.ui.upgrade_progress_bar(ProgressBarType.STUNNING_FIST, visible=False)
 
-    def update_stealth_mode_cd_bar(self, char: Character) -> None:
+    def update_stealth_mode_cd_bar(self, player: Player) -> None:
         # Stealth mode cooldown
-        value = char.stealth_cooldown.get_duration()
+        value = player.stealth_cooldown.get_duration()
         if value:
             self.ui.upgrade_progress_bar(ProgressBarType.STEALTH_MODE_CD, value)
             return
@@ -100,8 +100,8 @@ class Printer:
         self.ui.upgrade_progress_bar(ProgressBarType.TARGET_HP, cur_hp, 0, max_hp)
 
     def update_player_hp_bar(self, player: Character) -> None:
-        max_hp = PLAYER_HP
-        cur_hp = min(max(0, max_hp - player.get_received_damage_sum() + player.stats_storage.healed_points), max_hp)
+        max_hp = max(1, player.get_avg_hp())
+        cur_hp = min(max(0, player.get_cur_hp()), max_hp)
         self.ui.upgrade_progress_bar(ProgressBarType.PLAYER_HP, cur_hp, 0, max_hp)
 
     def change_print_mode(self):

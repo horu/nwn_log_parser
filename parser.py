@@ -6,7 +6,7 @@ EXPERIENCE_TIMEOUT = 2000
 class Parser:
     def __init__(self):
         self.characters = collections.defaultdict(Character)
-        self.player = Character()
+        self.player = Player()
 
         self.experience_list: typing.List[Experience] = []
 
@@ -20,8 +20,10 @@ class Parser:
         logging.debug('LINE: {}'.format(line[0:-1]))
         action: Attack = Attack.create(line)
         if action:
+            if action.attacker_name == self.player.name:
+                self.player.start_fight(action)
+
             attacker = self.get_char(action.attacker_name)
-            attacker.start_fight(action)
             attacker.add_ab(action)
 
             target = self.get_char(action.target_name)
@@ -44,8 +46,10 @@ class Parser:
 
         action: SpecialAttack = SpecialAttack.create(line)
         if action:
+            if action.attacker_name == self.player.name:
+                self.player.start_fight(action)
+
             attacker = self.get_char(action.attacker_name)
-            attacker.start_fight(action)
             if KNOCKDOWN in action.type:
                 attacker.last_knockdown = Knockdown(action)
             elif STUNNING_FIST in action.type:
@@ -71,7 +75,6 @@ class Parser:
             target = self.get_char(action.target_name)
             if target is not self.player:
                 target.on_killed(action)
-                self.player.on_killed(action)
                 if self.experience_list:
                     target.experience = self.experience_list.pop(0)
             return
@@ -101,10 +104,14 @@ class Parser:
 
         action: InitiativeRoll = InitiativeRoll.create(line)
         if action:
-            roller = self.get_char(action.roller_name)
-            roller.initiative_roll = action
             # find player name by Initiative Roll
-            self.player = roller
+            if self.player.name != action.roller_name:
+                self.characters.clear()
+                self.player = Player()
+                self.player.name = action.roller_name
+                self.player.hp_list = [PLAYER_HP]
+                self.characters[action.roller_name] = self.player
+            self.player.initiative_roll = action
             return
 
         action: Usage = Usage.create(line)
@@ -112,13 +119,13 @@ class Parser:
             user = self.get_char(action.user_name)
             if action.item == ITEM_POTION_OF_HEAL and user != self.player:
                 # for user we get Heal action
-                user.add_heal(user.get_received_damage_sum())
+                user.healed_points += user.sum_received_damage
             return
         
         action: Heal = Heal.create(line)
         if action:
             target = self.get_char(action.target_name)
-            target.add_heal(action.value)
+            target.healed_points += action.value
             return
 
         action: Experience = Experience.create(line)
@@ -128,7 +135,8 @@ class Parser:
 
         action: Resting = Resting.create(line)
         if action:
-            self.player.stats_storage.reset()
+            self.player.sum_received_damage = 0
+            self.player.healed_points = 0
             return
 
     def reset_statistic(self):
