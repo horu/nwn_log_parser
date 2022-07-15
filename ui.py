@@ -69,8 +69,18 @@ class UserInterface:
                 False),
         })
 
+        self.low_hp_label = QLabel("LOW HP")
+        self.low_hp_label.setFont(QFont('Monospace', 40))
+        self.low_hp_label.setAlignment(Qt.AlignCenter)
+        self.low_hp_label.setStyleSheet('background-color: rgba(0,0,0,0%); color: red')
+        self.low_hp_label.setVisible(False)
+        self.form.addRow(self.low_hp_label)
+
     def set_main_lavel_text(self, text: str) -> None:
         self.main_label.setText(text)
+
+    def notify_low_hp(self, visible: bool):
+        self.low_hp_label.setVisible(visible)
 
     @staticmethod
     def _get_style(color: str, additional_chunk: str = '') -> str:

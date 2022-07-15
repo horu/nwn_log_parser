@@ -23,7 +23,6 @@ class Statistic:
         self.received_damage = ValueStatistic()
         self.hit_ab_attack = ValueStatistic()
         self.hit_ac_attack = ValueStatistic()
-        self.death: typing.Optional[Death] = None  # target killed
 
 
 class DamagePerRound:
@@ -51,7 +50,6 @@ class StatisticStorage:
     def __init__(self):
         self.char_stats = collections.defaultdict(Statistic)
         self.all_chars_stats = Statistic()
-        self.this_char_death: typing.Optional[Death] = None
         self.caused_dpr = DamagePerRound()
 
     def reset(self):

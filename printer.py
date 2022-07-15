@@ -8,6 +8,7 @@ from ui import *
 CHARS_COUNT_WIDE_MODE = 30
 CHARS_TO_PRINT_TIMEOUT = 5000
 DAMAGE_PRINT_LIMIT = 1000
+LOW_HP_NOTIFY_LIMIT = 0.3
 
 
 def convert_damage(value: int) -> str:
@@ -102,6 +103,11 @@ class Printer:
     def update_player_hp_bar(self, player: Character) -> None:
         max_hp = max(1, player.get_avg_hp())
         cur_hp = min(max(0, player.get_cur_hp()), max_hp)
+        if cur_hp and cur_hp / max_hp < LOW_HP_NOTIFY_LIMIT:
+            self.ui.notify_low_hp(True)
+        else:
+            self.ui.notify_low_hp(False)
+
         self.ui.upgrade_progress_bar(ProgressBarType.PLAYER_HP, cur_hp, 0, max_hp)
 
     def change_print_mode(self):
