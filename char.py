@@ -60,14 +60,15 @@ class StatisticStorage:
 
     def increase(self, char_name: str, stat_name, counter_name, value: int):
         if self.this_char_death:
-            if get_ts() - self.this_char_death.timestamp < 1000:
+            if get_ts() - self.this_char_death.timestamp < 700:
                 # ignore damage and other actions after death
+                # 300 ms between attacks in a series for 2 attacks.
                 return
             self.reset()
 
         char_stats = self.char_stats[char_name]
         if char_stats.death:
-            if get_ts() - char_stats.death.timestamp < 1000:
+            if get_ts() - char_stats.death.timestamp < 700:
                 # ignore damage and other actions after death
                 return
 
