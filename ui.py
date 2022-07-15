@@ -1,7 +1,7 @@
 import logging
 import typing
 import collections
-from enum import Enum
+from enum import Enum, auto
 
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QFont
@@ -11,18 +11,30 @@ from char import *
 
 
 class ProgressBarType(Enum):
-    HP = 1
-    DAMAGE_PER_ROUND = 2
-    KNOCKDOWN = 3
-    KNOCKDOWN_MISS = 4
-    STUNNING_FIST = 5
-    STEALTH_MODE_CD = 6
-    ATTACK_BASE = 7
+    PLAYER_HP = auto()
+    TARGET_HP = auto()
+    DAMAGE_PER_ROUND = auto()
+    KNOCKDOWN = auto()
+    KNOCKDOWN_MISS = auto()
+    STUNNING_FIST = auto()
+    STEALTH_MODE_CD = auto()
+    ATTACK_BASE = auto()
 
 
 class UserInterface:
     def __init__(self, form: QFormLayout):
         self.form = form
+
+        self.progress_bar_dict: typing.Dict[ProgressBarType, QProgressBar] = {
+            ProgressBarType.PLAYER_HP: self.create_progress_bar(
+                '%p% HP', PLAYER_HP, 0, PLAYER_HP,
+                UserInterface._get_style('#ffff0000'),
+                True),
+            ProgressBarType.TARGET_HP: self.create_progress_bar(
+                '%p% TARGET HP', 0, 0, 1,
+                UserInterface._get_style('#ff0000ff'),
+                True),
+        }
 
         self.main_label = QLabel("")
         self.main_label.setFont(QFont('Monospace', 10))
@@ -30,7 +42,7 @@ class UserInterface:
         self.main_label.setStyleSheet('background-color: rgba(0,0,0,0%); color: white')
         self.form.addRow(self.main_label)
 
-        self.progress_bar_dict: typing.Dict[ProgressBarType, QProgressBar] = {
+        self.progress_bar_dict.update({
             ProgressBarType.DAMAGE_PER_ROUND: self.create_progress_bar(
                 '%v Damage per round', 0, 0, 0,
                 UserInterface._get_style('#99ff7b06'),
@@ -55,7 +67,7 @@ class UserInterface:
                 '%v Attack base', 0, 0, 0,
                 UserInterface._get_style('#9917b402'),
                 False),
-        }
+        })
 
     def set_main_lavel_text(self, text: str) -> None:
         self.main_label.setText(text)

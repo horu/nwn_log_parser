@@ -312,3 +312,18 @@ class Experience(Action):
     def __init__(self, g):
         super().__init__()
         self.value = int(g[0])
+
+
+"""
+[CHAT WINDOW TEXT] [Sat Jul 16 02:40:56] Done resting.
+"""
+
+
+class Resting(Action):
+    @classmethod
+    def create(cls, string):
+        p = r'\[CHAT WINDOW TEXT\] \[.+\] Done resting.'
+        return Action.base_create(string, p, cls)
+
+    def __init__(self, g):
+        super().__init__()

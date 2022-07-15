@@ -72,8 +72,8 @@ class Parser:
             if target is not self.player:
                 target.on_killed(action)
                 self.player.on_killed(action)
-            if self.experience_list:
-                target.experience = self.experience_list.pop(0)
+                if self.experience_list:
+                    target.experience = self.experience_list.pop(0)
             return
 
         action: DamageReduction = DamageReduction.create(line)
@@ -110,7 +110,8 @@ class Parser:
         action: Usage = Usage.create(line)
         if action:
             user = self.get_char(action.user_name)
-            if action.item == ITEM_POTION_OF_HEAL:
+            if action.item == ITEM_POTION_OF_HEAL and user != self.player:
+                # for user we get Heal action
                 user.add_heal(user.get_received_damage_sum())
             return
         
@@ -123,6 +124,11 @@ class Parser:
         action: Experience = Experience.create(line)
         if action:
             append_fix_time_window(self.experience_list, action, EXPERIENCE_TIMEOUT)
+            return
+
+        action: Resting = Resting.create(line)
+        if action:
+            self.player.stats_storage.reset()
             return
 
     def reset_statistic(self):

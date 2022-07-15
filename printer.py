@@ -94,6 +94,16 @@ class Printer:
                 return
         self.ui.upgrade_progress_bar(ProgressBarType.ATTACK_BASE, visible=False)
 
+    def update_target_hp_bar(self, target: Character) -> None:
+        max_hp = max(1, target.get_avg_hp())
+        cur_hp = min(max(0, target.get_cur_hp()), max_hp)
+        self.ui.upgrade_progress_bar(ProgressBarType.TARGET_HP, cur_hp, 0, max_hp)
+
+    def update_player_hp_bar(self, player: Character) -> None:
+        max_hp = PLAYER_HP
+        cur_hp = min(max(0, max_hp - player.get_received_damage_sum() + player.stats_storage.healed_points), max_hp)
+        self.ui.upgrade_progress_bar(ProgressBarType.PLAYER_HP, cur_hp, 0, max_hp)
+
     def change_print_mode(self):
         self.wide_mode = not self.wide_mode
 
@@ -122,7 +132,6 @@ class Printer:
     def print_char_without_name(self, char: Character) -> list:
         max_ac = char.get_max_miss_ac()
         min_ac = char.get_min_hit_ac()
-        cur_hp = char.get_avg_hp() - char.get_received_damage_sum() + char.stats_storage.healed_points
 
         stats = char.stats_storage.char_stats
         sum_rd = stats[char.last_received_damage.damager_name].received_damage.sum
@@ -130,7 +139,7 @@ class Printer:
         last_ad = sum([ad.value for ad in char.last_received_damage.damage_absorption_list])
 
         result = [
-            'HP: {}/{}'.format(convert_damage(cur_hp), convert_damage(char.get_avg_hp())),
+            'HP: {}/{}'.format(convert_damage(char.get_cur_hp()), convert_damage(char.get_avg_hp())),
             'AC: {:d}/{:d}({:d})'.format(max_ac, min_ac, char.get_last_hit_ac_attack_value()),
             'AB: {:d}({:d})'.format(char.get_max_ab_attack_base(), char.get_last_ab_attack_base()),
             'FT: {:d}({:d})'.format(char.fortitude, char.last_fortitude_dc),
@@ -165,6 +174,7 @@ class Printer:
             last_player_ab = player.get_last_ab_attack()
             if last_player_ab:
                 self.chars_to_print = [char for char in chars if char.name == last_player_ab.target_name]
+                self.update_target_hp_bar(self.chars_to_print[0])
             else:
                 self.chars_to_print = chars[0:1]
 
@@ -181,6 +191,7 @@ class Printer:
             text += '\n{}'.format('#' * line_size)
 
         self.ui.set_main_lavel_text(text)
+        self.update_player_hp_bar(player)
         self.update_dpr_bar(player)
         self.update_knockdown_bar(player)
         self.update_stunning_fist_bar(player)

@@ -241,6 +241,10 @@ class Character:
             avg_hp = sum(self.hp_list) / len(self.hp_list)
         return int(avg_hp)
 
+    def get_cur_hp(self) -> int:
+        cur_hp = self.get_avg_hp() - self.get_received_damage_sum() + self.stats_storage.healed_points
+        return cur_hp
+
     def add_heal(self, points: int) -> None:
         self.stats_storage.healed_points += points
 
