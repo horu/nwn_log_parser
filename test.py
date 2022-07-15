@@ -65,13 +65,10 @@ test_lines = """
 """
 
 
-def test(win):
+def test(printer):
     parser = Parser()
     for line in test_lines.splitlines():
         parser.push_line(line)
-    text = parser.print()
-    win.set_text(text)
-    parser.change_print_mode()
-    text += '\n{}'.format(parser.print())
-    logging.debug('\n{}'.format(text))
-    win.set_text(text)
+    printer.print(parser)
+    printer.change_print_mode()
+    printer.change_print_mode()

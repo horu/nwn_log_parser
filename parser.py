@@ -1,9 +1,4 @@
-import collections
-from tabulate import tabulate
-import pandas
-import tabulate
-
-from printer import *
+from char import *
 
 EXPERIENCE_TIMEOUT = 2000
 
@@ -12,7 +7,6 @@ class Parser:
     def __init__(self):
         self.characters = collections.defaultdict(Character)
         self.player = Character()
-        self.printer = Printer()
 
         self.experience_list: typing.List[Experience] = []
 
@@ -134,11 +128,3 @@ class Parser:
     def reset_statistic(self):
         for char in self.characters.values():
             char.stats_storage = StatisticStorage()
-
-    def change_print_mode(self):
-        self.printer.change_print_mode()
-
-    def print(self) -> str:
-        chars = [char for char in self.characters.values()]
-        text = self.printer.print(self.player, chars)
-        return text

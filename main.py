@@ -14,11 +14,12 @@ if __name__ == "__main__":
     win = Window()
     win.show()
 
-    test(win)
+    printer = Printer(win.form)
+    test(printer)
 
     parser = Parser()
     reader = LogReader(LOG_DIR)
-    back = Backend(win, reader, parser)
+    back = Backend(win, reader, parser, printer)
 
     sys.exit(app.exec_())
 

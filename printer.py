@@ -1,11 +1,8 @@
-import logging
-import typing
-import collections
-from tabulate import tabulate
 import pandas
 import tabulate
 
-from char import *
+from parser import *
+from ui import *
 
 
 CHARS_COUNT_WIDE_MODE = 30
@@ -17,62 +14,6 @@ def convert_damage(value: int) -> str:
     if abs(value) > DAMAGE_PRINT_LIMIT:
         return '{:.1f}'.format(value / DAMAGE_PRINT_LIMIT)
     return str(value)
-
-
-def print_progress_bar(name: str, value: int, min_value: int, max_value: int, line_len: int, bar_symbol: str) -> str:
-    if value >= min_value and (max_value - min_value) > 0:
-        header = '{:>3}: {:>5d} {}'.format(name, value, bar_symbol)
-        bar_len = int((line_len - len(header)) * (value - min_value) / (max_value - min_value))
-        text = '\n{}{}'.format(header, bar_symbol * bar_len)
-        return text
-    return ''
-
-
-def create_progress_bars(char: Character, line_size: int) -> str:
-    text = ''
-
-    # Damage per round
-    caused_dpr = char.stats_storage.caused_dpr
-    dpr = caused_dpr.last_dpr
-    if caused_dpr.max_dpr and dpr:
-        ts = get_ts()
-        duration_without_attack = ts - caused_dpr.ts_last_dpr
-        if duration_without_attack <= ROUND_DURATION:
-            dpr = int(dpr * (ROUND_DURATION - duration_without_attack) / ROUND_DURATION)
-            if dpr:
-                text += print_progress_bar('DPR', dpr, 0, caused_dpr.max_dpr, line_size, '\u2591')
-
-    # Knockdown cooldown
-    last_kd = char.last_knockdown
-    value = last_kd.get_cooldown()
-    if value:
-        bar_symbol = '\u2596'
-        if last_kd.s_attack.is_success():
-            bar_symbol = '\u259e'
-        text += print_progress_bar('KD', value, 0, KNOCKDOWN_PVE_CD, line_size, bar_symbol)
-
-    # Stunning fist duration
-    for sf in reversed(char.stunning_fist_list):
-        value = sf.get_duration()
-        if value:
-            text += print_progress_bar('SF', value, 0, STUNNING_FIST_DURATION, line_size, '\u2588')  # full bar
-            break
-
-    # Stealth mode cooldown
-    value = char.stealth_cooldown.get_duration()
-    if value:
-        text += print_progress_bar('SMC', value, 0, STEALTH_MODE_CD, line_size, '\u2592')
-
-    # Attacks min/max
-    ab_attack_list = char.ab_attack_list
-    if ab_attack_list:
-        last_ab = char.get_last_ab_attack()
-        if get_ts() - last_ab.timestamp <= 6000:
-            max_ab = char.get_max_ab_attack_base()
-            min_ab = char.get_min_ab_attack_base()
-            text += print_progress_bar('AB', last_ab.base, min_ab, max_ab, line_size, '\u2584')
-
-    return text
 
 
 def print_special_char(char: Character) -> list:
@@ -89,47 +30,69 @@ def print_special_char(char: Character) -> list:
     return text
 
 
-class CharSorter:
-    def __init__(self, player: Character):
-        self.player = player
-
-    def sort(self, chars: typing.List[Character]) -> typing.List[Character]:
-        chars.sort(key=lambda x: x.timestamp, reverse=True)
-        chars.sort(key=self.sort_by_player_contact_ts, reverse=True)
-        return chars
-
-    def sort_by_player_contact_ts(self, char: Character) -> int:
-        last_player_contact_ts = 0
-
-        for attack in self.player.ab_attack_list:
-            if char.name == attack.target_name:
-                last_player_contact_ts = max(last_player_contact_ts, attack.timestamp)
-                break
-
-        # for attack in self.player.ac_attack_list:
-        #     if char.name == attack.attacker_name:
-        #         last_player_contact_ts = max(last_player_contact_ts, attack.timestamp)
-        #
-        # action = self.player.last_hit_ac_attack
-        # if action and char.name == action.attacker_name:
-        #     last_player_contact_ts = max(last_player_contact_ts, action.timestamp)
-        #
-        # action = self.player.last_received_damage
-        # if action and action.damager_name == char.name:
-        #     last_player_contact_ts = max(last_player_contact_ts, action.timestamp)
-        #
-        # action = self.player.last_caused_damage
-        # if action and action.target_name == char.name:
-        #     last_player_contact_ts = max(last_player_contact_ts, action.timestamp)
-
-        return last_player_contact_ts
-
-
 class Printer:
-    def __init__(self):
+    def __init__(self, form: QFormLayout):
+        self.ui = UserInterface(form)
+
         self.chars_to_print: typing.List[Character] = []
         self.chars_to_print_ts = 0
         self.wide_mode = False
+
+    def update_dpr_bar(self, char: Character) -> None:
+        # Damage per round
+        caused_dpr = char.stats_storage.caused_dpr
+        dpr = caused_dpr.last_dpr
+        if caused_dpr.max_dpr and dpr:
+            ts = get_ts()
+            duration_without_attack = ts - caused_dpr.ts_last_dpr
+            if duration_without_attack <= ROUND_DURATION:
+                dpr = int(dpr * (ROUND_DURATION - duration_without_attack) / ROUND_DURATION)
+                if dpr:
+                    self.ui.upgrade_progress_bar(ProgressBarType.DAMAGE_PER_ROUND, dpr, 0, caused_dpr.max_dpr)
+                    return
+        self.ui.upgrade_progress_bar(ProgressBarType.DAMAGE_PER_ROUND, visible=False)
+
+    def update_knockdown_bar(self, char: Character) -> None:
+        # Knockdown cooldown
+        last_kd = char.last_knockdown
+        value = last_kd.get_cooldown()
+        if value:
+            if last_kd.s_attack.is_success():
+                self.ui.upgrade_progress_bar(ProgressBarType.KNOCKDOWN, value)
+            else:
+                self.ui.upgrade_progress_bar(ProgressBarType.KNOCKDOWN_MISS, value)
+            return
+        self.ui.upgrade_progress_bar(ProgressBarType.KNOCKDOWN, visible=False)
+        self.ui.upgrade_progress_bar(ProgressBarType.KNOCKDOWN_MISS, visible=False)
+
+    def update_stunning_fist_bar(self, char: Character) -> None:
+        # Stunning fist duration
+        for sf in reversed(char.stunning_fist_list):
+            value = sf.get_duration()
+            if value:
+                self.ui.upgrade_progress_bar(ProgressBarType.STUNNING_FIST, value)
+                return
+        self.ui.upgrade_progress_bar(ProgressBarType.STUNNING_FIST, visible=False)
+
+    def update_stealth_mode_cd_bar(self, char: Character) -> None:
+        # Stealth mode cooldown
+        value = char.stealth_cooldown.get_duration()
+        if value:
+            self.ui.upgrade_progress_bar(ProgressBarType.STEALTH_MODE_CD, value)
+            return
+        self.ui.upgrade_progress_bar(ProgressBarType.STEALTH_MODE_CD, visible=False)
+
+    def update_attack_base_bar(self, char: Character) -> None:
+        # Attacks min/max
+        ab_attack_list = char.ab_attack_list
+        if ab_attack_list:
+            last_ab = char.get_last_ab_attack()
+            if get_ts() - last_ab.timestamp <= 6000:
+                max_ab = char.get_max_ab_attack_base()
+                min_ab = char.get_min_ab_attack_base()
+                self.ui.upgrade_progress_bar(ProgressBarType.ATTACK_BASE, last_ab.base, min_ab, max_ab)
+                return
+        self.ui.upgrade_progress_bar(ProgressBarType.ATTACK_BASE, visible=False)
 
     def change_print_mode(self):
         self.wide_mode = not self.wide_mode
@@ -186,7 +149,10 @@ class Printer:
             name = '{} ({:d})'.format(name, char.experience.value)
         return [name] + self.print_char_without_name(char)
 
-    def print(self, player: Character, chars: typing.List[Character]) -> str:
+    def print(self, parser: Parser) -> None:
+        player = parser.player
+        chars = [char for char in parser.characters.values()]
+
         ts = get_ts()
         if self.wide_mode and ts - self.chars_to_print_ts > CHARS_TO_PRINT_TIMEOUT:
             chars_without_player = [char for char in chars if char is not player]
@@ -210,10 +176,13 @@ class Printer:
         text = str(tabulate.tabulate(df, tablefmt='plain', showindex=False))
 
         line_size = len(text.splitlines()[0])
-        text += create_progress_bars(player, line_size)
-
         if self.wide_mode:
             text = '{}\n'.format('#' * line_size) + text
             text += '\n{}'.format('#' * line_size)
 
-        return text
+        self.ui.set_main_lavel_text(text)
+        self.update_dpr_bar(player)
+        self.update_knockdown_bar(player)
+        self.update_stunning_fist_bar(player)
+        self.update_stealth_mode_cd_bar(player)
+        self.update_attack_base_bar(player)
