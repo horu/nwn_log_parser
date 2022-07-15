@@ -8,9 +8,8 @@ import tabulate
 from char import *
 
 
-CHARS_TO_PRINT_LIMIT_NORM = 1
-CHARS_TO_PRINT_LIMIT_MAX = 30
-CHARS_TO_PRINT_TIMEOUT = 500
+CHARS_COUNT_WIDE_MODE = 30
+CHARS_TO_PRINT_TIMEOUT = 5000
 DAMAGE_PRINT_LIMIT = 1000
 
 
@@ -62,7 +61,7 @@ def create_progress_bars(char: Character, line_size: int) -> str:
     # Stealth mode cooldown
     value = char.stealth_cooldown.get_duration()
     if value:
-        text += print_progress_bar('SM', value, 0, STEALTH_MODE_CD, line_size, '\u2592')
+        text += print_progress_bar('SMC', value, 0, STEALTH_MODE_CD, line_size, '\u2592')
 
     # Attacks min/max
     ab_attack_list = char.ab_attack_list
@@ -79,11 +78,12 @@ def create_progress_bars(char: Character, line_size: int) -> str:
 def print_special_char(char: Character) -> list:
     text = []
 
-    kd = char.last_knockdown
-    text.append('KD: {:d}({})'.format(kd.s_attack.value, kd.s_attack.result))
+    last_kd = char.last_knockdown
+    last_sf = char.stunning_fist_list[-1] if char.stunning_fist_list else None
 
-    if char.stunning_fist_list:
-        last_sf = char.stunning_fist_list[-1]
+    if not last_sf or last_kd.timestamp > last_sf.timestamp:
+        text.append('KD: {:d}({})'.format(last_kd.s_attack.value, last_kd.s_attack.result))
+    elif last_sf:
         dc = last_sf.throw.dc if last_sf.throw else 0
         text.append('SF: {:d}({:d}/{})'.format(last_sf.s_attack.value, dc, last_sf.s_attack.result))
     return text
@@ -129,17 +129,10 @@ class Printer:
     def __init__(self):
         self.chars_to_print: typing.List[Character] = []
         self.chars_to_print_ts = 0
-        self.chars_to_print_limit = CHARS_TO_PRINT_LIMIT_NORM
+        self.wide_mode = False
 
     def change_print_mode(self):
-        if self.chars_to_print_limit == CHARS_TO_PRINT_LIMIT_NORM:
-            self.chars_to_print_limit = CHARS_TO_PRINT_LIMIT_MAX
-        else:
-            self.chars_to_print_limit = CHARS_TO_PRINT_LIMIT_NORM
-        self.chars_to_print_ts = 0
-
-    def is_wide_mode(self):
-        return self.chars_to_print_limit > CHARS_TO_PRINT_LIMIT_NORM
+        self.wide_mode = not self.wide_mode
 
     def print_char_wide_stat(self, char: Character) -> list:
         storage = char.stats_storage
@@ -182,7 +175,7 @@ class Printer:
             'RD: {}({}/{})'.format(convert_damage(sum_rd), convert_damage(last_rd), last_ad),
         ]
 
-        if self.is_wide_mode():
+        if self.wide_mode:
             result += self.print_char_wide_stat(char)
 
         return result
@@ -194,22 +187,20 @@ class Printer:
         return [name] + self.print_char_without_name(char)
 
     def print(self, player: Character, chars: typing.List[Character]) -> str:
-        # ts = get_ts()
-        # if ts - self.chars_to_print_ts > CHARS_TO_PRINT_TIMEOUT:
-        chars_without_player = [char for char in chars if char is not player]
-        # sorter = CharSorter(player)
-        # sorted_chars = sorter.sort(chars_without_player)
+        ts = get_ts()
+        if self.wide_mode and ts - self.chars_to_print_ts > CHARS_TO_PRINT_TIMEOUT:
+            chars_without_player = [char for char in chars if char is not player]
+            chars_without_player.sort(key=lambda x: x.timestamp, reverse=True)
 
-        if self.is_wide_mode():
-            self.chars_to_print = chars_without_player[:self.chars_to_print_limit]
+            self.chars_to_print = chars_without_player[:CHARS_COUNT_WIDE_MODE]
             self.chars_to_print.sort(key=lambda x: x.name)
+            self.chars_to_print_ts = ts
         else:
             last_player_ab = player.get_last_ab_attack()
             if last_player_ab:
-                self.chars_to_print = [char for char in chars_without_player if char.name == last_player_ab.target_name]
+                self.chars_to_print = [char for char in chars if char.name == last_player_ab.target_name]
             else:
-                self.chars_to_print = chars_without_player[0:1]
-        # self.chars_to_print_ts = ts
+                self.chars_to_print = chars[0:1]
 
         table = [self.print_char(char) for char in self.chars_to_print]
         player_special = ['{}\n'.format(' | '.join(print_special_char(player)))]
@@ -221,7 +212,7 @@ class Printer:
         line_size = len(text.splitlines()[0])
         text += create_progress_bars(player, line_size)
 
-        if self.is_wide_mode():
+        if self.wide_mode:
             text = '{}\n'.format('#' * line_size) + text
             text += '\n{}'.format('#' * line_size)
 
