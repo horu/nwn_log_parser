@@ -112,6 +112,7 @@ class Printer:
 
     def change_print_mode(self):
         self.wide_mode = not self.wide_mode
+        self.chars_to_print_ts = 0
 
     def print_char_wide_stat(self, char: Character) -> list:
         storage = char.stats_storage
@@ -176,7 +177,7 @@ class Printer:
             self.chars_to_print = chars_without_player[:CHARS_COUNT_WIDE_MODE]
             self.chars_to_print.sort(key=lambda x: x.name)
             self.chars_to_print_ts = ts
-        else:
+        elif not self.wide_mode:
             last_player_ab = player.get_last_ab_attack()
             if last_player_ab:
                 self.chars_to_print = [char for char in chars if char.name == last_player_ab.target_name]
