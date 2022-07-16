@@ -113,7 +113,7 @@ class Printer:
                 if dpr:
                     self.ui.upgrade_progress_bar(ProgressBarType.DAMAGE_PER_ROUND, dpr, 0, caused_dpr.max_dpr)
                     return
-        self.ui.upgrade_progress_bar(ProgressBarType.DAMAGE_PER_ROUND, visible=Visible.INVISIBLE)
+        self.ui.set_visible_progress_bar(ProgressBarType.DAMAGE_PER_ROUND, visible=Visible.INVISIBLE)
 
     def update_knockdown_bar(self, char: Character) -> None:
         # Knockdown cooldown
@@ -125,8 +125,8 @@ class Printer:
             else:
                 self.ui.upgrade_progress_bar(ProgressBarType.KNOCKDOWN_MISS, value)
             return
-        self.ui.upgrade_progress_bar(ProgressBarType.KNOCKDOWN, visible=Visible.INVISIBLE)
-        self.ui.upgrade_progress_bar(ProgressBarType.KNOCKDOWN_MISS, visible=Visible.INVISIBLE)
+        self.ui.set_visible_progress_bar(ProgressBarType.KNOCKDOWN, visible=Visible.INVISIBLE)
+        self.ui.set_visible_progress_bar(ProgressBarType.KNOCKDOWN_MISS, visible=Visible.INVISIBLE)
 
     def update_stunning_fist_bar(self, char: Character) -> None:
         # Stunning fist duration
@@ -135,7 +135,7 @@ class Printer:
             if value:
                 self.ui.upgrade_progress_bar(ProgressBarType.STUNNING_FIST, value)
                 return
-        self.ui.upgrade_progress_bar(ProgressBarType.STUNNING_FIST, visible=Visible.INVISIBLE)
+        self.ui.set_visible_progress_bar(ProgressBarType.STUNNING_FIST, visible=Visible.INVISIBLE)
 
     def update_stealth_mode_cd_bar(self, player: Player) -> None:
         # Stealth mode cooldown
@@ -143,7 +143,7 @@ class Printer:
         if value:
             self.ui.upgrade_progress_bar(ProgressBarType.STEALTH_MODE_CD, value)
             return
-        self.ui.upgrade_progress_bar(ProgressBarType.STEALTH_MODE_CD, visible=Visible.INVISIBLE)
+        self.ui.set_visible_progress_bar(ProgressBarType.STEALTH_MODE_CD, visible=Visible.INVISIBLE)
 
     def update_attack_base_bar(self, char: Character) -> None:
         # Attacks min/max
@@ -155,7 +155,7 @@ class Printer:
                 min_ab = char.get_min_ab_attack_base()
                 self.ui.upgrade_progress_bar(ProgressBarType.ATTACK_BASE, last_ab.base, min_ab, max_ab)
                 return
-        self.ui.upgrade_progress_bar(ProgressBarType.ATTACK_BASE, visible=Visible.INVISIBLE)
+        self.ui.set_visible_progress_bar(ProgressBarType.ATTACK_BASE, visible=Visible.INVISIBLE)
 
     def update_target_hp_bar(self, target: Character) -> None:
         max_hp = max(1, target.get_avg_hp())

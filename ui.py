@@ -237,9 +237,9 @@ class UserInterface:
 
     def upgrade_player_hp_progress_bar(
             self,
-            cur_value: int = 0,
-            min_value: typing.Optional[int] = None,
-            max_value: typing.Optional[int] = None,
+            cur_value: int,
+            min_value: typing.Optional[int],
+            max_value: typing.Optional[int],
     ) -> None:
         pb = self.progress_bar_dict[ProgressBarType.PLAYER_HP]
         pb.setFormat('%v/{} RD'.format(max_value))
@@ -250,9 +250,9 @@ class UserInterface:
     def upgrade_target_hp_progress_bar(
             self,
             target_name: str,
-            cur_value: int = 0,
-            min_value: typing.Optional[int] = None,
-            max_value: typing.Optional[int] = None,
+            cur_value: int,
+            min_value: typing.Optional[int],
+            max_value: typing.Optional[int],
     ) -> None:
         pb = self.progress_bar_dict[ProgressBarType.TARGET_HP]
         pb.setFormat('%v/{} {}'.format(max_value, target_name[:30]))
@@ -263,7 +263,7 @@ class UserInterface:
     def upgrade_progress_bar(
             self,
             bar_type: ProgressBarType,
-            cur_value: int = 0,
+            cur_value: int,
             min_value: typing.Optional[int] = None,
             max_value: typing.Optional[int] = None,
             visible: Visible = Visible.VISIBLE,
@@ -274,4 +274,8 @@ class UserInterface:
             pb.setMinimum(min_value)
         if max_value is not None:
             pb.setMaximum(max_value)
+        pb.setVisible(visible == Visible.VISIBLE)
+
+    def set_visible_progress_bar(self, bar_type: ProgressBarType, visible: Visible) -> None:
+        pb = self.progress_bar_dict[bar_type]
         pb.setVisible(visible == Visible.VISIBLE)
