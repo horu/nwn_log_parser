@@ -24,16 +24,10 @@ class Window(QMainWindow):
         self.setAttribute(Qt.WA_TranslucentBackground, True)
         self.setWindowFlags(Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint)
 
-        self.form = QFormLayout()
-        self.form.setHorizontalSpacing(0)
-        self.form.setVerticalSpacing(0)
-        self.form.setRowWrapPolicy(QFormLayout.DontWrapRows)
+        self.central_widget = QWidget()
+        self.central_widget.setStyleSheet('background-color: rgba(0,0,0,{}%); color: white'.format(int(TRANSPARENCY * 100)))
 
-        self.group_box = QWidget()
-        self.group_box.setStyleSheet('background-color: rgba(0,0,0,{}%); color: white'.format(int(TRANSPARENCY * 100)))
-        self.group_box.setLayout(self.form)
-
-        self.setCentralWidget(self.group_box)
+        self.setCentralWidget(self.central_widget)
 
         # position for move window
         self.drag_position = QPoint()

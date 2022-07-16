@@ -88,8 +88,12 @@ class CharacterStat:
 
 
 class UserInterface:
-    def __init__(self, form: QFormLayout):
-        self.form = form
+    def __init__(self, widget: QWidget):
+        self.form = QFormLayout()
+        self.form.setHorizontalSpacing(0)
+        self.form.setVerticalSpacing(0)
+        self.form.setRowWrapPolicy(QFormLayout.DontWrapRows)
+        widget.setLayout(self.form)
 
         self.progress_bar_dict: typing.Dict[ProgressBarType, QProgressBar] = {}
 

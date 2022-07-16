@@ -14,7 +14,8 @@ if __name__ == "__main__":
     win = Window()
     win.show()
 
-    printer = Printer(win.form)
+    ui = UserInterface(win.central_widget)
+    printer = Printer(ui)
     test(printer)
 
     parser = Parser()

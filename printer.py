@@ -96,8 +96,8 @@ class WidePrinter:
 
 
 class Printer:
-    def __init__(self, form: QFormLayout):
-        self.ui = UserInterface(form)
+    def __init__(self, ui: UserInterface):
+        self.ui = ui
         self.wide_mode = False
         self.wide_printer = WidePrinter()
 
