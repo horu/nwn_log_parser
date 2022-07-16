@@ -98,7 +98,7 @@ class Printer:
     def update_target_hp_bar(self, target: Character) -> None:
         max_hp = max(1, target.get_avg_hp())
         cur_hp = min(max(0, target.get_cur_hp()), max_hp)
-        self.ui.upgrade_progress_bar(ProgressBarType.TARGET_HP, max_hp - cur_hp, 0, max_hp)
+        self.ui.upgrade_target_hp_progress_bar(max_hp - cur_hp, 0, max_hp)
 
     def update_player_hp_bar(self, player: Character) -> None:
         max_hp = max(1, player.get_avg_hp())
@@ -108,7 +108,7 @@ class Printer:
         else:
             self.ui.notify_low_hp(False)
 
-        self.ui.upgrade_progress_bar(ProgressBarType.PLAYER_HP, max_hp - cur_hp, 0, max_hp)
+        self.ui.upgrade_player_hp_progress_bar(max_hp - cur_hp, 0, max_hp)
 
     def change_print_mode(self):
         self.wide_mode = not self.wide_mode

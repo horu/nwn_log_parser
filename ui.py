@@ -7,7 +7,7 @@ from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QFont
 from PyQt5.QtWidgets import *
 
-from char import *
+from common import *
 
 
 class ProgressBarType(Enum):
@@ -27,11 +27,11 @@ class UserInterface:
 
         self.progress_bar_dict: typing.Dict[ProgressBarType, QProgressBar] = {
             ProgressBarType.PLAYER_HP: self.create_progress_bar(
-                '%p% HP', 0, 0, 1,
+                '%v/0 RD', 0, 0, 1,
                 UserInterface._get_style('#ffff0000'),
                 True),
             ProgressBarType.TARGET_HP: self.create_progress_bar(
-                '%p% TARGET HP', 0, 0, 1,
+                '%v/0 TARGET RD', 0, 0, 1,
                 UserInterface._get_style('#ffff910c'),
                 True),
         }
@@ -117,6 +117,30 @@ class UserInterface:
         pb.setVisible(visible)
         self.form.addRow(pb)
         return pb
+
+    def upgrade_player_hp_progress_bar(
+            self,
+            cur_value: int = 0,
+            min_value: typing.Optional[int] = None,
+            max_value: typing.Optional[int] = None,
+    ) -> None:
+        pb = self.progress_bar_dict[ProgressBarType.PLAYER_HP]
+        pb.setFormat('%v/{} RD'.format(max_value))
+        pb.setValue(cur_value)
+        pb.setMinimum(min_value)
+        pb.setMaximum(max_value)
+
+    def upgrade_target_hp_progress_bar(
+            self,
+            cur_value: int = 0,
+            min_value: typing.Optional[int] = None,
+            max_value: typing.Optional[int] = None,
+    ) -> None:
+        pb = self.progress_bar_dict[ProgressBarType.TARGET_HP]
+        pb.setFormat('%v/{} TARGET RD'.format(max_value))
+        pb.setValue(cur_value)
+        pb.setMinimum(min_value)
+        pb.setMaximum(max_value)
 
     def upgrade_progress_bar(
             self,
