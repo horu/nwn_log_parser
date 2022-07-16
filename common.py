@@ -28,7 +28,9 @@ WILL = 'Will'
 REFLEX = 'Reflex'
 
 KNOCKDOWN = 'Knockdown'
+SHORT_KNOCKDOWN = 'KD'
 STUNNING_FIST = 'Stunning Fist'
+SHORT_STUNNING_FIST = 'SF'
 
 ITEM_POTION_OF_HEAL = 'Potion of Heal'
 

@@ -95,7 +95,7 @@ class Character:
 
         self.timestamp = 0  # last timestamp of action with the char
 
-        self.experience: typing.Optional[Experience] = None
+        self.experience = Experience.explicit_create()
 
     def __str__(self):
         return str(self.__dict__)

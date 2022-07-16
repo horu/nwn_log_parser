@@ -19,7 +19,7 @@ class Window(QMainWindow):
         """Initializer."""
         super().__init__(parent)
         self.setWindowTitle("Nwn log parser")
-        self.move(420, 37)
+        self.move(600, 37)
         self.setWindowOpacity(1)
         self.setAttribute(Qt.WA_TranslucentBackground, True)
         self.setWindowFlags(Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint)

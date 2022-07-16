@@ -313,6 +313,10 @@ class Experience(Action):
         super().__init__()
         self.value = int(g[0])
 
+    @classmethod
+    def explicit_create(cls):
+        return cls(['0'])
+
 
 """
 [CHAT WINDOW TEXT] [Sat Jul 16 02:40:56] Done resting.

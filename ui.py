@@ -21,26 +21,97 @@ class ProgressBarType(Enum):
     ATTACK_BASE = auto()
 
 
+DAMAGE_PRINT_LIMIT = 1000
+
+
+def convert_long_int(value: int) -> str:
+    if abs(value) > DAMAGE_PRINT_LIMIT:
+        return '{:.1f}'.format(value / DAMAGE_PRINT_LIMIT)
+    return str(value)
+
+
+def create_label(value: str = '', color: str = 'white'):
+    label = QLabel(value)
+    label.setFont(QFont('Monospace', 10))
+    label.setAlignment(Qt.AlignLeft | Qt.AlignTop)
+    label.setStyleSheet('background-color: rgba(0,0,0,0%); color: {}'.format(color))
+    return label
+
+
+class Param:
+    def __init__(self, title: str, color: str):
+        self.form = QFormLayout()
+        self.form.setHorizontalSpacing(0)
+        self.title = create_label(title, color)
+        self.value = create_label(color=color)
+        self.form.addRow(self.title, self.value)
+
+
+class CharacterStat:
+    def __init__(self):
+        self.h_box = QHBoxLayout()
+        self.ac = self._add_param('AC:', '#ffffff')
+        self.ab = self._add_param('AB:', '#01fe01')
+
+        self.saving_throw_dict: typing.Dict[str, Param] = {}
+        self.saving_throw_dict[FORTITUDE] = self._add_param('F:', '#65c9fb')
+        self.saving_throw_dict[WILL] = self._add_param('W:', '#cc99cc')
+
+        self.received_damage = self._add_param('RD:', '#e35d02')
+        self.special_attack = self._add_param('SA:', '#b0b0b0')
+        self.experience = self._add_param('E:', '#ffff01')
+
+    def _add_param(self, title: str, color: str = 'white') -> Param:
+        param = Param(title, color)
+        self.h_box.addLayout(param.form)
+        self.h_box.addSpacing(10)
+        return param
+
+    def set_ac(self, min_ac: int, max_ac: int, last_ac_hit: int) -> None:
+        self.ac.value.setText('{:>2}/{:>2}({:>2})'.format(min_ac, max_ac, last_ac_hit))
+
+    def set_ab(self, ab: int, last_ab: int) -> None:
+        self.ab.value.setText('{:>2}({:>2})'.format(ab, last_ab))
+
+    def set_saving_throw(self, name: str, value: int, last_dc: int) -> None:
+        self.saving_throw_dict[name].value.setText('{:>2}({:>2})'.format(value, last_dc))
+
+    def set_received_damage(self, damage: int, last_damage: int, damage_absorb: int) -> None:
+        self.received_damage.value.setText('{:>4}({:>3}/{:>3})'.format(
+            convert_long_int(damage), convert_long_int(last_damage), convert_long_int(damage_absorb)))
+
+    def set_special_attack(self, name: str, ab: int, dc: int, result: str) -> None:
+        self.special_attack.value.setText('{:>2} {:>2}({:>2}/{:>4})'.format(name, ab, dc, result[:4]))
+
+    def set_experience(self, experience: int) -> None:
+        self.experience.value.setText('{:>3}'.format(convert_long_int(experience)))
+
+
 class UserInterface:
     def __init__(self, form: QFormLayout):
         self.form = form
 
-        self.progress_bar_dict: typing.Dict[ProgressBarType, QProgressBar] = {
-            ProgressBarType.PLAYER_HP: self.create_progress_bar(
-                '%v/0 RD', 0, 0, 1,
-                UserInterface._get_style('#ffff0000'),
-                True),
+        self.progress_bar_dict: typing.Dict[ProgressBarType, QProgressBar] = {}
+
+        self.progress_bar_dict.update({
             ProgressBarType.TARGET_HP: self.create_progress_bar(
                 '%v/0 TARGET RD', 0, 0, 1,
                 UserInterface._get_style('#ffff910c'),
                 True),
-        }
+        })
 
-        self.main_label = QLabel("")
-        self.main_label.setFont(QFont('Monospace', 10))
-        self.main_label.setAlignment(Qt.AlignLeft | Qt.AlignTop)
-        self.main_label.setStyleSheet('background-color: rgba(0,0,0,0%); color: white')
-        self.form.addRow(self.main_label)
+        self.target_stat = CharacterStat()
+        self.form.addRow(self.target_stat.h_box)
+
+        self.progress_bar_dict.update({
+            ProgressBarType.PLAYER_HP: self.create_progress_bar(
+                '%v/0 RD', 0, 0, 1,
+                UserInterface._get_style('#ffff0000'),
+                True),
+        })
+
+        self.player_stat = CharacterStat()
+        self.form.addRow(self.player_stat.h_box)
 
         self.progress_bar_dict.update({
             ProgressBarType.DAMAGE_PER_ROUND: self.create_progress_bar(
@@ -76,7 +147,15 @@ class UserInterface:
         self.low_hp_label.setVisible(False)
         self.form.addRow(self.low_hp_label)
 
-    def set_main_lavel_text(self, text: str) -> None:
+        self.main_label = QLabel("")
+        self.main_label.setFont(QFont('Monospace', 10))
+        self.main_label.setAlignment(Qt.AlignLeft | Qt.AlignTop)
+        self.main_label.setStyleSheet('background-color: rgba(0,0,0,0%); color: white')
+        self.main_label.setVisible(False)
+        self.form.addRow(self.main_label)
+
+    def set_main_label_text(self, text: str, visible: bool) -> None:
+        self.main_label.setVisible(visible)
         self.main_label.setText(text)
 
     def notify_low_hp(self, visible: bool):
@@ -132,12 +211,13 @@ class UserInterface:
 
     def upgrade_target_hp_progress_bar(
             self,
+            target_name: str,
             cur_value: int = 0,
             min_value: typing.Optional[int] = None,
             max_value: typing.Optional[int] = None,
     ) -> None:
         pb = self.progress_bar_dict[ProgressBarType.TARGET_HP]
-        pb.setFormat('%v/{} TARGET RD'.format(max_value))
+        pb.setFormat('%v/{} {}'.format(max_value, target_name[:30]))
         pb.setValue(cur_value)
         pb.setMinimum(min_value)
         pb.setMaximum(max_value)

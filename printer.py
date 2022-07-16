@@ -17,27 +17,89 @@ def convert_damage(value: int) -> str:
     return str(value)
 
 
-def print_special_char(char: Character) -> list:
-    text = []
+def print_wide_char(char: Character) -> list:
+    storage = char.stats_storage
+
+    max_ac = char.get_max_miss_ac()
+    min_ac = char.get_min_hit_ac()
+
+    stats = char.stats_storage.char_stats
+    sum_rd = stats[char.last_received_damage.damager_name].received_damage.sum
+    last_rd = char.last_received_damage.value
+    last_ad = sum([ad.value for ad in char.last_received_damage.damage_absorption_list])
+
+    sum_cd = stats[char.last_caused_damage.target_name].caused_damage.sum
+    last_cd = char.last_caused_damage.value
+
+    all_stats = storage.all_chars_stats
+    hit_ab_attack = all_stats.hit_ab_attack
+    per_ab = hit_ab_attack.count / hit_ab_attack.sum if hit_ab_attack.sum else 0
+
+    caused_damage = all_stats.caused_damage
+    avg_caused_damage = caused_damage.sum / caused_damage.count if caused_damage.count else 0
+
+    result = [
+        char.name,
+        'HP: {}/{}'.format(convert_damage(char.get_cur_hp()), convert_damage(char.get_avg_hp())),
+        'AC: {:d}/{:d}({:d})'.format(max_ac, min_ac, char.get_last_hit_ac_attack_value()),
+        'AB: {:d}({:d})'.format(char.get_max_ab_attack_base(), char.get_last_ab_attack_base()),
+        'FT: {:d}({:d})'.format(char.fortitude, char.last_fortitude_dc),
+        'WL: {:d}({:d})'.format(char.will, char.last_will_dc),
+        'RD: {}({}/{})'.format(convert_damage(sum_rd), convert_damage(last_rd), last_ad),
+        'CD: {}({})'.format(convert_damage(sum_cd), convert_damage(last_cd)),
+        'DPR: {}({})'.format(
+            convert_damage(storage.caused_dpr.max_dpr), convert_damage(storage.caused_dpr.last_dpr)),
+        'PER AB: {:d}%'.format(int(per_ab * 100)),
+        'AVG CD: {:d}'.format(int(avg_caused_damage)),
+    ]
 
     last_kd = char.last_knockdown
     last_sf = char.stunning_fist_list[-1] if char.stunning_fist_list else None
 
     if not last_sf or last_kd.timestamp > last_sf.timestamp:
-        text.append('KD: {:d}({})'.format(last_kd.s_attack.value, last_kd.s_attack.result))
+        result.append('KD: {:d}({})'.format(last_kd.s_attack.value, last_kd.s_attack.result))
     elif last_sf:
         dc = last_sf.throw.dc if last_sf.throw else 0
-        text.append('SF: {:d}({:d}/{})'.format(last_sf.s_attack.value, dc, last_sf.s_attack.result))
-    return text
+        result.append('SF: {:d}({:d}/{})'.format(last_sf.s_attack.value, dc, last_sf.s_attack.result))
+
+    return result
+
+
+class WidePrinter:
+    def __init__(self):
+        self.chars_to_print: typing.List[Character] = []
+        self.chars_to_print_ts = 0
+
+    def print_wide(self, parser: Parser) -> str:
+        player = parser.player
+        chars = [char for char in parser.characters.values()]
+
+        ts = get_ts()
+        if ts - self.chars_to_print_ts > CHARS_TO_PRINT_TIMEOUT:
+            chars_without_player = [char for char in chars if char is not player]
+            chars_without_player.sort(key=lambda x: x.timestamp, reverse=True)
+
+            self.chars_to_print = chars_without_player[:CHARS_COUNT_WIDE_MODE]
+            self.chars_to_print.sort(key=lambda x: x.name)
+            self.chars_to_print_ts = ts
+
+        table = [print_wide_char(char) for char in self.chars_to_print]
+
+        df = pandas.DataFrame(table)
+        text = str(tabulate.tabulate(df, tablefmt='plain', showindex=False))
+
+        line_size = len(text.splitlines()[0])
+        text = '{}\n'.format('#' * line_size) + text
+        text += '\n{}'.format('#' * line_size)
+
+        return text
 
 
 class Printer:
     def __init__(self, form: QFormLayout):
         self.ui = UserInterface(form)
-
-        self.chars_to_print: typing.List[Character] = []
-        self.chars_to_print_ts = 0
         self.wide_mode = False
+        self.wide_printer = WidePrinter()
 
     def update_dpr_bar(self, char: Character) -> None:
         # Damage per round
@@ -98,7 +160,7 @@ class Printer:
     def update_target_hp_bar(self, target: Character) -> None:
         max_hp = max(1, target.get_avg_hp())
         cur_hp = min(max(0, target.get_cur_hp()), max_hp)
-        self.ui.upgrade_target_hp_progress_bar(max_hp - cur_hp, 0, max_hp)
+        self.ui.upgrade_target_hp_progress_bar(target.name, max_hp - cur_hp, 0, max_hp)
 
     def update_player_hp_bar(self, player: Character) -> None:
         max_hp = max(1, player.get_avg_hp())
@@ -112,92 +174,50 @@ class Printer:
 
     def change_print_mode(self):
         self.wide_mode = not self.wide_mode
-        self.chars_to_print_ts = 0
+        self.wide_printer.chars_to_print_ts = 0
 
-    def print_char_wide_stat(self, char: Character) -> list:
-        storage = char.stats_storage
-        all_stats = storage.all_chars_stats
-
-        stats = storage.char_stats
-        sum_cd = stats[char.last_caused_damage.target_name].caused_damage.sum
-        last_cd = char.last_caused_damage.value
-
-        hit_ab_attack = all_stats.hit_ab_attack
-        per_ab = hit_ab_attack.count / hit_ab_attack.sum if hit_ab_attack.sum else 0
-
-        caused_damage = all_stats.caused_damage
-        avg_caused_damage = caused_damage.sum / caused_damage.count if caused_damage.count else 0
-
-        return [
-            'CD: {}({})'.format(convert_damage(sum_cd), convert_damage(last_cd)),
-            'DPR: {}({})'.format(
-                convert_damage(storage.caused_dpr.max_dpr), convert_damage(storage.caused_dpr.last_dpr)),
-            'PER AB: {:d}%'.format(int(per_ab * 100)),
-            'AVG CD: {:d}'.format(int(avg_caused_damage)),
-        ]
-
-    def print_char_without_name(self, char: Character) -> list:
-        max_ac = char.get_max_miss_ac()
-        min_ac = char.get_min_hit_ac()
-
-        stats = char.stats_storage.char_stats
-        sum_rd = stats[char.last_received_damage.damager_name].received_damage.sum
+    def update_char_stat(self, stat: CharacterStat, char: Character) -> None:
+        sum_rd = char.stats_storage.char_stats[char.last_received_damage.damager_name].received_damage.sum
         last_rd = char.last_received_damage.value
         last_ad = sum([ad.value for ad in char.last_received_damage.damage_absorption_list])
 
-        result = [
-            'HP: {}/{}'.format(convert_damage(char.get_cur_hp()), convert_damage(char.get_avg_hp())),
-            'AC: {:d}/{:d}({:d})'.format(max_ac, min_ac, char.get_last_hit_ac_attack_value()),
-            'AB: {:d}({:d})'.format(char.get_max_ab_attack_base(), char.get_last_ab_attack_base()),
-            'FT: {:d}({:d})'.format(char.fortitude, char.last_fortitude_dc),
-            'WL: {:d}({:d})'.format(char.will, char.last_will_dc),
-            'RD: {}({}/{})'.format(convert_damage(sum_rd), convert_damage(last_rd), last_ad),
-        ]
+        stat.set_ac(char.get_max_miss_ac(), char.get_min_hit_ac(), char.get_last_hit_ac_attack_value())
+        stat.set_ab(char.get_max_ab_attack_base(), char.get_last_ab_attack_base())
+        stat.set_saving_throw(FORTITUDE, char.fortitude, char.last_fortitude_dc)
+        stat.set_saving_throw(WILL, char.will, char.last_will_dc)
+        stat.set_received_damage(sum_rd, last_rd, last_ad)
+        stat.set_experience(char.experience.value)
 
-        if self.wide_mode:
-            result += self.print_char_wide_stat(char)
-
-        return result
-
-    def print_char(self, char: Character) -> list:
-        name = char.name
-        if char.experience:
-            name = '{} ({:d})'.format(name, char.experience.value)
-        return [name] + self.print_char_without_name(char)
+        last_kd = char.last_knockdown
+        last_sf = char.stunning_fist_list[-1] if char.stunning_fist_list else None
+        if not last_sf or last_kd.timestamp > last_sf.timestamp:
+            dc = last_kd.s_attack.value
+            stat.set_special_attack(SHORT_KNOCKDOWN, last_kd.s_attack.value, dc, last_kd.s_attack.result)
+        elif last_sf:
+            dc = last_sf.throw.dc if last_sf.throw else 0
+            stat.set_special_attack(SHORT_STUNNING_FIST, last_sf.s_attack.value, dc, last_sf.s_attack.result)
 
     def print(self, parser: Parser) -> None:
+        if self.wide_mode:
+            # old mode
+            text = self.wide_printer.print_wide(parser)
+            self.ui.set_main_label_text(text, True)
+            return
+        # gui mode
+        self.ui.set_main_label_text('', False)
+
         player = parser.player
         chars = [char for char in parser.characters.values()]
 
-        ts = get_ts()
-        if self.wide_mode and ts - self.chars_to_print_ts > CHARS_TO_PRINT_TIMEOUT:
-            chars_without_player = [char for char in chars if char is not player]
-            chars_without_player.sort(key=lambda x: x.timestamp, reverse=True)
+        target = chars[0]
+        last_player_ab = player.get_last_ab_attack()
+        if last_player_ab:
+            target = [char for char in chars if char.name == last_player_ab.target_name][0]
 
-            self.chars_to_print = chars_without_player[:CHARS_COUNT_WIDE_MODE]
-            self.chars_to_print.sort(key=lambda x: x.name)
-            self.chars_to_print_ts = ts
-        elif not self.wide_mode:
-            last_player_ab = player.get_last_ab_attack()
-            if last_player_ab:
-                self.chars_to_print = [char for char in chars if char.name == last_player_ab.target_name]
-                self.update_target_hp_bar(self.chars_to_print[0])
-            else:
-                self.chars_to_print = chars[0:1]
+        self.update_target_hp_bar(target)
+        self.update_char_stat(self.ui.target_stat, target)
+        self.update_char_stat(self.ui.player_stat, player)
 
-        table = [self.print_char(char) for char in self.chars_to_print]
-        player_special = ['{}\n'.format(' | '.join(print_special_char(player)))]
-        table.append(player_special + self.print_char_without_name(player))
-
-        df = pandas.DataFrame(table)
-        text = str(tabulate.tabulate(df, tablefmt='plain', showindex=False))
-
-        line_size = len(text.splitlines()[0])
-        if self.wide_mode:
-            text = '{}\n'.format('#' * line_size) + text
-            text += '\n{}'.format('#' * line_size)
-
-        self.ui.set_main_lavel_text(text)
         self.update_player_hp_bar(player)
         self.update_dpr_bar(player)
         self.update_knockdown_bar(player)
