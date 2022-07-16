@@ -183,8 +183,7 @@ class Character:
                 # 300 ms between attacks in a series for 2 attacks.
                 return
             self.death = None
-            self.sum_received_damage = 0
-            self.healed_points = 0
+            self.reset_damage()
 
         self.sum_received_damage += damage.value
         self.last_received_damage = damage
@@ -210,6 +209,13 @@ class Character:
         cur_hp = self.get_avg_hp() - self.sum_received_damage + self.healed_points
         return cur_hp
 
+    def add_heal(self, points: int) -> None:
+        self.healed_points += points
+
+    def reset_damage(self) -> None:
+        self.healed_points = 0
+        self.sum_received_damage = 0
+
 
 class Player(Character):
     def __init__(self):
@@ -217,6 +223,20 @@ class Player(Character):
 
         self.stealth_cooldown = StealthCooldown.explicit_create(0)
         self.initiative_roll: typing.Optional[InitiativeRoll] = None
+
+    def on_killed(self, death: Death) -> None:
+        self.death = death
+        # next add_heal gets full hp - 1
+
+    def add_heal(self, points: int) -> None:
+        if self.death:
+            self.death = None
+            hp = points + 1
+            logging.debug('PLAYER HP: {}'.format(hp))
+            self.hp_list = [hp]
+            self.reset_damage()
+        else:
+            self.healed_points += points
 
     def on_fortitude_save(self, throw: SavingThrow) -> None:
         for sf in self.stunning_fist_list:

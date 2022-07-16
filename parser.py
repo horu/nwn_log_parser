@@ -119,7 +119,7 @@ class Parser:
         if action:
             self._detect_player(action.target_name)
             target = self.get_char(action.target_name)
-            target.healed_points += action.value
+            target.add_heal(action.value)
             assert target == self.player
             return
 
@@ -130,8 +130,7 @@ class Parser:
 
         action: Resting = Resting.create(line)
         if action:
-            self.player.sum_received_damage = 0
-            self.player.healed_points = 0
+            self.player.reset_damage()
             return
 
     def _detect_player(self, name: str):

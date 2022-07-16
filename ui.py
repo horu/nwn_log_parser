@@ -70,7 +70,7 @@ class UserInterface:
         })
 
         self.low_hp_label = QLabel("LOW HP")
-        self.low_hp_label.setFont(QFont('Monospace', 40))
+        self.low_hp_label.setFont(QFont('Monospace', 32))
         self.low_hp_label.setAlignment(Qt.AlignCenter)
         self.low_hp_label.setStyleSheet('background-color: rgba(0,0,0,0%); color: red')
         self.low_hp_label.setVisible(False)
