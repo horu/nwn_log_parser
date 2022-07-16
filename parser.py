@@ -103,13 +103,7 @@ class Parser:
 
         action: InitiativeRoll = InitiativeRoll.create(line)
         if action:
-            # find player name by Initiative Roll
-            if self.player.name != action.roller_name:
-                self.characters.clear()
-                self.player = Player()
-                self.player.name = action.roller_name
-                self.player.hp_list = [PLAYER_HP]
-                self.characters[action.roller_name] = self.player
+            self._detect_player(action.roller_name)
             self.player.initiative_roll = action
             return
 
@@ -123,8 +117,10 @@ class Parser:
         
         action: Heal = Heal.create(line)
         if action:
+            self._detect_player(action.target_name)
             target = self.get_char(action.target_name)
             target.healed_points += action.value
+            assert target == self.player
             return
 
         action: Experience = Experience.create(line)
@@ -137,6 +133,15 @@ class Parser:
             self.player.sum_received_damage = 0
             self.player.healed_points = 0
             return
+
+    def _detect_player(self, name: str):
+        # find player name by InitiativeRoll and Heal
+        if self.player.name != name:
+            self.characters.clear()
+            self.player = Player()
+            self.player.name = name
+            self.player.hp_list = [PLAYER_HP]
+            self.characters[name] = self.player
 
     def reset_statistic(self):
         for char in self.characters.values():

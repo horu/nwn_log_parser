@@ -164,7 +164,9 @@ class Character:
 
     def add_stunning_fist(self, sf: StunningFirst) -> None:
         new_sf_list = [
-            sf for sf in self.stunning_fist_list if sf.s_attack.is_success() and (sf.throw is None or sf.get_duration())]
+            sf for sf in self.stunning_fist_list
+            if sf.s_attack.is_success() and (sf.throw is None or sf.get_duration())
+        ]
         self.stunning_fist_list = new_sf_list
         self.stunning_fist_list.append(sf)
 
@@ -198,11 +200,6 @@ class Character:
         append_fix_size(self.hp_list, hp, HP_LIST_LIMIT)
         self.death = death
 
-    def on_fortitude_save(self, throw: SavingThrow) -> None:
-        for sf in self.stunning_fist_list:
-            if sf.s_attack.target_name == throw.target_name and sf.throw is None:
-                sf.throw = throw
-
     def get_avg_hp(self) -> int:
         avg_hp = 0
         if self.hp_list:
@@ -220,6 +217,12 @@ class Player(Character):
 
         self.stealth_cooldown = StealthCooldown.explicit_create(0)
         self.initiative_roll: typing.Optional[InitiativeRoll] = None
+
+    def on_fortitude_save(self, throw: SavingThrow) -> None:
+        for sf in self.stunning_fist_list:
+            if sf.s_attack.target_name == throw.target_name and sf.throw is None:
+                sf.throw = throw
+                break
 
     def start_fight(self, attack: Attack) -> None:
         # uses to indicate start fight after stealth mode on next attack to start stealth cooldown
