@@ -192,14 +192,15 @@ class Character:
     def add_damage_absorption(self, absorption: DamageAbsorption) -> None:
         self.last_received_damage.damage_absorption_list.append(absorption)
 
-    def on_killed(self, death: Death, experience: Experience) -> None:
-        if not self.experience or self.experience.value == experience.value:
+    def on_killed(self, death: Death, experience: typing.Optional[Experience]) -> None:
+        if not self.experience or not experience or self.experience.value == experience.value:
             hp = self.sum_received_damage
             logging.debug('HP: {}'.format(hp))
             append_fix_size(self.hp_list, hp, HP_LIST_LIMIT)
         elif self.experience.value != experience.value:
             logging.debug('UNIQUE CHAR DETECTED: {}(HP {})'.format(self.name, self.sum_received_damage))
-        self.experience = experience
+        if experience:
+            self.experience = experience
         self.death = death
 
     def get_avg_hp(self) -> int:
