@@ -86,7 +86,6 @@ class Character:
         self.last_caused_damage = Damage.explicit_create()
         self.last_received_damage = Damage.explicit_create()
         self.sum_received_damage = 0
-        self.healed_points = 0
 
         self.death: typing.Optional[Death] = None
 
@@ -194,7 +193,7 @@ class Character:
         self.last_received_damage.damage_absorption_list.append(absorption)
 
     def on_killed(self, death: Death) -> None:
-        hp = self.sum_received_damage - self.healed_points
+        hp = self.sum_received_damage
         logging.debug('HP: {}'.format(hp))
         append_fix_size(self.hp_list, hp, HP_LIST_LIMIT)
         self.death = death
@@ -206,14 +205,11 @@ class Character:
         return int(avg_hp)
 
     def get_cur_hp(self) -> int:
-        cur_hp = self.get_avg_hp() - self.sum_received_damage + self.healed_points
+        cur_hp = self.get_avg_hp() - self.sum_received_damage
         return cur_hp
 
-    def add_heal(self, points: int) -> None:
-        self.healed_points += points
-
     def reset_damage(self) -> None:
-        self.healed_points = 0
+        logging.debug('RESET DAMAGE FOR {}'.format(self.name))
         self.sum_received_damage = 0
 
 
@@ -224,19 +220,22 @@ class Player(Character):
         self.stealth_cooldown = StealthCooldown.explicit_create(0)
         self.initiative_roll: typing.Optional[InitiativeRoll] = None
 
+        self.last_heal = Heal.explicit_create()
+
     def on_killed(self, death: Death) -> None:
         self.death = death
         # next add_heal gets full hp - 1
 
-    def add_heal(self, points: int) -> None:
+    def add_heal(self, heal: Heal) -> None:
+        self.last_heal = heal
         if self.death:
             self.death = None
-            hp = points + 1
+            hp = heal.value + 1
             logging.debug('PLAYER HP: {}'.format(hp))
             self.hp_list = [hp]
             self.reset_damage()
         else:
-            self.healed_points += points
+            self.sum_received_damage -= heal.value
 
     def on_fortitude_save(self, throw: SavingThrow) -> None:
         for sf in self.stunning_fist_list:

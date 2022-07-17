@@ -292,6 +292,10 @@ class Heal(Action):
         p = r'\[CHAT WINDOW TEXT\] \[.+\] ([^:]+) \: Healed ([0-9]+) hit points.'
         return Action.base_create(string, p, cls)
 
+    @classmethod
+    def explicit_create(cls):
+        return cls(['', '0'])
+
     def __init__(self, g):
         super().__init__()
         self.target_name = g[0]
@@ -309,13 +313,13 @@ class Experience(Action):
         p = r'\[CHAT WINDOW TEXT\] \[.+\] Experience Points Gained\:[ ]+([0-9]+)'
         return Action.base_create(string, p, cls)
 
-    def __init__(self, g):
-        super().__init__()
-        self.value = int(g[0])
-
     @classmethod
     def explicit_create(cls):
         return cls(['0'])
+
+    def __init__(self, g):
+        super().__init__()
+        self.value = int(g[0])
 
 
 """

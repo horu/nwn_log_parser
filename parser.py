@@ -9,6 +9,7 @@ class Parser:
         self.player = Player()
 
         self.experience_list: typing.List[Experience] = []
+        self.round_ts = 0
 
     def get_char(self, name: str) -> Character:
         char = self.characters[name]
@@ -18,6 +19,16 @@ class Parser:
 
     def push_line(self, line) -> None:
         logging.debug('LINE: {}'.format(line[0:-1]))
+        ts = get_ts()
+        if ts - self.round_ts >= ROUND_DURATION:
+            # every round teak
+            self.round_ts = ts
+            # if no heal for 2 rounds then full hp
+            # DELETE THIS SHIT.
+            # To fix bug with real hp
+            if ts - self.player.last_heal.timestamp > ROUND_DURATION * 2 and self.player.sum_received_damage:
+                self.player.reset_damage()
+
         action: Attack = Attack.create(line)
         if action:
             if action.attacker_name == self.player.name:
@@ -112,15 +123,13 @@ class Parser:
             user = self.get_char(action.user_name)
             if action.item == ITEM_POTION_OF_HEAL and user != self.player:
                 # for user we get Heal action
-                user.healed_points += user.sum_received_damage
+                user.reset_damage()
             return
         
         action: Heal = Heal.create(line)
         if action:
             self._detect_player(action.target_name)
-            target = self.get_char(action.target_name)
-            target.add_heal(action.value)
-            assert target == self.player
+            self.player.add_heal(action)
             return
 
         action: Experience = Experience.create(line)
