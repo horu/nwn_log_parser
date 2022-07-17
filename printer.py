@@ -190,7 +190,7 @@ class Printer:
         stat.set_saving_throw(FORTITUDE, char.fortitude, char.last_fortitude_dc)
         stat.set_saving_throw(WILL, char.will, char.last_will_dc)
         stat.set_received_damage(sum_rd, last_rd, last_ad)
-        stat.set_experience(char.experience.value)
+        stat.set_experience(char.get_experience_value())
 
         last_kd = char.last_knockdown
         last_sf = char.stunning_fist_list[-1] if char.stunning_fist_list else None

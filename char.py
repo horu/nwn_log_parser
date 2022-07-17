@@ -94,7 +94,7 @@ class Character:
 
         self.timestamp = 0  # last timestamp of action with the char
 
-        self.experience = Experience.explicit_create()
+        self.experience: typing.Optional[Experience] = None
 
     def __str__(self):
         return str(self.__dict__)
@@ -192,10 +192,14 @@ class Character:
     def add_damage_absorption(self, absorption: DamageAbsorption) -> None:
         self.last_received_damage.damage_absorption_list.append(absorption)
 
-    def on_killed(self, death: Death) -> None:
-        hp = self.sum_received_damage
-        logging.debug('HP: {}'.format(hp))
-        append_fix_size(self.hp_list, hp, HP_LIST_LIMIT)
+    def on_killed(self, death: Death, experience: Experience) -> None:
+        if not self.experience or self.experience.value == experience.value:
+            hp = self.sum_received_damage
+            logging.debug('HP: {}'.format(hp))
+            append_fix_size(self.hp_list, hp, HP_LIST_LIMIT)
+        elif self.experience.value != experience.value:
+            logging.debug('UNIQUE CHAR DETECTED: {}(HP {})'.format(self.name, self.sum_received_damage))
+        self.experience = experience
         self.death = death
 
     def get_avg_hp(self) -> int:
@@ -212,6 +216,11 @@ class Character:
         logging.debug('RESET DAMAGE FOR {}'.format(self.name))
         self.sum_received_damage = 0
 
+    def get_experience_value(self) -> int:
+        if self.experience:
+            return self.experience.value
+        return 0
+
 
 class Player(Character):
     def __init__(self):
@@ -222,7 +231,7 @@ class Player(Character):
 
         self.last_heal = Heal.explicit_create()
 
-    def on_killed(self, death: Death) -> None:
+    def on_killed(self, death: Death, experience: Experience) -> None:
         self.death = death
         # next add_heal gets full hp - 1
 

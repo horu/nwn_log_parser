@@ -84,9 +84,8 @@ class Parser:
         action: Death = Death.create(line)
         if action:
             target = self.get_char(action.target_name)
-            target.on_killed(action)
-            if self.experience_list:
-                target.experience = self.experience_list.pop(0)
+            experience = self.experience_list.pop(0) if self.experience_list else 0
+            target.on_killed(action, experience)
             return
 
         action: DamageReduction = DamageReduction.create(line)
