@@ -131,6 +131,24 @@ class UserInterface:
         self.target_stat = CharacterStat()
         self.main_form.addRow(self.target_stat.h_box)
 
+        self.attack_damage_bar = QHBoxLayout()
+        self.main_form.addRow(self.attack_damage_bar)
+
+        self.attack_damage_bar.addWidget(self._create_progress_bar(
+            ProgressBarType.DAMAGE_PER_ROUND,
+            '%v Damage per round', 0, 0, 1,
+            UserInterface._get_style('#99ff7b06'),
+            Visible.INVISIBLE,
+        ))
+
+        self.attack_damage_bar.addWidget(self._create_progress_bar(
+            ProgressBarType.ATTACK_BASE,
+            '%v Attack base', 0, 0, 1,
+            UserInterface._get_style('#9917b402'),
+            Visible.INVISIBLE,
+            inverted=True,
+        ))
+
         self.main_form.addRow(self._create_progress_bar(
             ProgressBarType.KNOCKDOWN,
             '%v ms Knockdown', 0, 0, KNOCKDOWN_PVE_CD,
@@ -154,24 +172,6 @@ class UserInterface:
             '%v ms Stealth mode cooldown', 0, 0, STEALTH_MODE_CD,
             UserInterface._get_style('#ff3472ff'),
             Visible.INVISIBLE,
-        ))
-
-        self.attack_damage_bar = QHBoxLayout()
-        self.main_form.addRow(self.attack_damage_bar)
-
-        self.attack_damage_bar.addWidget(self._create_progress_bar(
-            ProgressBarType.DAMAGE_PER_ROUND,
-            '%v Damage per round', 0, 0, 1,
-            UserInterface._get_style('#99ff7b06'),
-            Visible.INVISIBLE,
-        ))
-
-        self.attack_damage_bar.addWidget(self._create_progress_bar(
-            ProgressBarType.ATTACK_BASE,
-            '%v Attack base', 0, 0, 1,
-            UserInterface._get_style('#9917b402'),
-            Visible.INVISIBLE,
-            inverted=True,
         ))
 
         self.low_hp_label = QLabel("LOW HP")
