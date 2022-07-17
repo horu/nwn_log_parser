@@ -194,7 +194,7 @@ class Character:
         self.last_received_damage.damage_absorption_list.append(absorption)
 
     def on_killed(self, death: Death) -> None:
-        hp = self.sum_received_damage
+        hp = self.sum_received_damage - self.healed_points
         logging.debug('HP: {}'.format(hp))
         append_fix_size(self.hp_list, hp, HP_LIST_LIMIT)
         self.death = death

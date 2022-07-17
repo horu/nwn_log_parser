@@ -98,7 +98,7 @@ class CharacterStat:
             convert_long_int(damage), convert_long_int(last_damage), convert_long_int(damage_absorb)))
 
     def set_special_attack(self, name: str, ab: int, dc: int, result: str) -> None:
-        self.special_attack.value.setText('{:>2} {:>2}({:>2}/{:>3})'.format(name, ab, dc, result[:4]))
+        self.special_attack.value.setText('{:>2} {:>2}({:>2}/{:>4})'.format(name, ab, dc, result[:4]))
 
     def set_experience(self, experience: int) -> None:
         self.experience.value.setText('{:>3}'.format(convert_long_int(experience)))
@@ -111,7 +111,7 @@ class UserInterface:
         self.main_form = create_form()
         widget.setLayout(self.main_form)
 
-        self.main_form.addRow(self.create_progress_bar(
+        self.main_form.addRow(self._create_progress_bar(
             ProgressBarType.PLAYER_HP,
             '%v/0 RD', 0, 0, 1,
             UserInterface._get_style('#ffff0000'),
@@ -121,7 +121,7 @@ class UserInterface:
         self.player_stat = CharacterStat()
         self.main_form.addRow(self.player_stat.h_box)
 
-        self.main_form.addRow(self.create_progress_bar(
+        self.main_form.addRow(self._create_progress_bar(
             ProgressBarType.TARGET_HP,
             '%v/0 TARGET RD', 0, 0, 1,
             UserInterface._get_style('#ffff910c'),
@@ -131,25 +131,25 @@ class UserInterface:
         self.target_stat = CharacterStat()
         self.main_form.addRow(self.target_stat.h_box)
 
-        self.main_form.addRow(self.create_progress_bar(
+        self.main_form.addRow(self._create_progress_bar(
             ProgressBarType.KNOCKDOWN,
             '%v ms Knockdown', 0, 0, KNOCKDOWN_PVE_CD,
             UserInterface._get_style('#99bd00ff'),
             Visible.INVISIBLE,
         ))
-        self.main_form.addRow(self.create_progress_bar(
+        self.main_form.addRow(self._create_progress_bar(
             ProgressBarType.KNOCKDOWN_MISS,
             '%v ms Knockdown', 0, 0, KNOCKDOWN_PVE_CD,
             UserInterface._get_style('#99bd00ff', additional_chunk='width: 10px; margin: 0.5px;'),
             Visible.INVISIBLE,
         ))
-        self.main_form.addRow(self.create_progress_bar(
+        self.main_form.addRow(self._create_progress_bar(
             ProgressBarType.STUNNING_FIST,
             '%v ms Stunning fist', 0, 0, STUNNING_FIST_DURATION,
             UserInterface._get_style('#99ffffff'),
             Visible.INVISIBLE,
         ))
-        self.main_form.addRow(self.create_progress_bar(
+        self.main_form.addRow(self._create_progress_bar(
             ProgressBarType.STEALTH_MODE_CD,
             '%v ms Stealth mode cooldown', 0, 0, STEALTH_MODE_CD,
             UserInterface._get_style('#ff3472ff'),
@@ -159,17 +159,17 @@ class UserInterface:
         self.attack_damage_bar = QHBoxLayout()
         self.main_form.addRow(self.attack_damage_bar)
 
-        self.attack_damage_bar.addWidget(self.create_progress_bar(
-            ProgressBarType.ATTACK_BASE,
-            '%v Attack base', 0, 0, 0,
-            UserInterface._get_style('#9917b402'),
+        self.attack_damage_bar.addWidget(self._create_progress_bar(
+            ProgressBarType.DAMAGE_PER_ROUND,
+            '%v Damage per round', 0, 0, 1,
+            UserInterface._get_style('#99ff7b06'),
             Visible.INVISIBLE,
         ))
 
-        self.attack_damage_bar.addWidget(self.create_progress_bar(
-            ProgressBarType.DAMAGE_PER_ROUND,
-            '%v Damage per round', 0, 0, 0,
-            UserInterface._get_style('#99ff7b06'),
+        self.attack_damage_bar.addWidget(self._create_progress_bar(
+            ProgressBarType.ATTACK_BASE,
+            '%v Attack base', 0, 0, 1,
+            UserInterface._get_style('#9917b402'),
             Visible.INVISIBLE,
             inverted=True,
         ))
@@ -211,7 +211,7 @@ class UserInterface:
                 "}}".format(color, additional_chunk)
         return style
 
-    def create_progress_bar(
+    def _create_progress_bar(
             self,
             type: ProgressBarType,
             title_format: str,
@@ -235,27 +235,16 @@ class UserInterface:
         self.progress_bar_dict[type] = pb
         return pb
 
-    def upgrade_player_hp_progress_bar(
-            self,
+    def upgrade_hp_progress_bar(
+                self,
+            bar_type: ProgressBarType,
+            name: str,
             cur_value: int,
-            min_value: typing.Optional[int],
-            max_value: typing.Optional[int],
+            min_value: int,
+            max_value: int,
     ) -> None:
-        pb = self.progress_bar_dict[ProgressBarType.PLAYER_HP]
-        pb.setFormat('%v/{} RD'.format(max_value))
-        pb.setValue(cur_value)
-        pb.setMinimum(min_value)
-        pb.setMaximum(max_value)
-
-    def upgrade_target_hp_progress_bar(
-            self,
-            target_name: str,
-            cur_value: int,
-            min_value: typing.Optional[int],
-            max_value: typing.Optional[int],
-    ) -> None:
-        pb = self.progress_bar_dict[ProgressBarType.TARGET_HP]
-        pb.setFormat('%v/{} {}'.format(max_value, target_name[:30]))
+        pb = self.progress_bar_dict[bar_type]
+        pb.setFormat('%v/{} {}'.format(max_value, name[:30]))
         pb.setValue(cur_value)
         pb.setMinimum(min_value)
         pb.setMaximum(max_value)
@@ -266,7 +255,6 @@ class UserInterface:
             cur_value: int,
             min_value: typing.Optional[int] = None,
             max_value: typing.Optional[int] = None,
-            visible: Visible = Visible.VISIBLE,
     ) -> None:
         pb = self.progress_bar_dict[bar_type]
         pb.setValue(cur_value)
@@ -274,8 +262,16 @@ class UserInterface:
             pb.setMinimum(min_value)
         if max_value is not None:
             pb.setMaximum(max_value)
-        pb.setVisible(visible == Visible.VISIBLE)
+        pb.setVisible(True)
 
-    def set_visible_progress_bar(self, bar_type: ProgressBarType, visible: Visible) -> None:
+    def set_complete_progress_bar(self, bar_type: ProgressBarType) -> None:
         pb = self.progress_bar_dict[bar_type]
-        pb.setVisible(visible == Visible.VISIBLE)
+        pb.setValue(pb.minimum())
+        if bar_type == ProgressBarType.DAMAGE_PER_ROUND:
+            attack_pb = self.progress_bar_dict[ProgressBarType.ATTACK_BASE]
+            pb.setVisible(attack_pb.isVisible())
+            return
+        elif bar_type == ProgressBarType.ATTACK_BASE:
+            dpr_pb = self.progress_bar_dict[ProgressBarType.DAMAGE_PER_ROUND]
+            dpr_pb.setVisible(False)
+        pb.setVisible(False)
