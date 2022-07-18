@@ -41,7 +41,7 @@ class Backend:
 
         self.timer_action = QTimer()
         self.timer_action.timeout.connect(self.read_log)
-        self.timer_action.start(100)
+        self.timer_action.start(10)
 
         # self.timer_reset_geometry = QTimer()
         # self.timer_reset_geometry.timeout.connect(self.reset_geometry)
