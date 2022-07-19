@@ -385,3 +385,35 @@ class CastInterruption(Action):
     def __init__(self, g):
         super().__init__()
         self.caster_name = g[0]
+
+
+"""
+Attempting to fast cast 17 spells.
+"""
+
+
+class RodOfFastCast(Action):
+    @classmethod
+    def create(cls, string):
+        p = r'Attempting to fast cast ([0-9]+) spells.'
+        return Action.base_create(string, p, cls)
+
+    def __init__(self, g):
+        super().__init__()
+        self.cast_count = int(g[0])
+
+
+"""
+[CHAT WINDOW TEXT] [Tue Jul 19 14:40:28] * Divine Favor wore off *
+"""
+
+
+class Debuff(Action):
+    @classmethod
+    def create(cls, string):
+        p = r'\[CHAT WINDOW TEXT\] \[.+\] \* ([^:^*]+) wore off \*'
+        return Action.base_create(string, p, cls)
+
+    def __init__(self, g):
+        super().__init__()
+        self.buff_name = g[0]

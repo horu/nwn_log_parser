@@ -8,7 +8,8 @@ from PyQt5.QtGui import QFont
 from PyQt5.QtWidgets import *
 
 from common import *
-
+from progress_bar import *
+import buffs
 
 class ProgressBarType(Enum):
     PLAYER_HP = auto()
@@ -20,11 +21,6 @@ class ProgressBarType(Enum):
     STEALTH_MODE_CD = auto()
     ATTACK_BASE = auto()
     CASTING_SPELL = auto()
-
-
-class Visible(Enum):
-    VISIBLE = auto()
-    INVISIBLE = auto()
 
 
 class Orientation(Enum):
@@ -104,7 +100,6 @@ class CharacterStat:
     def set_experience(self, experience: int) -> None:
         self.experience.value.setText('{:>3}'.format(convert_long_int(experience)))
 
-
 class UserInterface:
     def __init__(self, widget: QWidget):
         self.progress_bar_dict: typing.Dict[ProgressBarType, QProgressBar] = {}
@@ -112,20 +107,20 @@ class UserInterface:
         self.main_form = create_form()
         widget.setLayout(self.main_form)
 
-        self.main_form.addRow(self._create_progress_bar(
+        self.main_form.addRow(self._add_progress_bar(
             ProgressBarType.PLAYER_HP,
             '%v/0 RD', 0, 0, 1,
-            UserInterface._get_style('#ffff0000'),
+            get_progress_bar_style('#ffff0000'),
             Visible.VISIBLE,
         ))
 
         self.player_stat = CharacterStat()
         self.main_form.addRow(self.player_stat.h_box)
 
-        self.main_form.addRow(self._create_progress_bar(
+        self.main_form.addRow(self._add_progress_bar(
             ProgressBarType.TARGET_HP,
             '%v/0 TARGET RD', 0, 0, 1,
-            UserInterface._get_style('#ffff910c'),
+            get_progress_bar_style('#ffff910c'),
             Visible.VISIBLE,
         ))
 
@@ -135,49 +130,49 @@ class UserInterface:
         self.attack_damage_bar = QHBoxLayout()
         self.main_form.addRow(self.attack_damage_bar)
 
-        self.attack_damage_bar.addWidget(self._create_progress_bar(
+        self.attack_damage_bar.addWidget(self._add_progress_bar(
             ProgressBarType.DAMAGE_PER_ROUND,
             '%v Damage per round', 0, 0, 1,
-            UserInterface._get_style('#99ff7b06'),
+            get_progress_bar_style('#99ff7b06'),
             Visible.INVISIBLE,
         ))
 
-        self.attack_damage_bar.addWidget(self._create_progress_bar(
+        self.attack_damage_bar.addWidget(self._add_progress_bar(
             ProgressBarType.ATTACK_BASE,
             '%v Attack base', 0, 0, 1,
-            UserInterface._get_style('#9917b402'),
+            get_progress_bar_style('#9917b402'),
             Visible.INVISIBLE,
             inverted=True,
         ))
 
-        self.main_form.addRow(self._create_progress_bar(
+        self.main_form.addRow(self._add_progress_bar(
             ProgressBarType.KNOCKDOWN,
             '%v ms Knockdown', 0, 0, KNOCKDOWN_PVE_CD,
-            UserInterface._get_style('#99bd00ff'),
+            get_progress_bar_style('#99bd00ff'),
             Visible.INVISIBLE,
         ))
-        self.main_form.addRow(self._create_progress_bar(
+        self.main_form.addRow(self._add_progress_bar(
             ProgressBarType.KNOCKDOWN_MISS,
             '%v ms Knockdown', 0, 0, KNOCKDOWN_PVE_CD,
-            UserInterface._get_style('#99bd00ff', additional_chunk='width: 10px; margin: 0.5px;'),
+            get_progress_bar_style('#99bd00ff', additional_chunk='width: 10px; margin: 0.5px;'),
             Visible.INVISIBLE,
         ))
-        self.main_form.addRow(self._create_progress_bar(
+        self.main_form.addRow(self._add_progress_bar(
             ProgressBarType.STUNNING_FIST,
             '%v ms Stunning fist', 0, 0, STUNNING_FIST_DURATION,
-            UserInterface._get_style('#99ffffff'),
+            get_progress_bar_style('#99ffffff'),
             Visible.INVISIBLE,
         ))
-        self.main_form.addRow(self._create_progress_bar(
+        self.main_form.addRow(self._add_progress_bar(
             ProgressBarType.STEALTH_MODE_CD,
             '%v ms Stealth mode cooldown', 0, 0, STEALTH_MODE_CD,
-            UserInterface._get_style('#ff3472ff'),
+            get_progress_bar_style('#ff3472ff'),
             Visible.INVISIBLE,
         ))
-        self.main_form.addRow(self._create_progress_bar(
+        self.main_form.addRow(self._add_progress_bar(
             ProgressBarType.CASTING_SPELL,
             '%v ms', 0, 0, CAST_TIME,
-            UserInterface._get_style('#990017ff'),
+            get_progress_bar_style('#990017ff'),
             Visible.INVISIBLE,
         ))
 
@@ -202,23 +197,7 @@ class UserInterface:
     def notify_low_hp(self, visible: bool):
         self.low_hp_label.setVisible(visible)
 
-    @staticmethod
-    def _get_style(color: str, additional_chunk: str = '') -> str:
-        style = "QProgressBar{{" \
-                "background-color: rgba(0,0,0,0%); " \
-                "min-height: 14px; " \
-                "max-height: 14px; " \
-                "border-radius: 5px;"\
-                "text-align: center; " \
-                "}}"\
-                "QProgressBar::chunk{{ " \
-                "background-color: {}; " \
-                "color: white;" \
-                "{}" \
-                "}}".format(color, additional_chunk)
-        return style
-
-    def _create_progress_bar(
+    def _add_progress_bar(
             self,
             type: ProgressBarType,
             title_format: str,
@@ -229,16 +208,7 @@ class UserInterface:
             visible: Visible,
             inverted: bool = False,
     ) -> QProgressBar:
-        pb = QProgressBar()
-        pb.setFormat(title_format)
-        pb.setValue(cur_value)
-        pb.setMinimum(min_value)
-        pb.setMaximum(max_value)
-        pb.setFont(QFont('Monospace', 10))
-        pb.setStyleSheet(style)
-        pb.setVisible(visible == Visible.VISIBLE)
-        pb.setAlignment(Qt.AlignLeft | Qt.AlignTop)
-        pb.setInvertedAppearance(inverted)
+        pb = create_progress_bar(title_format, cur_value, min_value, max_value, style, visible, inverted)
         self.progress_bar_dict[type] = pb
         return pb
 

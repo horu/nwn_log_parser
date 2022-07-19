@@ -138,7 +138,7 @@ class Parser:
 
         action: Resting = Resting.create(line)
         if action:
-            self.player.reset_damage()
+            self.player.resting()
             return
 
         action: CastBegin = CastBegin.create(line)
@@ -157,6 +157,16 @@ class Parser:
         if action:
             caster = self.get_char(action.caster_name)
             caster.cast_interruption(action)
+            return
+
+        action: Debuff = Debuff.create(line)
+        if action:
+            self.player.debuff(action)
+            return
+
+        action: RodOfFastCast = RodOfFastCast.create(line)
+        if action:
+            self.player.item_usage(ROD_OF_FAST_CAST)
             return
 
     def _detect_player(self, name: str):

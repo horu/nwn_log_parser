@@ -3,6 +3,8 @@ import os
 import typing
 
 ROUND_DURATION = 6000
+TURN_DURATION = 6000
+
 KNOCKDOWN_PVE_CD = 6000
 KNOCKDOWN_PVP_CD = 12000
 STUNNING_FIST_DURATION = 12000
@@ -34,11 +36,13 @@ STUNNING_FIST = 'Stunning Fist'
 SHORT_STUNNING_FIST = 'SF'
 
 ITEM_POTION_OF_HEAL = 'Potion of Heal'
+ROD_OF_FAST_CAST = 'Rod Of Fast Cast'
 
 LOG_LEVEL = os.environ.get('LOG_LEVEL', default='DEBUG')
 LOG_DIR = os.environ.get('LOG_DIR', default='{}/.local/share/Neverwinter Nights/logs/'.format(os.getenv('HOME')))
 PLAYER_HP = int(os.environ.get('PLAYER_HP'))
 HIPS = bool(os.environ.get('HIPS', default=False))
+CASTER_LEVEL = int(os.environ.get('CASTER_LVL'))
 
 
 def get_ts():

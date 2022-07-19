@@ -3,6 +3,7 @@ import logging
 import typing
 
 from actions import *
+from buffs import *
 
 AB_ATTACK_LIST_LIMIT = 12
 HP_LIST_LIMIT = 10
@@ -243,9 +244,33 @@ class Player(Character):
         self.initiative_roll: typing.Optional[InitiativeRoll] = None
 
         self.last_heal = Heal.explicit_create()
+        self.buff_dict: typing.Dict[str, typing.Optional[Buff]] = {}
+
+    def cast_end(self, cast: CastEnd) -> None:
+        super(self).cast_end(cast)
+
+        buff = Buff.create_from_cast(cast)
+        if buff:
+            self.buff_dict[buff.buff_name] = buff
+
+    def resting(self):
+        self.reset_damage()
+        self.clear_buffs()
+
+    def item_usage(self, item_name: str):
+        buff = Buff.create_from_usage(item_name)
+        if buff:
+            self.buff_dict[buff.buff_name] = buff
+
+    def debuff(self, debuff: Debuff):
+        self.buff_dict[debuff.buff_name] = None
+
+    def clear_buffs(self):
+        self.buff_dict.clear()
 
     def on_killed(self, death: Death, experience: Experience) -> None:
         self.death = death
+        self.clear_buffs()
         # next add_heal gets full hp - 1
 
     def add_heal(self, heal: Heal) -> None:

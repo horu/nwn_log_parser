@@ -43,10 +43,6 @@ class Backend:
         self.timer_action.timeout.connect(self.read_log)
         self.timer_action.start(10)
 
-        # self.timer_reset_geometry = QTimer()
-        # self.timer_reset_geometry.timeout.connect(self.reset_geometry)
-        # self.timer_reset_geometry.start(1000)
-
         self.window.centralWidget().mousePressEvent = self.on_press_event
         self.window.centralWidget().mouseDoubleClickEvent = self.on_double_click_event
         self.window.centralWidget().mouseMoveEvent = self.on_move_event
