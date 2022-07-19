@@ -96,6 +96,8 @@ class Character:
 
         self.experience: typing.Optional[Experience] = None
 
+        self.casting_spell: typing.Optional[CastBegin] = None
+
     def __str__(self):
         return str(self.__dict__)
 
@@ -222,6 +224,16 @@ class Character:
             return self.experience.value
         return 0
 
+    def cast_begin(self, cast: CastBegin) -> None:
+        self.casting_spell = cast
+
+    def cast_end(self, cast: CastEnd) -> None:
+        if self.casting_spell and self.casting_spell.spell_name == cast.spell_name:
+            self.casting_spell = None
+
+    def cast_interruption(self, cast: CastInterruption) -> None:
+        self.casting_spell = None
+
 
 class Player(Character):
     def __init__(self):
@@ -255,6 +267,9 @@ class Player(Character):
 
     def start_fight(self, attack: Attack) -> None:
         # uses to indicate start fight after stealth mode on next attack to start stealth cooldown
+        if not HIPS:
+            return
+
         if self.initiative_roll:
             self.initiative_roll = None
             self.stealth_cooldown = StealthCooldown.explicit_create(STEALTH_MODE_CD)

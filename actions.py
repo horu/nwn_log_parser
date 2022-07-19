@@ -335,3 +335,53 @@ class Resting(Action):
 
     def __init__(self, g):
         super().__init__()
+
+
+"""
+[CHAT WINDOW TEXT] [Tue Jul 19 12:33:11] TEST casting Mage Armor
+"""
+
+
+class CastBegin(Action):
+    @classmethod
+    def create(cls, string):
+        p = r'\[CHAT WINDOW TEXT\] \[.+\] ([^:]+) casting ([^\n]+)'
+        return Action.base_create(string, p, cls)
+
+    def __init__(self, g):
+        super().__init__()
+        self.caster_name = g[0]
+        self.spell_name = g[1]
+
+
+"""
+[CHAT WINDOW TEXT] [Tue Jul 19 12:33:11] TEST casts Mage Armor
+"""
+
+
+class CastEnd(Action):
+    @classmethod
+    def create(cls, string):
+        p = r'\[CHAT WINDOW TEXT\] \[.+\] ([^:]+) casts ([^\n]+)'
+        return Action.base_create(string, p, cls)
+
+    def __init__(self, g):
+        super().__init__()
+        self.caster_name = g[0]
+        self.spell_name = g[1]
+
+
+"""
+[CHAT WINDOW TEXT] [Tue Jul 19 12:43:07] TEST m r sf : Spell Interrupted
+"""
+
+
+class CastInterruption(Action):
+    @classmethod
+    def create(cls, string):
+        p = r'\[CHAT WINDOW TEXT\] \[.+\] ([^:]+) \: Spell Interrupted'
+        return Action.base_create(string, p, cls)
+
+    def __init__(self, g):
+        super().__init__()
+        self.caster_name = g[0]

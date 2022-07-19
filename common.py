@@ -7,6 +7,7 @@ KNOCKDOWN_PVE_CD = 6000
 KNOCKDOWN_PVP_CD = 12000
 STUNNING_FIST_DURATION = 12000
 STEALTH_MODE_CD = 10000
+CAST_TIME = 1250
 
 KNOCKDOWN_AB_PENALTY = 4
 
@@ -37,6 +38,7 @@ ITEM_POTION_OF_HEAL = 'Potion of Heal'
 LOG_LEVEL = os.environ.get('LOG_LEVEL', default='DEBUG')
 LOG_DIR = os.environ.get('LOG_DIR', default='{}/.local/share/Neverwinter Nights/logs/'.format(os.getenv('HOME')))
 PLAYER_HP = int(os.environ.get('PLAYER_HP'))
+HIPS = bool(os.environ.get('HIPS', default=False))
 
 
 def get_ts():

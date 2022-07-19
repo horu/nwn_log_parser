@@ -141,6 +141,24 @@ class Parser:
             self.player.reset_damage()
             return
 
+        action: CastBegin = CastBegin.create(line)
+        if action:
+            caster = self.get_char(action.caster_name)
+            caster.cast_begin(action)
+            return
+
+        action: CastEnd = CastEnd.create(line)
+        if action:
+            caster = self.get_char(action.caster_name)
+            caster.cast_end(action)
+            return
+
+        action: CastInterruption = CastInterruption.create(line)
+        if action:
+            caster = self.get_char(action.caster_name)
+            caster.cast_interruption(action)
+            return
+
     def _detect_player(self, name: str):
         # find player name by InitiativeRoll and Heal
         if self.player.name != name:

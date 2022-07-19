@@ -62,6 +62,9 @@ test_lines = """
 [CHAT WINDOW TEXT] [Sun Jul 10 23:16:49] Adult Red Dragon damages Moore Guardian: 81 (81 Physical)
 [CHAT WINDOW TEXT] [Thu Jul 14 19:29:38] Moore Guardian uses Potion of Heal
 [CHAT WINDOW TEXT] [Sun Jul 10 23:16:49] Adult Red Dragon damages Moore Guardian: 11 (11 Physical)
+[CHAT WINDOW TEXT] [Tue Jul 19 12:33:11] TEST casting Mage Armor
+[CHAT WINDOW TEXT] [Tue Jul 19 12:33:11] TEST casts Mage Armor
+[CHAT WINDOW TEXT] [Tue Jul 19 12:43:07] TEST m r sf : Spell Interrupted
 TEST END
 
 """

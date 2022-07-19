@@ -19,6 +19,7 @@ class ProgressBarType(Enum):
     STUNNING_FIST = auto()
     STEALTH_MODE_CD = auto()
     ATTACK_BASE = auto()
+    CASTING_SPELL = auto()
 
 
 class Visible(Enum):
@@ -173,6 +174,12 @@ class UserInterface:
             UserInterface._get_style('#ff3472ff'),
             Visible.INVISIBLE,
         ))
+        self.main_form.addRow(self._create_progress_bar(
+            ProgressBarType.CASTING_SPELL,
+            '%v ms', 0, 0, CAST_TIME,
+            UserInterface._get_style('#990017ff'),
+            Visible.INVISIBLE,
+        ))
 
         self.low_hp_label = QLabel("LOW HP")
         self.low_hp_label.setFont(QFont('Monospace', 32))
@@ -248,6 +255,18 @@ class UserInterface:
         pb.setValue(cur_value)
         pb.setMinimum(min_value)
         pb.setMaximum(max_value)
+
+    def upgrade_casting_progress_bar(
+                self,
+            spell_name: str,
+            channeling_ms: int,
+    ) -> None:
+        pb = self.progress_bar_dict[ProgressBarType.CASTING_SPELL]
+        pb.setFormat('%v ms {}'.format(spell_name))
+        pb.setValue(channeling_ms)
+        pb.setMinimum(0)
+        pb.setMaximum(CAST_TIME)
+        pb.setVisible(True)
 
     def upgrade_progress_bar(
             self,

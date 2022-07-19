@@ -101,6 +101,25 @@ class Printer:
         self.wide_mode = False
         self.wide_printer = WidePrinter()
 
+    def update_target_hp_bar(self, target: Character) -> None:
+        max_hp = max(1, target.get_avg_hp())
+        cur_hp = target.get_cur_hp()
+        min_hp = min(cur_hp, 0)
+        # self.ui.upgrade_hp_progress_bar(ProgressBarType.TARGET_HP, target.name, max_hp - cur_hp, 0, max_hp)
+        self.ui.upgrade_hp_progress_bar(ProgressBarType.TARGET_HP, target.name, cur_hp, min_hp, max_hp)
+
+    def update_player_hp_bar(self, player: Character) -> None:
+        max_hp = max(1, player.get_avg_hp())
+        cur_hp = player.get_cur_hp()
+        min_hp = min(cur_hp, 0)
+        if cur_hp and cur_hp / max_hp < LOW_HP_NOTIFY_LIMIT:
+            self.ui.notify_low_hp(True)
+        else:
+            self.ui.notify_low_hp(False)
+
+        # self.ui.upgrade_hp_progress_bar(ProgressBarType.PLAYER_HP, player.name, max_hp - cur_hp, 0, max_hp)
+        self.ui.upgrade_hp_progress_bar(ProgressBarType.PLAYER_HP, player.name, cur_hp, min_hp, max_hp)
+
     def update_dpr_bar(self, char: Character) -> None:
         # Damage per round
         caused_dpr = char.stats_storage.caused_dpr
@@ -157,24 +176,14 @@ class Printer:
                 return
         self.ui.set_complete_progress_bar(ProgressBarType.ATTACK_BASE)
 
-    def update_target_hp_bar(self, target: Character) -> None:
-        max_hp = max(1, target.get_avg_hp())
-        cur_hp = target.get_cur_hp()
-        min_hp = min(cur_hp, 0)
-        # self.ui.upgrade_hp_progress_bar(ProgressBarType.TARGET_HP, target.name, max_hp - cur_hp, 0, max_hp)
-        self.ui.upgrade_hp_progress_bar(ProgressBarType.TARGET_HP, target.name, cur_hp, min_hp, max_hp)
-
-    def update_player_hp_bar(self, player: Character) -> None:
-        max_hp = max(1, player.get_avg_hp())
-        cur_hp = player.get_cur_hp()
-        min_hp = min(cur_hp, 0)
-        if cur_hp and cur_hp / max_hp < LOW_HP_NOTIFY_LIMIT:
-            self.ui.notify_low_hp(True)
-        else:
-            self.ui.notify_low_hp(False)
-
-        # self.ui.upgrade_hp_progress_bar(ProgressBarType.PLAYER_HP, player.name, max_hp - cur_hp, 0, max_hp)
-        self.ui.upgrade_hp_progress_bar(ProgressBarType.PLAYER_HP, player.name, cur_hp, min_hp, max_hp)
+    def update_casting_bar(self, char: Character) -> None:
+        casting = char.casting_spell
+        if casting:
+            channeling = CAST_TIME - (get_ts() - casting.timestamp)
+            if channeling >= 0:
+                self.ui.upgrade_casting_progress_bar(casting.spell_name, channeling)
+                return
+        self.ui.set_complete_progress_bar(ProgressBarType.CASTING_SPELL)
 
     def change_print_mode(self):
         self.wide_mode = not self.wide_mode
@@ -228,3 +237,4 @@ class Printer:
         self.update_stunning_fist_bar(player)
         self.update_stealth_mode_cd_bar(player)
         self.update_attack_base_bar(player)
+        self.update_casting_bar(player)
