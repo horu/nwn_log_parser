@@ -247,7 +247,7 @@ class Player(Character):
         self.buff_dict: typing.Dict[str, typing.Optional[Buff]] = {}
 
     def cast_end(self, cast: CastEnd) -> None:
-        super(self).cast_end(cast)
+        super(Player, self).cast_end(cast)
 
         buff = Buff.create_from_cast(cast)
         if buff:
@@ -263,7 +263,8 @@ class Player(Character):
             self.buff_dict[buff.buff_name] = buff
 
     def debuff(self, debuff: Debuff):
-        self.buff_dict[debuff.buff_name] = None
+        pass
+        #  self.buff_dict[debuff.buff_name] = None
 
     def clear_buffs(self):
         self.buff_dict.clear()

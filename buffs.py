@@ -9,8 +9,8 @@ class Buff:
                 ROD_OF_FAST_CAST
             ],
         }
-        for duration, name in durations:
-            if name == item_name:
+        for duration, names in durations.items():
+            if item_name in names:
                 return Buff(item_name, duration)
         return None
 
@@ -29,9 +29,9 @@ class Buff:
                 'Greater Sanctuary',
             ],
         }
-        for duration, name in durations:
-            if name == cast.spell_name:
-                return Buff(name, duration)
+        for duration, names in durations.items():
+            if cast.spell_name in names:
+                return Buff(cast.spell_name, duration)
         return None
 
     def __init__(

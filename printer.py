@@ -185,6 +185,16 @@ class Printer:
                 return
         self.ui.set_complete_progress_bar(ProgressBarType.CASTING_SPELL)
 
+    def update_buffs_bar(self, player: Player) -> None:
+        buffs = player.buff_dict
+        for name, buff in buffs.items():
+            if buff:
+                duration = buff.duration - (get_ts() - buff.timestamp)
+                if duration >= 0:
+                    self.ui.upgrade_buff_progress_bar(name, duration, 0, buff.duration, Visible.VISIBLE)
+                    continue
+            self.ui.upgrade_buff_progress_bar(name, 0, 0, 1, Visible.INVISIBLE)
+
     def change_print_mode(self):
         self.wide_mode = not self.wide_mode
         self.wide_printer.chars_to_print_ts = 0
@@ -238,3 +248,4 @@ class Printer:
         self.update_stealth_mode_cd_bar(player)
         self.update_attack_base_bar(player)
         self.update_casting_bar(player)
+        self.update_buffs_bar(player)
