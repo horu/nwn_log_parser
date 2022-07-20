@@ -25,7 +25,7 @@ class Buff:
             TURN_DURATION * 2: [
                 'Divine Favor',
             ],
-            40: [
+            36000: [
                 'Greater Sanctuary',
             ],
         }

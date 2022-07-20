@@ -41,6 +41,7 @@ ROD_OF_FAST_CAST = 'Rod Of Fast Cast'
 LOG_LEVEL = os.environ.get('LOG_LEVEL', default='DEBUG')
 LOG_DIR = os.environ.get('LOG_DIR', default='{}/.local/share/Neverwinter Nights/logs/'.format(os.getenv('HOME')))
 PLAYER_HP = int(os.environ.get('PLAYER_HP'))
+DEFAULT_PLAYER_NAME = os.environ.get('DEFAULT_PLAYER_NAME', default='Dunya Kulakova')
 HIPS = bool(os.environ.get('HIPS', default=False))
 CASTER_LEVEL = int(os.environ.get('CASTER_LVL'))
 

@@ -265,11 +265,14 @@ class Player(Character):
             self.buff_dict[buff.buff_name] = buff
 
     def debuff(self, debuff: Debuff):
-        pass
-        #  self.buff_dict[debuff.buff_name] = None
+        buff = self.buff_dict.get(debuff.buff_name)
+        # ignore redebuff message
+        if not buff or abs(debuff.timestamp - buff.timestamp) > 1000:
+            self.buff_dict[debuff.buff_name] = None
 
     def clear_buffs(self):
-        self.buff_dict.clear()
+        for name in self.buff_dict.keys():
+            self.buff_dict[name] = None
 
     def on_killed(self, death: Death, experience: Experience) -> None:
         self.death = death

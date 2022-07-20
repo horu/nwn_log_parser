@@ -11,6 +11,7 @@ class Parser:
 
         self.characters = collections.defaultdict(Character)
         self.player = Player()
+        self.player.name = DEFAULT_PLAYER_NAME
 
         self.experience_list: typing.List[Experience] = []
         self.round_ts = 0

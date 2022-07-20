@@ -40,6 +40,9 @@ class UserInterface:
         self.target_stat = CharacterStat()
         self.main_form.addRow(self.target_stat.box)
 
+        self.buffs_bar = BuffsBar()
+        self.main_form.addRow(self.buffs_bar.form)
+
         self.attack_damage_bar = AttackDpsBar()
         self.main_form.addRow(self.attack_damage_bar.box)
 

@@ -119,6 +119,13 @@ class Printer:
 
         self.ui.player_hp_bar.upgrade(player.name, cur_hp, min_hp, max_hp)
 
+    def update_buffs_bar(self, player: Player) -> None:
+        for name, buff in player.buff_dict.items():
+            if buff:
+                self.ui.buffs_bar.update(name, buff.duration, buff.timestamp)
+            else:
+                self.ui.buffs_bar.hide(name)
+
     def update_dpr_bar(self, char: Character) -> None:
         # Damage per round
         caused_dpr = char.stats_storage.caused_dpr
@@ -137,9 +144,9 @@ class Printer:
         last_kd = char.last_knockdown
         if last_kd.s_attack.is_success():
             self.ui.knockdown_bar.update_timestamp(last_kd.timestamp)
-            self.ui.knockdown_miss_bar.update_timestamp(0)
+            self.ui.knockdown_miss_bar.hide()
         else:
-            self.ui.knockdown_bar.update_timestamp(0)
+            self.ui.knockdown_bar.hide()
             self.ui.knockdown_miss_bar.update_timestamp(last_kd.timestamp)
         return
 
@@ -160,7 +167,7 @@ class Printer:
         if casting:
             self.ui.casting_bar.update(casting.spell_name, casting.timestamp)
         else:
-            self.ui.casting_bar.update('', 0)
+            self.ui.casting_bar.hide()
 
     def change_print_mode(self):
         self.wide_mode = not self.wide_mode
@@ -212,6 +219,13 @@ class Printer:
 
         for action in parser.pop_actions():
             action_type = action.get_type()
+            if (action_type == CastEnd or
+                    action_type == RodOfFastCast or
+                    action_type == Resting or
+                    action_type == Debuff or
+                    action_type == Death):
+                self.update_buffs_bar(player)
+
             if action_type == Damage:
                 self.update_dpr_bar(player)
             elif action_type == Attack:

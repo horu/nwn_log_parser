@@ -1,3 +1,5 @@
+import typing
+
 from ui_common import *
 from common import *
 
@@ -19,11 +21,11 @@ def get_progress_bar_style(color: str, additional_chunk: str = '') -> str:
 
 
 def create_progress_bar(
-        title_format: str,
-        cur_value: int,
-        min_value: int,
-        max_value: int,
         style: str,
+        title_format: typing.Optional[str] = '%v',
+        cur_value: typing.Optional[int] = 0,
+        min_value: typing.Optional[int] = 0,
+        max_value: typing.Optional[int] = 1,
         inverted: bool = False,
 ) -> QProgressBar:
     pb = QProgressBar()
@@ -41,10 +43,7 @@ def create_progress_bar(
 
 class HpBar:
     def __init__(self, color: str):
-        self.pb = create_progress_bar(
-            '%v/1', 0, 0, 1,
-            get_progress_bar_style(color),
-        )
+        self.pb = create_progress_bar(get_progress_bar_style(color))
 
     def upgrade(self, name: str, cur_value: int, min_value: int, max_value: int) -> None:
         self.pb.setFormat('%v/{} {}'.format(max_value, name[:30]))
@@ -122,13 +121,17 @@ class TemporaryProgressBar(Timer):
         value = self.get_timeout() - (now - self._start_timestamp)
         self.pb.setValue(value)
 
+    def hide(self):
+        self.update_timestamp(0)
+
 
 class KnockdownBar(TemporaryProgressBar):
     def __init__(self):
         super(KnockdownBar, self).__init__(
             10, KNOCKDOWN_PVE_CD,
-            '%v ms Knockdown', 0, 0, KNOCKDOWN_PVE_CD,
             get_progress_bar_style('#99bd00ff'),
+            '%v ms Knockdown',
+            max_value=KNOCKDOWN_PVE_CD,
         )
 
 
@@ -136,8 +139,9 @@ class KnockdownMissBar(TemporaryProgressBar):
     def __init__(self):
         super(KnockdownMissBar, self).__init__(
             10, KNOCKDOWN_PVE_CD,
-            '%v ms Knockdown', 0, 0, KNOCKDOWN_PVE_CD,
             get_progress_bar_style('#99bd00ff', additional_chunk='width: 10px; margin: 0.5px;'),
+            '%v ms Knockdown',
+            max_value=KNOCKDOWN_PVE_CD,
         )
 
 
@@ -145,8 +149,9 @@ class StunningFistBar(TemporaryProgressBar):
     def __init__(self):
         super(StunningFistBar, self).__init__(
             10, STUNNING_FIST_DURATION,
-            '%v ms Stunning fist', 0, 0, STUNNING_FIST_DURATION,
             get_progress_bar_style('#99ffffff'),
+            '%v ms Stunning fist',
+            max_value=STUNNING_FIST_DURATION,
         )
 
 
@@ -154,8 +159,9 @@ class StealthCooldownBar(TemporaryProgressBar):
     def __init__(self):
         super(StealthCooldownBar, self).__init__(
             10, STEALTH_MODE_CD,
-            '%v ms Stealth cooldown', 0, 0, STEALTH_MODE_CD,
             get_progress_bar_style('#ff3472ff'),
+            '%v ms Stealth cooldown',
+            max_value=STEALTH_MODE_CD,
         )
 
     def update(self, cooldown: Time, event_ts: Time):
@@ -167,8 +173,9 @@ class CastingBar(TemporaryProgressBar):
     def __init__(self):
         super(CastingBar, self).__init__(
             10, CAST_TIME,
-            '%v ms', 0, 0, CAST_TIME,
             get_progress_bar_style('#990017ff'),
+            '%v ms',
+            max_value=CAST_TIME,
         )
 
     def update(self, spell_name: str, event_ts: Time):
@@ -182,17 +189,10 @@ class AttackDpsBar(Timer):
         self.box = QHBoxLayout()
 
         self.dpr = 0
-        self.dps_pb = create_progress_bar(
-            '%v Damage per round', 0, 0, 1,
-            get_progress_bar_style('#99ff7b06'),
-        )
+        self.dps_pb = create_progress_bar(get_progress_bar_style('#99ff7b06'), '%v Damage per round')
         self.box.addWidget(self.dps_pb)
 
-        self.attack_pb = create_progress_bar(
-            '%v Attack base', 0, 0, 1,
-            get_progress_bar_style('#9917b402'),
-            inverted=True,
-        )
+        self.attack_pb = create_progress_bar(get_progress_bar_style('#9917b402'), '%v Attack base', inverted=True)
         self.box.addWidget(self.attack_pb)
 
     def update_dps(self, dpr: int, max_dpr: int, last_dpr_ts: Time):
@@ -220,3 +220,75 @@ class AttackDpsBar(Timer):
     def end(self):
         self.dps_pb.setVisible(False)
         self.attack_pb.setVisible(False)
+
+
+class BuffBar(TemporaryProgressBar):
+    def __init__(self, name: str, duration: Time):
+        super(BuffBar, self).__init__(
+            10, duration,
+            get_progress_bar_style('#99c975fb'),
+            BuffBar.get_label(name, duration),
+            cur_value=duration,
+            max_value=duration,
+        )
+        self.name = name
+
+    @classmethod
+    def get_label(cls, name: str, duration: Time) -> str:
+        label = '{} {}:{:0>2d}'.format(name, int(duration / 60000), int(duration % 60000 / 1000))
+        return label
+
+    def tick(self, now: Time):
+        super(BuffBar, self).tick(now)
+        value = self.get_timeout() - (now - self._start_timestamp)
+        label = BuffBar.get_label(self.name, value)
+        self.pb.setFormat(label)
+
+
+class BuffsBox:
+    def __init__(self):
+        self.box = QHBoxLayout()
+        self.buffs: typing.Dict[str, BuffBar] = {}
+
+
+class BuffsBar:
+    def __init__(self):
+        self.form = create_form()
+        self.buff_boxes: typing.List[BuffsBox] = []
+
+    def _get_buff(self, buff_name: str, duration: Time):
+        for box in self.buff_boxes:
+            if buff_name in box.buffs.keys():
+                return box.buffs[buff_name]
+
+        buff = BuffBar(buff_name, duration)
+        box_to_insert = None
+        for box in self.buff_boxes:
+            if len(box.buffs) < 3:
+                box_to_insert = box
+                break
+
+        if not box_to_insert:
+            box_to_insert = BuffsBox()
+            self.buff_boxes.append(box_to_insert)
+            self.form.addRow(box_to_insert.box)
+
+        box_to_insert.box.addWidget(buff.pb)
+        box_to_insert.buffs[buff_name] = buff
+
+        return buff
+
+    def update(self, buff_name: str, duration: Time, start_time: Time):
+        buff_bar = self._get_buff(buff_name, duration)
+        buff_bar.update_timestamp(start_time)
+
+    def hide(self, buff_name: str):
+        for box in self.buff_boxes:
+            for name, buff in box.buffs.items():
+                if name == buff_name:
+                    buff.hide()
+                    box.box.removeWidget(buff.pb)
+                    del box.buffs[name]
+                    break
+
+
