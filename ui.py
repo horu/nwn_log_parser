@@ -100,6 +100,7 @@ class CharacterStat:
     def set_experience(self, experience: int) -> None:
         self.experience.value.setText('{:>3}'.format(convert_long_int(experience)))
 
+
 class UserInterface:
     def __init__(self, widget: QWidget):
         self.progress_bar_dict: typing.Dict[ProgressBarType, QProgressBar] = {}
@@ -126,6 +127,10 @@ class UserInterface:
 
         self.target_stat = CharacterStat()
         self.main_form.addRow(self.target_stat.h_box)
+
+        self.buff_bar = create_form()
+        self.buffs = {}
+        self.main_form.addRow(self.buff_bar)
 
         self.attack_damage_bar = QHBoxLayout()
         self.main_form.addRow(self.attack_damage_bar)
@@ -211,6 +216,33 @@ class UserInterface:
         pb = create_progress_bar(title_format, cur_value, min_value, max_value, style, visible, inverted)
         self.progress_bar_dict[type] = pb
         return pb
+
+    def upgrade_buff_progress_bar(
+                self,
+            name: str,
+            cur_value: int,
+            min_value: int,
+            max_value: int,
+            visible: Visible,
+    ) -> None:
+        pb = self.buffs.get(name, None)
+        if not pb:
+            pb = create_progress_bar(
+                '',
+                cur_value,
+                min_value,
+                max_value,
+                get_progress_bar_style('#99ffffff'),
+                Visible.VISIBLE,
+            )
+            self.buffs[name] = pb
+            self.buff_bar.addRow(pb)
+
+        pb.setFormat('%v/{} {}'.format(max_value, name))
+        pb.setValue(cur_value)
+        pb.setMinimum(min_value)
+        pb.setMaximum(max_value)
+        pb.setVisible(visible == Visible.VISIBLE)
 
     def upgrade_hp_progress_bar(
                 self,
