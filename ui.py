@@ -1,14 +1,28 @@
-import logging
-import typing
-import collections
-from enum import Enum, auto
-
-from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QFont
-from PyQt5.QtWidgets import *
-
+from ui_bar import *
+from ui_common import *
 from ui_char import *
-from progress_bar import *
+
+TRANSPARENCY = 0.5
+
+
+class Window(QMainWindow):
+    """Main Window."""
+    def __init__(self, parent=None):
+        """Initializer."""
+        super().__init__(parent)
+        self.setWindowTitle("Nwn log parser")
+        self.move(600, 0)
+        self.setWindowOpacity(1)
+        self.setAttribute(Qt.WA_TranslucentBackground, True)
+        self.setWindowFlags(Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint)
+
+        self.central_widget = QWidget()
+        self.central_widget.setStyleSheet('background-color: rgba(0,0,0,{}%); color: white'.format(int(TRANSPARENCY * 100)))
+
+        self.setCentralWidget(self.central_widget)
+
+        # position for move window
+        self.drag_position = QPoint()
 
 
 class UserInterface:

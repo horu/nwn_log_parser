@@ -64,6 +64,8 @@ test_lines = """
 [CHAT WINDOW TEXT] [Tue Jul 19 12:33:11] TEST casting Mage Armor
 [CHAT WINDOW TEXT] [Tue Jul 19 12:33:11] TEST casts Mage Armor
 [CHAT WINDOW TEXT] [Tue Jul 19 12:43:07] TEST m r sf : Spell Interrupted
+Attempting to fast cast 17 spells.
+[CHAT WINDOW TEXT] [Tue Jul 19 14:40:28] * Divine Favor wore off *
 TEST END
 
 """

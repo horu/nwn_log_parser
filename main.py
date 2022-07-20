@@ -1,8 +1,7 @@
 import sys
 
 from test import *
-from ui_common import *
-from log_reader import *
+from backend import *
 
 # https://github.com/jakkn/nwn-logparser
 

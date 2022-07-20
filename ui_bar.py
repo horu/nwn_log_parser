@@ -1,10 +1,4 @@
-import logging
-from enum import Enum, auto
-
-from PyQt5.QtCore import Qt, QTimer
-from PyQt5.QtGui import QFont
-from PyQt5.QtWidgets import *
-
+from ui_common import *
 from common import *
 
 
@@ -226,4 +220,3 @@ class AttackDpsBar(Timer):
     def end(self):
         self.dps_pb.setVisible(False)
         self.attack_pb.setVisible(False)
-
