@@ -122,9 +122,9 @@ class Printer:
     def update_buffs_bar(self, player: Player) -> None:
         for name, buff in player.buff_dict.items():
             if buff:
-                self.ui.buffs_bar.update(name, buff.duration, buff.timestamp)
+                self.ui.buffs_bar.update(name.short, buff.duration, buff.timestamp)
             else:
-                self.ui.buffs_bar.hide(name)
+                self.ui.buffs_bar.hide(name.short)
 
     def update_dpr_bar(self, char: Character) -> None:
         # Damage per round

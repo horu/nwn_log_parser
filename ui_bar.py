@@ -264,7 +264,7 @@ class BuffsBar:
         buff = BuffBar(buff_name, duration)
         box_to_insert = None
         for box in self.buff_boxes:
-            if len(box.buffs) < 3:
+            if len(box.buffs) < 6:
                 box_to_insert = box
                 break
 

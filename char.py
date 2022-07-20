@@ -246,12 +246,12 @@ class Player(Character):
         self.initiative_roll: typing.Optional[InitiativeRoll] = None
 
         self.last_heal = Heal.explicit_create()
-        self.buff_dict: typing.Dict[str, typing.Optional[Buff]] = {}
+        self.buff_dict: typing.Dict[BuffName, typing.Optional[Buff]] = {}
 
     def cast_end(self, cast: CastEnd) -> None:
         super(Player, self).cast_end(cast)
 
-        buff = Buff.create_from_cast(cast)
+        buff = Buff.create_by_full_name(cast.spell_name)
         if buff:
             self.buff_dict[buff.buff_name] = buff
 
@@ -260,15 +260,17 @@ class Player(Character):
         self.clear_buffs()
 
     def item_usage(self, item_name: str):
-        buff = Buff.create_from_usage(item_name)
+        buff = Buff.create_by_full_name(item_name)
         if buff:
             self.buff_dict[buff.buff_name] = buff
 
     def debuff(self, debuff: Debuff):
-        buff = self.buff_dict.get(debuff.buff_name)
-        # ignore redebuff message
-        if not buff or abs(debuff.timestamp - buff.timestamp) > 1000:
-            self.buff_dict[debuff.buff_name] = None
+        common_buff = Buff.create_by_full_name(debuff.buff_name)
+        if common_buff:
+            buff = self.buff_dict.get(common_buff.buff_name)
+            # ignore redebuff message
+            if not buff or abs(debuff.timestamp - buff.timestamp) > 1000:
+                self.buff_dict[common_buff.buff_name] = None
 
     def clear_buffs(self):
         for name in self.buff_dict.keys():
