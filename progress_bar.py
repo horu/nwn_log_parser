@@ -1,3 +1,4 @@
+import logging
 from enum import Enum, auto
 
 from PyQt5.QtCore import Qt, QTimer
@@ -76,7 +77,7 @@ class TargetHpBar(HpBar):
 
 
 class Timer:
-    def __init__(self, tick_ms: int, timeout: int):
+    def __init__(self, tick_ms: Time, timeout: Time):
         self._timer = QTimer()
         self._timer.timeout.connect(self._action)
         self._timer.setInterval(tick_ms)
@@ -85,19 +86,28 @@ class Timer:
         self._start_timestamp = get_ts()
         self._timeout = timeout
 
+    def _check_continue(self, now: Time) -> bool:
+        return now - self._start_timestamp <= self._timeout
+
     def _action(self):
-        ts = get_ts()
-        if ts - self._start_timestamp > self._timeout:
+        now = get_ts()
+        if self._check_continue(now):
+            self.tick(now)
+        else:
             self._timer.stop()
             self.end()
-        else:
-            self.tick(ts)
 
-    def update_timestamp(self):
-        if not self._timer.isActive():
-            self._timer.start()
-        self._start_timestamp = get_ts()
-        self._action()
+    def update_timestamp(self, ts: Time) -> bool:
+        self._start_timestamp = ts
+        now = get_ts()
+        if self._check_continue(now):
+            if not self._timer.isActive():
+                self._timer.start()
+            return True
+        return False
+
+    def get_timeout(self):
+        return self._timeout
 
     def get_start_timestamp(self):
         return self._start_timestamp
@@ -105,24 +115,24 @@ class Timer:
     def end(self):
         pass
 
-    def tick(self, ts: int):
+    def tick(self, now: Time):
         pass
 
 
 class TemporaryProgressBar(Timer):
-    def __init__(self, tick_ms: int, timeout: int, *args, **kwargs):
+    def __init__(self, tick_ms: Time, timeout: Time, *args, **kwargs):
         super(TemporaryProgressBar, self).__init__(tick_ms, timeout)
         self.pb = create_progress_bar(*args, **kwargs)
 
-    def update_timestamp(self):
-        super().update_timestamp()
-        self.pb.setVisible(True)
+    def update_timestamp(self, ts: Time):
+        if super(TemporaryProgressBar, self).update_timestamp(ts):
+            self.pb.setVisible(True)
 
     def end(self):
         self.pb.setVisible(False)
 
-    def tick(self, ts: int):
-        value = ts - self._start_timestamp
+    def tick(self, now: Time):
+        value = self.get_timeout() - (now - self._start_timestamp)
         self.pb.setValue(value)
 
 
@@ -149,35 +159,39 @@ class KnockdownMissBar(TemporaryProgressBar):
 class StunningFistBar(TemporaryProgressBar):
     def __init__(self):
         super(StunningFistBar, self).__init__(
-            10, KNOCKDOWN_PVE_CD,
+            10, STUNNING_FIST_DURATION,
             '%v ms Stunning fist', 0, 0, STUNNING_FIST_DURATION,
             get_progress_bar_style('#99ffffff'),
             Visible.INVISIBLE,
         )
 
 
-class StealthCooldown(TemporaryProgressBar):
+class StealthCooldownBar(TemporaryProgressBar):
     def __init__(self):
-        super(StealthCooldown, self).__init__(
-            10, KNOCKDOWN_PVE_CD,
+        super(StealthCooldownBar, self).__init__(
+            10, STEALTH_MODE_CD,
             '%v ms Stealth cooldown', 0, 0, STEALTH_MODE_CD,
             get_progress_bar_style('#ff3472ff'),
             Visible.INVISIBLE,
         )
 
+    def update(self, cooldown: Time, event_ts: Time):
+        start_time = event_ts - (STEALTH_MODE_CD - cooldown + 1000)
+        self.update_timestamp(start_time)
 
-class Casting(TemporaryProgressBar):
+
+class CastingBar(TemporaryProgressBar):
     def __init__(self):
-        super(Casting, self).__init__(
-            10, KNOCKDOWN_PVE_CD,
+        super(CastingBar, self).__init__(
+            10, CAST_TIME,
             '%v ms', 0, 0, CAST_TIME,
             get_progress_bar_style('#990017ff'),
             Visible.INVISIBLE,
         )
 
-    def update(self, spell_name: str):
+    def update(self, spell_name: str, event_ts: Time):
         self.pb.setFormat('%v ms {}'.format(spell_name))
-        self.update_timestamp()
+        self.update_timestamp(event_ts)
 
 
 class AttackDpsBar(Timer):
@@ -201,24 +215,24 @@ class AttackDpsBar(Timer):
         )
         self.box.addWidget(self.attack_pb)
 
-    def update_dps(self, dpr: int, max_dpr: int):
+    def update_dps(self, dpr: int, max_dpr: int, last_dpr_ts: Time):
         self.dpr = dpr
-        self.dps_pb.setMaximum(max_dpr)
-        self._update()
+        self.dps_pb.setMaximum(max(max_dpr, 1))
+        self._update(last_dpr_ts)
 
-    def update_attack(self, attack: int, min_attack: int, max_attack: int):
+    def update_attack(self, attack: int, min_attack: int, max_attack: int, last_attack_ts: Time):
         self.attack_pb.setValue(attack)
         self.attack_pb.setMinimum(min_attack)
         self.attack_pb.setMaximum(max_attack)
-        self._update()
+        self._update(last_attack_ts)
 
-    def _update(self):
-        self.update_timestamp()
-        self.dps_pb.setVisible(True)
-        self.attack_pb.setVisible(True)
+    def _update(self, last_action: Time):
+        if self.update_timestamp(last_action):
+            self.dps_pb.setVisible(True)
+            self.attack_pb.setVisible(True)
 
-    def tick(self, ts: int):
-        duration_without_attack = ts - self.get_start_timestamp()
+    def tick(self, now: Time):
+        duration_without_attack = now - self.get_start_timestamp()
         dpr = int(self.dpr * (ROUND_DURATION - duration_without_attack) / ROUND_DURATION)
         if dpr >= 0:
             self.dps_pb.setValue(dpr)

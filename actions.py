@@ -25,6 +25,9 @@ class Action:
     def __str__(self):
         return '{}: {}'.format(self.__class__.__name__, str(self.__dict__))
 
+    def get_type(self):
+        return self.__class__
+
 
 def append_fix_time_window(actions_list: typing.List[Action], action: Action, window_duration) -> None:
     actions_list.append(action)
@@ -122,12 +125,8 @@ class StunningFirst(Action):
         self.s_attack = s_attack
         self.throw = None
 
-    def get_duration(self) -> int:  # ms
-        if self.throw and self.throw.result == FAILURE:
-            duration = STUNNING_FIST_DURATION - (get_ts() - self.s_attack.timestamp)
-            if duration > 0:
-                return duration
-        return 0
+    def is_success(self) -> bool:  # ms
+        return self.throw and self.throw.result == FAILURE
 
 
 class SavingThrow(Action):
@@ -234,18 +233,12 @@ class StealthCooldown(Action):
     @classmethod
     def explicit_create(cls, cooldown: int):  # ms
         sc = cls(['0'])
-        sc._cooldown = cooldown
+        sc.cooldown = cooldown
         return sc
-
-    def get_duration(self) -> int:  # ms
-        duration = self._cooldown - 1000 - (get_ts() - self.timestamp)  # 1000 - server fix
-        if duration > 0:
-            return duration
-        return 0
 
     def __init__(self, g):
         super().__init__()
-        self._cooldown = int(g[0]) * 1000  # ms
+        self.cooldown = int(g[0]) * 1000  # ms
 
 
 """

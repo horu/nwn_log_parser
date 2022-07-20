@@ -1,3 +1,5 @@
+import typer
+
 from char import *
 
 EXPERIENCE_TIMEOUT = 2000
@@ -5,11 +7,17 @@ EXPERIENCE_TIMEOUT = 2000
 
 class Parser:
     def __init__(self):
+        self.last_actions: typing.List[Action] = []
+
         self.characters = collections.defaultdict(Character)
         self.player = Player()
 
         self.experience_list: typing.List[Experience] = []
         self.round_ts = 0
+
+    def pop_actions(self) -> typing.Iterable[Action]:
+        while self.last_actions:
+            yield self.last_actions.pop()
 
     def get_char(self, name: str) -> Character:
         char = self.characters[name]
@@ -17,7 +25,12 @@ class Parser:
         char.update_timestamp()
         return char
 
-    def push_line(self, line) -> None:
+    def push_line(self, line: str) -> None:
+        action = self.parse(line)
+        if action:
+            self.last_actions.append(action)
+
+    def parse(self, line: str) -> typing.Optional[Action]:
         logging.debug('LINE: {}'.format(line[0:-1]))
         ts = get_ts()
         if ts - self.round_ts >= ROUND_DURATION:
@@ -39,7 +52,7 @@ class Parser:
 
             target = self.get_char(action.target_name)
             target.add_ac(action)
-            return
+            return action
 
         action: SavingThrow = SavingThrow.create(line)
         if action:
@@ -53,7 +66,7 @@ class Parser:
             elif WILL in action.type:
                 target.will = action.base
                 target.last_will_dc = action.dc
-            return
+            return action
 
         action: SpecialAttack = SpecialAttack.create(line)
         if action:
@@ -68,7 +81,7 @@ class Parser:
 
             target = self.get_char(action.target_name)
             target.add_ac(action)
-            return
+            return action
 
         action: Damage = Damage.create(line)
         if action:
@@ -79,43 +92,43 @@ class Parser:
             # if damager is self.player or target is self.player:
             damager.add_caused_damage(action)
             target.add_received_damage(action)
-            return
+            return action
 
         action: Death = Death.create(line)
         if action:
             target = self.get_char(action.target_name)
             experience = self.experience_list.pop(0) if self.experience_list else None
             target.on_killed(action, experience)
-            return
+            return action
 
         action: DamageReduction = DamageReduction.create(line)
         if action:
             target = self.get_char(action.target_name)
             target.add_damage_absorption(action)
-            return
+            return action
 
         action: DamageResistance = DamageResistance.create(line)
         if action:
             target = self.get_char(action.target_name)
             target.add_damage_absorption(action)
-            return
+            return action
 
         action: DamageImmunity = DamageImmunity.create(line)
         if action:
             target = self.get_char(action.target_name)
             target.add_damage_absorption(action)
-            return
+            return action
 
         action: StealthCooldown = StealthCooldown.create(line)
         if action:
             self.player.stealth_cooldown = action
-            return
+            return action
 
         action: InitiativeRoll = InitiativeRoll.create(line)
         if action:
             self._detect_player(action.roller_name)
             self.player.initiative_roll = action
-            return
+            return action
 
         action: Usage = Usage.create(line)
         if action:
@@ -123,51 +136,53 @@ class Parser:
             if action.item == ITEM_POTION_OF_HEAL and user != self.player:
                 # for user we get Heal action
                 user.reset_damage()
-            return
+            return action
         
         action: Heal = Heal.create(line)
         if action:
             self._detect_player(action.target_name)
             self.player.add_heal(action)
-            return
+            return action
 
         action: Experience = Experience.create(line)
         if action:
             append_fix_time_window(self.experience_list, action, EXPERIENCE_TIMEOUT)
-            return
+            return action
 
         action: Resting = Resting.create(line)
         if action:
             self.player.resting()
-            return
+            return action
 
         action: CastBegin = CastBegin.create(line)
         if action:
             caster = self.get_char(action.caster_name)
             caster.cast_begin(action)
-            return
+            return action
 
         action: CastEnd = CastEnd.create(line)
         if action:
             caster = self.get_char(action.caster_name)
             caster.cast_end(action)
-            return
+            return action
 
         action: CastInterruption = CastInterruption.create(line)
         if action:
             caster = self.get_char(action.caster_name)
             caster.cast_interruption(action)
-            return
+            return action
 
         action: Debuff = Debuff.create(line)
         if action:
             self.player.debuff(action)
-            return
+            return action
 
         action: RodOfFastCast = RodOfFastCast.create(line)
         if action:
             self.player.item_usage(ROD_OF_FAST_CAST)
-            return
+            return action
+
+        return None
 
     def _detect_player(self, name: str):
         # find player name by InitiativeRoll and Heal

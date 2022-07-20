@@ -30,17 +30,17 @@ class DamagePerRound:
     def __init__(self):
         self.damage_list: typing.List[Damage] = []
         self.max_dpr = 0
-        self.ts_max_dpr = 0
+        self.max_dpr_ts = 0
         self.last_dpr = 0
-        self.ts_last_dpr = 0
+        self.last_dpr_ts = 0
 
     def calculate_dpr(self):
         ts = get_ts()
         self.last_dpr = sum([damage.value for damage in self.damage_list])
-        self.ts_last_dpr = ts
-        if self.last_dpr > self.max_dpr or ts - self.ts_max_dpr > MAX_DPR_TIMEOUT:
+        self.last_dpr_ts = ts
+        if self.last_dpr > self.max_dpr or ts - self.max_dpr_ts > MAX_DPR_TIMEOUT:
             self.max_dpr = self.last_dpr
-            self.ts_max_dpr = ts
+            self.max_dpr_ts = ts
 
     def add_damage(self, damage: Damage) -> None:
         append_fix_time_window(self.damage_list, damage, ROUND_DURATION)
@@ -102,6 +102,13 @@ class Character:
     def __str__(self):
         return str(self.__dict__)
 
+    def get_target_name(self) -> str:
+        if self.ab_attack_list:
+            return self.ab_attack_list[-1].target_name
+        if self.last_caused_damage:
+            return self.last_caused_damage.target_name
+        return self.name
+
     # ac
     def add_ac(self, attack: Attack):
         append_fix_size(self.ac_attack_list, attack, AC_ATTACK_LIST_LIMIT)
@@ -159,18 +166,13 @@ class Character:
             return ab.base
         return 0
 
-    def update_timestamp(self) -> None:
+    def update_timestamp(self) -> Time:
         current_time = get_ts()
         self.timestamp = current_time
         return current_time
 
     def add_stunning_fist(self, sf: StunningFirst) -> None:
-        new_sf_list = [
-            sf for sf in self.stunning_fist_list
-            if sf.s_attack.is_success() and (sf.throw is None or sf.get_duration())
-        ]
-        self.stunning_fist_list = new_sf_list
-        self.stunning_fist_list.append(sf)
+        append_fix_time_window(self.stunning_fist_list, sf, STUNNING_FIST_DURATION)
 
     def add_caused_damage(self, damage: Damage) -> None:
         self.stats_storage.caused_dpr.add_damage(damage)
@@ -286,8 +288,11 @@ class Player(Character):
             self.sum_received_damage -= heal.value
 
     def on_fortitude_save(self, throw: SavingThrow) -> None:
+        if throw.type != 'Fortitude Save':
+            return
+
         for sf in self.stunning_fist_list:
-            if sf.s_attack.target_name == throw.target_name and sf.throw is None:
+            if sf.s_attack.target_name == throw.target_name and sf.s_attack.is_success() and sf.throw is None:
                 sf.throw = throw
                 break
 

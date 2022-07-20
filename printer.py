@@ -1,3 +1,5 @@
+import logging
+
 import pandas
 import tabulate
 
@@ -105,8 +107,7 @@ class Printer:
         max_hp = max(1, target.get_avg_hp())
         cur_hp = target.get_cur_hp()
         min_hp = min(cur_hp, 0)
-        # self.ui.upgrade_hp_progress_bar(ProgressBarType.TARGET_HP, target.name, max_hp - cur_hp, 0, max_hp)
-        self.ui.upgrade_hp_progress_bar(ProgressBarType.TARGET_HP, target.name, cur_hp, min_hp, max_hp)
+        self.ui.target_hp_bar.upgrade(target.name, cur_hp, min_hp, max_hp)
 
     def update_player_hp_bar(self, player: Character) -> None:
         max_hp = max(1, player.get_avg_hp())
@@ -117,83 +118,50 @@ class Printer:
         else:
             self.ui.notify_low_hp(False)
 
-        # self.ui.upgrade_hp_progress_bar(ProgressBarType.PLAYER_HP, player.name, max_hp - cur_hp, 0, max_hp)
-        self.ui.upgrade_hp_progress_bar(ProgressBarType.PLAYER_HP, player.name, cur_hp, min_hp, max_hp)
+        self.ui.player_hp_bar.upgrade(player.name, cur_hp, min_hp, max_hp)
 
     def update_dpr_bar(self, char: Character) -> None:
         # Damage per round
         caused_dpr = char.stats_storage.caused_dpr
-        dpr = caused_dpr.last_dpr
-        if caused_dpr.max_dpr and dpr:
-            ts = get_ts()
-            duration_without_attack = ts - caused_dpr.ts_last_dpr
-            if duration_without_attack <= ROUND_DURATION:
-                dpr = int(dpr * (ROUND_DURATION - duration_without_attack) / ROUND_DURATION)
-                if dpr:
-                    self.ui.upgrade_progress_bar(ProgressBarType.DAMAGE_PER_ROUND, dpr, 0, caused_dpr.max_dpr)
-                    return
-        self.ui.set_complete_progress_bar(ProgressBarType.DAMAGE_PER_ROUND)
+        self.ui.attack_damage_bar.update_dps(caused_dpr.last_dpr, caused_dpr.max_dpr, caused_dpr.last_dpr_ts)
+
+    def update_attack_base_bar(self, char: Character) -> None:
+        # Attacks min/max
+        last_ab = char.get_last_ab_attack()
+        if last_ab:
+            max_ab = char.get_max_ab_attack_base()
+            min_ab = char.get_min_ab_attack_base()
+            self.ui.attack_damage_bar.update_attack(last_ab.base, min_ab, max_ab, last_ab.timestamp)
 
     def update_knockdown_bar(self, char: Character) -> None:
         # Knockdown cooldown
         last_kd = char.last_knockdown
-        value = last_kd.get_cooldown()
-        if value:
-            if last_kd.s_attack.is_success():
-                self.ui.upgrade_progress_bar(ProgressBarType.KNOCKDOWN, value)
-            else:
-                self.ui.upgrade_progress_bar(ProgressBarType.KNOCKDOWN_MISS, value)
-            return
-        self.ui.set_complete_progress_bar(ProgressBarType.KNOCKDOWN)
-        self.ui.set_complete_progress_bar(ProgressBarType.KNOCKDOWN_MISS)
+        if last_kd.s_attack.is_success():
+            self.ui.knockdown_bar.update_timestamp(last_kd.timestamp)
+            self.ui.knockdown_miss_bar.update_timestamp(0)
+        else:
+            self.ui.knockdown_bar.update_timestamp(0)
+            self.ui.knockdown_miss_bar.update_timestamp(last_kd.timestamp)
+        return
 
     def update_stunning_fist_bar(self, char: Character) -> None:
         # Stunning fist duration
         for sf in reversed(char.stunning_fist_list):
-            value = sf.get_duration()
-            if value:
-                self.ui.upgrade_progress_bar(ProgressBarType.STUNNING_FIST, value)
-                return
-        self.ui.set_complete_progress_bar(ProgressBarType.STUNNING_FIST)
+            if sf.is_success():
+                self.ui.stunning_fist_bar.update_timestamp(sf.timestamp)
+                break
 
     def update_stealth_mode_cd_bar(self, player: Player) -> None:
         # Stealth mode cooldown
-        value = player.stealth_cooldown.get_duration()
-        if value:
-            self.ui.upgrade_progress_bar(ProgressBarType.STEALTH_MODE_CD, value)
-            return
-        self.ui.set_complete_progress_bar(ProgressBarType.STEALTH_MODE_CD)
-
-    def update_attack_base_bar(self, char: Character) -> None:
-        # Attacks min/max
-        ab_attack_list = char.ab_attack_list
-        if ab_attack_list:
-            last_ab = char.get_last_ab_attack()
-            if get_ts() - last_ab.timestamp <= 6000:
-                max_ab = char.get_max_ab_attack_base()
-                min_ab = char.get_min_ab_attack_base()
-                self.ui.upgrade_progress_bar(ProgressBarType.ATTACK_BASE, last_ab.base, min_ab, max_ab)
-                return
-        self.ui.set_complete_progress_bar(ProgressBarType.ATTACK_BASE)
+        sm_cd = player.stealth_cooldown
+        self.ui.stealth_cooldown_bar.update(sm_cd.cooldown, sm_cd.timestamp)
 
     def update_casting_bar(self, char: Character) -> None:
         casting = char.casting_spell
         if casting:
-            channeling = CAST_TIME - (get_ts() - casting.timestamp)
-            if channeling >= 0:
-                self.ui.upgrade_casting_progress_bar(casting.spell_name, channeling)
-                return
-        self.ui.set_complete_progress_bar(ProgressBarType.CASTING_SPELL)
-
-    def update_buffs_bar(self, player: Player) -> None:
-        buffs = player.buff_dict
-        for name, buff in buffs.items():
-            if buff:
-                duration = buff.duration - (get_ts() - buff.timestamp)
-                if duration >= 0:
-                    self.ui.upgrade_buff_progress_bar(name, duration, 0, buff.duration, Visible.VISIBLE)
-                    continue
-            self.ui.upgrade_buff_progress_bar(name, 0, 0, 1, Visible.INVISIBLE)
+            self.ui.casting_bar.update(casting.spell_name, casting.timestamp)
+        else:
+            self.ui.casting_bar.update('', 0)
 
     def change_print_mode(self):
         self.wide_mode = not self.wide_mode
@@ -233,19 +201,29 @@ class Printer:
         chars = [char for char in parser.characters.values()]
 
         target = chars[0]
-        last_player_ab = player.get_last_ab_attack()
-        if last_player_ab:
-            target = [char for char in chars if char.name == last_player_ab.target_name][0]
-
-        self.update_target_hp_bar(target)
-        self.update_char_stat(self.ui.target_stat, target)
-        self.update_char_stat(self.ui.player_stat, player)
+        for char in chars:
+            if char.name == player.get_target_name():
+                target = char
+                break
 
         self.update_player_hp_bar(player)
-        self.update_dpr_bar(player)
-        self.update_knockdown_bar(player)
-        self.update_stunning_fist_bar(player)
-        self.update_stealth_mode_cd_bar(player)
-        self.update_attack_base_bar(player)
-        self.update_casting_bar(player)
-        self.update_buffs_bar(player)
+        self.update_char_stat(self.ui.player_stat, player)
+        self.update_target_hp_bar(target)
+        self.update_char_stat(self.ui.target_stat, target)
+
+        for action in parser.pop_actions():
+            action_type = action.get_type()
+            if action_type == Damage:
+                self.update_dpr_bar(player)
+            elif action_type == Attack:
+                self.update_attack_base_bar(player)
+                self.update_stealth_mode_cd_bar(player)
+            elif action_type == SpecialAttack:
+                self.update_knockdown_bar(player)
+                self.update_stealth_mode_cd_bar(player)
+            elif action_type == SavingThrow:
+                self.update_stunning_fist_bar(player)
+            elif action_type == StealthCooldown:
+                self.update_stealth_mode_cd_bar(player)
+            elif action_type == CastBegin or action_type == CastEnd or action_type == CastInterruption:
+                self.update_casting_bar(player)

@@ -108,13 +108,13 @@ class UserInterface:
         self.knockdown_miss_bar = KnockdownMissBar()
         self.main_form.addRow(self.knockdown_miss_bar.pb)
 
-        self.stunning_fist_bar = KnockdownMissBar()
+        self.stunning_fist_bar = StunningFistBar()
         self.main_form.addRow(self.stunning_fist_bar.pb)
 
-        self.stealth_cooldown_bar = KnockdownMissBar()
+        self.stealth_cooldown_bar = StealthCooldownBar()
         self.main_form.addRow(self.stealth_cooldown_bar.pb)
 
-        self.casting_bar = KnockdownMissBar()
+        self.casting_bar = CastingBar()
         self.main_form.addRow(self.casting_bar.pb)
 
         self.low_hp_label = QLabel("LOW HP")

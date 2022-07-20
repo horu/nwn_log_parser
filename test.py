@@ -70,7 +70,7 @@ TEST END
 """
 
 
-def test(printer):
+def test(printer: Printer):
     parser = Parser()
     for line in test_lines.splitlines():
         parser.push_line(line)

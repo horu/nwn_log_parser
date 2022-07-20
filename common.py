@@ -44,9 +44,11 @@ PLAYER_HP = int(os.environ.get('PLAYER_HP'))
 HIPS = bool(os.environ.get('HIPS', default=False))
 CASTER_LEVEL = int(os.environ.get('CASTER_LVL'))
 
+Time = int  # ms
 
-def get_ts():
-    return int(time.time_ns() / 1000000)
+
+def get_ts() -> Time:
+    return Time(time.time_ns() / 1000000)
 
 
 def append_fix_size(list_to_append, el, size):
