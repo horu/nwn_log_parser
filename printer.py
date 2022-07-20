@@ -1,10 +1,9 @@
-import logging
-
 import pandas
 import tabulate
 
 from parser import *
-from ui import *
+from ui import UserInterface
+from ui_char import CharacterStat
 
 
 CHARS_COUNT_WIDE_MODE = 30

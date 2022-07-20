@@ -1,7 +1,7 @@
 import sys
 
 from test import *
-from qt import *
+from ui_common import *
 from log_reader import *
 
 # https://github.com/jakkn/nwn-logparser

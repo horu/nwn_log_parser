@@ -24,18 +24,12 @@ def get_progress_bar_style(color: str, additional_chunk: str = '') -> str:
     return style
 
 
-class Visible(Enum):
-    VISIBLE = auto()
-    INVISIBLE = auto()
-
-
 def create_progress_bar(
         title_format: str,
         cur_value: int,
         min_value: int,
         max_value: int,
         style: str,
-        visible: Visible,
         inverted: bool = False,
 ) -> QProgressBar:
     pb = QProgressBar()
@@ -56,7 +50,6 @@ class HpBar:
         self.pb = create_progress_bar(
             '%v/1', 0, 0, 1,
             get_progress_bar_style(color),
-            Visible.VISIBLE,
         )
 
     def upgrade(self, name: str, cur_value: int, min_value: int, max_value: int) -> None:
@@ -142,7 +135,6 @@ class KnockdownBar(TemporaryProgressBar):
             10, KNOCKDOWN_PVE_CD,
             '%v ms Knockdown', 0, 0, KNOCKDOWN_PVE_CD,
             get_progress_bar_style('#99bd00ff'),
-            Visible.INVISIBLE,
         )
 
 
@@ -152,7 +144,6 @@ class KnockdownMissBar(TemporaryProgressBar):
             10, KNOCKDOWN_PVE_CD,
             '%v ms Knockdown', 0, 0, KNOCKDOWN_PVE_CD,
             get_progress_bar_style('#99bd00ff', additional_chunk='width: 10px; margin: 0.5px;'),
-            Visible.INVISIBLE,
         )
 
 
@@ -162,7 +153,6 @@ class StunningFistBar(TemporaryProgressBar):
             10, STUNNING_FIST_DURATION,
             '%v ms Stunning fist', 0, 0, STUNNING_FIST_DURATION,
             get_progress_bar_style('#99ffffff'),
-            Visible.INVISIBLE,
         )
 
 
@@ -172,7 +162,6 @@ class StealthCooldownBar(TemporaryProgressBar):
             10, STEALTH_MODE_CD,
             '%v ms Stealth cooldown', 0, 0, STEALTH_MODE_CD,
             get_progress_bar_style('#ff3472ff'),
-            Visible.INVISIBLE,
         )
 
     def update(self, cooldown: Time, event_ts: Time):
@@ -186,7 +175,6 @@ class CastingBar(TemporaryProgressBar):
             10, CAST_TIME,
             '%v ms', 0, 0, CAST_TIME,
             get_progress_bar_style('#990017ff'),
-            Visible.INVISIBLE,
         )
 
     def update(self, spell_name: str, event_ts: Time):
@@ -203,14 +191,12 @@ class AttackDpsBar(Timer):
         self.dps_pb = create_progress_bar(
             '%v Damage per round', 0, 0, 1,
             get_progress_bar_style('#99ff7b06'),
-            Visible.INVISIBLE,
         )
         self.box.addWidget(self.dps_pb)
 
         self.attack_pb = create_progress_bar(
             '%v Attack base', 0, 0, 1,
             get_progress_bar_style('#9917b402'),
-            Visible.INVISIBLE,
             inverted=True,
         )
         self.box.addWidget(self.attack_pb)

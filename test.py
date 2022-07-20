@@ -1,5 +1,4 @@
-from parser import *
-from qt import *
+from printer import *
 
 test_lines = """
 [CHAT WINDOW TEXT] [Wed Jul 13 00:35:34] Dunya Kulakova : Initiative Roll : 20 : (9 + 11 = 20)
