@@ -10,7 +10,7 @@ class Parser:
         self.last_actions: typing.List[Action] = []
 
         self.characters = collections.defaultdict(Character)
-        self.player = Player()
+        self.player = Character()
 
         self.experience_list: typing.List[Experience] = []
         self.round_ts = 0
@@ -199,10 +199,8 @@ class Parser:
         # find player name by InitiativeRoll and Heal
         if self.player.name != name:
             self.characters.clear()
-            self.player = Player()
-            self.player.name = name
+            self.player = self.get_char(name)
             self.player.hp_list = [PLAYER_HP]
-            self.characters[name] = self.player
 
     def reset_statistic(self):
         for char in self.characters.values():

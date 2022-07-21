@@ -99,6 +99,12 @@ class Character:
 
         self.casting_spell: typing.Optional[CastBegin] = None
 
+        self.stealth_cooldown = StealthCooldown.explicit_create(0)
+        self.initiative_roll: typing.Optional[InitiativeRoll] = None
+
+        self.last_heal = Heal.explicit_create()
+        self.buff_dict: typing.Dict[BuffName, typing.Optional[Buff]] = {}
+
     def __str__(self):
         return str(self.__dict__)
 
@@ -207,6 +213,7 @@ class Character:
         if experience:
             self.experience = experience
         self.death = death
+        self.clear_buffs()
 
     def get_avg_hp(self) -> int:
         avg_hp = 0
@@ -234,26 +241,12 @@ class Character:
         if self.casting_spell and self.casting_spell.spell_name == cast.spell_name:
             self.casting_spell = None
 
-    def cast_interruption(self, cast: CastInterruption) -> None:
-        self.casting_spell = None
-
-
-class Player(Character):
-    def __init__(self):
-        super(Player, self).__init__()
-
-        self.stealth_cooldown = StealthCooldown.explicit_create(0)
-        self.initiative_roll: typing.Optional[InitiativeRoll] = None
-
-        self.last_heal = Heal.explicit_create()
-        self.buff_dict: typing.Dict[BuffName, typing.Optional[Buff]] = {}
-
-    def cast_end(self, cast: CastEnd) -> None:
-        super(Player, self).cast_end(cast)
-
         buff = Buff.create_by_full_name(cast.spell_name)
         if buff:
             self.buff_dict[buff.buff_name] = buff
+
+    def cast_interruption(self, cast: CastInterruption) -> None:
+        self.casting_spell = None
 
     def fast_cast_end(self, cast: FastCastEnd) -> None:
         buff = Buff.create_by_full_name(cast.spell_name)
@@ -281,13 +274,9 @@ class Player(Character):
         for name in self.buff_dict.keys():
             self.buff_dict[name] = None
 
-    def on_killed(self, death: Death, experience: Experience) -> None:
-        self.death = death
-        self.clear_buffs()
-        # next add_heal gets full hp - 1
-
     def add_heal(self, heal: Heal) -> None:
         self.last_heal = heal
+        # next add_heal gets full hp - 1
         if self.death:
             self.death = None
             hp = heal.value + 1

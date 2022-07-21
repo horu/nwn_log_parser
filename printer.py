@@ -119,7 +119,7 @@ class Printer:
 
         self.ui.player_hp_bar.upgrade(player.name, cur_hp, min_hp, max_hp)
 
-    def update_buffs_bar(self, player: Player) -> None:
+    def update_buffs_bar(self, player: Character) -> None:
         for name, buff in player.buff_dict.items():
             if buff:
                 self.ui.buffs_bar.update(name.short, buff.duration, buff.timestamp)
@@ -157,7 +157,7 @@ class Printer:
                 self.ui.stunning_fist_bar.update_timestamp(sf.timestamp)
                 break
 
-    def update_stealth_mode_cd_bar(self, player: Player) -> None:
+    def update_stealth_mode_cd_bar(self, player: Character) -> None:
         # Stealth mode cooldown
         sm_cd = player.stealth_cooldown
         self.ui.stealth_cooldown_bar.update(sm_cd.cooldown, sm_cd.timestamp)

@@ -66,6 +66,7 @@ test_lines = """
 [CHAT WINDOW TEXT] [Tue Jul 19 12:43:07] TEST CHAR : Spell Interrupted
 [CHAT WINDOW TEXT] [Tue Jul 19 14:40:28] * Divine Favor wore off *
 XP DEBT: Decreased by 475 XP
+Attempting to fast cast 17 spells.
 [CHAT WINDOW TEXT] [Thu Jul 21 14:54:58] XP DEBT: You must pay 15550 XP, before you can start earn XP again
 [CHAT WINDOW TEXT] [Wed Jul 20 22:55:50] Casting spell Bless1 at postion 15 on item with metamagic: None
 [CHAT WINDOW TEXT] [Tue Jul 19 14:40:28] * Bless wore off *
