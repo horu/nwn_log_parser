@@ -296,6 +296,26 @@ class Heal(Action):
 
 
 """
+XP DEBT: Decreased by 450 XP
+"""
+
+
+class ExperienceDebtDecrease(Action):
+    @classmethod
+    def create(cls, string):
+        p = r'XP DEBT: Decreased by ([0-9]+) XP'
+        return Action.base_create(string, p, cls)
+
+    @classmethod
+    def explicit_create(cls):
+        return cls(['0'])
+
+    def __init__(self, g):
+        super().__init__()
+        self.value = int(g[0])
+
+
+"""
 [CHAT WINDOW TEXT] [Thu Jul 14 23:24:05] Experience Points Gained:  535
 """
 
@@ -307,7 +327,9 @@ class Experience(Action):
         return Action.base_create(string, p, cls)
 
     @classmethod
-    def explicit_create(cls):
+    def explicit_create(cls, debt: typing.Optional[ExperienceDebtDecrease] = None):
+        if debt:
+            return cls([str(debt.value)])
         return cls(['0'])
 
     def __init__(self, g):

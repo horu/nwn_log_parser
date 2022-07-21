@@ -149,6 +149,12 @@ class Parser:
             append_fix_time_window(self.experience_list, action, EXPERIENCE_TIMEOUT)
             return action
 
+        action: ExperienceDebtDecrease = ExperienceDebtDecrease.create(line)
+        if action:
+            exp = Experience.explicit_create(action)
+            append_fix_time_window(self.experience_list, exp, EXPERIENCE_TIMEOUT)
+            return action
+
         action: Resting = Resting.create(line)
         if action:
             self.player.resting()
