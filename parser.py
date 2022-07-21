@@ -179,7 +179,12 @@ class Parser:
 
         action: RodOfFastCast = RodOfFastCast.create(line)
         if action:
-            self.player.item_usage(ROD_OF_FAST_CAST)
+            # self.player.item_usage(ROD_OF_FAST_CAST)
+            return action
+
+        action: FastCastEnd = FastCastEnd.create(line)
+        if action:
+            self.player.fast_cast_end(action)
             return action
 
         return None

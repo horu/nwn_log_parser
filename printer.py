@@ -220,6 +220,7 @@ class Printer:
         for action in parser.pop_actions():
             action_type = action.get_type()
             if (action_type == CastEnd or
+                    action_type == FastCastEnd or
                     action_type == RodOfFastCast or
                     action_type == Resting or
                     action_type == Debuff or

@@ -397,6 +397,22 @@ class RodOfFastCast(Action):
 
 
 """
+[CHAT WINDOW TEXT] [Wed Jul 20 22:55:50] Casting spell Bless at postion 15 on item with metamagic: None
+"""
+
+
+class FastCastEnd(Action):
+    @classmethod
+    def create(cls, string):
+        p = r'\[CHAT WINDOW TEXT\] \[.+\] Casting spell ([^:]+) at postion'
+        return Action.base_create(string, p, cls)
+
+    def __init__(self, g):
+        super().__init__()
+        self.spell_name = g[0]
+
+
+"""
 [CHAT WINDOW TEXT] [Tue Jul 19 14:40:28] * Divine Favor wore off *
 """
 

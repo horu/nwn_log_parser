@@ -65,6 +65,8 @@ test_lines = """
 [CHAT WINDOW TEXT] [Tue Jul 19 12:33:11] TEST casts Mage Armor
 [CHAT WINDOW TEXT] [Tue Jul 19 12:43:07] TEST m r sf : Spell Interrupted
 [CHAT WINDOW TEXT] [Tue Jul 19 14:40:28] * Divine Favor wore off *
+XP DEBT: Decreased by 475 XP
+[CHAT WINDOW TEXT] [Thu Jul 21 14:54:58] XP DEBT: You must pay 15550 XP, before you can start earn XP again
 TEST END
 
 """

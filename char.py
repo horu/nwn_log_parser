@@ -255,6 +255,11 @@ class Player(Character):
         if buff:
             self.buff_dict[buff.buff_name] = buff
 
+    def fast_cast_end(self, cast: FastCastEnd) -> None:
+        buff = Buff.create_by_full_name(cast.spell_name)
+        if buff:
+            self.buff_dict[buff.buff_name] = buff
+
     def resting(self):
         self.reset_damage()
         self.clear_buffs()
@@ -265,7 +270,7 @@ class Player(Character):
             self.buff_dict[buff.buff_name] = buff
 
     def debuff(self, debuff: Debuff):
-        common_buff = Buff.create_by_full_name(debuff.buff_name)
+        common_buff = CommonBuff.find_by_full_name(debuff.buff_name)
         if common_buff:
             buff = self.buff_dict.get(common_buff.buff_name)
             # ignore redebuff message
