@@ -17,7 +17,8 @@ if __name__ == "__main__":
     printer = Printer(ui)
     test(printer)
 
-    parser = Parser()
+    data_saver = DataSaver(DATA_FILE_PATH)
+    parser = data_saver.load()
     reader = LogReader(LOG_DIR)
     back = Backend(win, reader, parser, printer)
 

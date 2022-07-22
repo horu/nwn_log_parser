@@ -1,0 +1,98 @@
+parser:
+  characters:
+  - classes:
+      assasion: 1
+      cleric: 15
+      monk: 19
+    hp_list:
+    - 453
+    name: Dunya Kulakova
+  - classes: {}
+    hp_list: []
+    name: Ichilphrion
+  - classes: {}
+    hp_list: []
+    name: Epic Dragon Guardian
+  - classes: {}
+    hp_list: []
+    name: Alicia
+  - classes: {}
+    hp_list: []
+    name: Summoned Fire Elemental
+  - classes: {}
+    hp_list: []
+    name: Weiland Nightingale
+  - classes: {}
+    hp_list: []
+    name: Epic Giant Demon
+  - classes: {}
+    hp_list: []
+    name: Massy  of the Gnarled Stick
+  - classes: {}
+    hp_list: []
+    name: NIGHTMARE
+  - classes: {}
+    hp_list: []
+    name: Massy Wolfblood
+  - classes: {}
+    hp_list: []
+    name: Notorious Bard
+  - classes: {}
+    hp_list: []
+    name: Rodo Woschren
+  - classes: {}
+    hp_list: []
+    name: Elena Yoo
+  - classes: {}
+    hp_list: []
+    name: Door
+  - classes: {}
+    hp_list:
+    - 72
+    name: Manticore
+  - classes: {}
+    hp_list:
+    - 116
+    name: Bandit Leader Dian
+  - classes: {}
+    hp_list: []
+    name: 'No'
+  - classes: {}
+    experience: 200
+    hp_list:
+    - 977
+    - 899
+    - 862
+    - 881
+    - 924
+    - 879
+    - 888
+    - 1007
+    - 874
+    - 865
+    name: Blackscale Lizardfolk Ranger
+  - classes: {}
+    experience: 250
+    hp_list:
+    - 850
+    - 973
+    - 987
+    - 798
+    - 965
+    - 818
+    - 974
+    - 804
+    - 893
+    - 1574
+    name: Blackscale Lizardfolk Hero
+  - classes: {}
+    experience: 250
+    hp_list:
+    - 670
+    - 682
+    name: Lich
+  - classes: {}
+    hp_list: []
+    name: Summoned Helmed Horror
+  player:
+    name: Dunya Kulakova

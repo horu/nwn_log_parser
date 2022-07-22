@@ -9,7 +9,7 @@ from ui_char import CharacterStat
 CHARS_COUNT_WIDE_MODE = 30
 CHARS_TO_PRINT_TIMEOUT = 5000
 DAMAGE_PRINT_LIMIT = 1000
-LOW_HP_NOTIFY_LIMIT = 0.3
+LOW_HP_NOTIFY_LIMIT = 0.4
 
 
 def convert_damage(value: int) -> str:

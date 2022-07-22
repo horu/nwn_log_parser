@@ -327,9 +327,11 @@ class Experience(Action):
         return Action.base_create(string, p, cls)
 
     @classmethod
-    def explicit_create(cls, debt: typing.Optional[ExperienceDebtDecrease] = None):
+    def explicit_create(cls, debt: typing.Optional[ExperienceDebtDecrease] = None, value: typing.Optional[int] = None):
         if debt:
             return cls([str(debt.value)])
+        elif value is not None:
+            return cls([str(value)])
         return cls(['0'])
 
     def __init__(self, g):

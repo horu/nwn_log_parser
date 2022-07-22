@@ -126,7 +126,7 @@ class Parser:
 
         action: InitiativeRoll = InitiativeRoll.create(line)
         if action:
-            self._detect_player(action.roller_name)
+            self.set_player(action.roller_name)
             self.player.initiative_roll = action
             return action
 
@@ -140,7 +140,7 @@ class Parser:
         
         action: Heal = Heal.create(line)
         if action:
-            self._detect_player(action.target_name)
+            self.set_player(action.target_name)
             self.player.add_heal(action)
             return action
 
@@ -195,7 +195,7 @@ class Parser:
 
         return None
 
-    def _detect_player(self, name: str):
+    def set_player(self, name: str):
         # find player name by InitiativeRoll and Heal
         if self.player.name != name:
             self.characters.clear()

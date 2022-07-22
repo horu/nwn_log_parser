@@ -4,6 +4,7 @@ import typing
 
 from actions import *
 from buffs import *
+from levels import Levels
 
 AB_ATTACK_LIST_LIMIT = 12
 HP_LIST_LIMIT = 10
@@ -104,6 +105,8 @@ class Character:
 
         self.last_heal = Heal.explicit_create()
         self.buff_dict: typing.Dict[BuffName, typing.Optional[Buff]] = {}
+
+        self.levels = Levels()
 
     def __str__(self):
         return str(self.__dict__)
@@ -241,7 +244,7 @@ class Character:
         if self.casting_spell and self.casting_spell.spell_name == cast.spell_name:
             self.casting_spell = None
 
-        buff = Buff.create_by_full_name(cast.spell_name)
+        buff = Buff.create_by_full_name(cast.spell_name, self.levels)
         if buff:
             self.buff_dict[buff.buff_name] = buff
 
@@ -249,7 +252,7 @@ class Character:
         self.casting_spell = None
 
     def fast_cast_end(self, cast: FastCastEnd) -> None:
-        buff = Buff.create_by_full_name(cast.spell_name)
+        buff = Buff.create_by_full_name(cast.spell_name, self.levels)
         if buff:
             self.buff_dict[buff.buff_name] = buff
 
@@ -258,12 +261,12 @@ class Character:
         self.clear_buffs()
 
     def item_usage(self, item_name: str):
-        buff = Buff.create_by_full_name(item_name)
+        buff = Buff.create_by_full_name(item_name, self.levels)
         if buff:
             self.buff_dict[buff.buff_name] = buff
 
     def debuff(self, debuff: Debuff):
-        common_buff = CommonBuff.find_by_full_name(debuff.buff_name)
+        common_buff = Buff.create_by_full_name(debuff.buff_name, self.levels)
         if common_buff:
             buff = self.buff_dict.get(common_buff.buff_name)
             # ignore redebuff message

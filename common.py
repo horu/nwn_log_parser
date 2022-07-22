@@ -1,3 +1,4 @@
+import pathlib
 import time
 import os
 import typing
@@ -42,7 +43,7 @@ LOG_LEVEL = os.environ.get('LOG_LEVEL', default='DEBUG')
 LOG_DIR = os.environ.get('LOG_DIR', default='{}/.local/share/Neverwinter Nights/logs/'.format(os.getenv('HOME')))
 PLAYER_HP = int(os.environ.get('PLAYER_HP'))
 HIPS = bool(os.environ.get('HIPS', default=False))
-CASTER_LEVEL = int(os.environ.get('CASTER_LVL'))
+DATA_FILE_PATH = pathlib.Path(os.environ.get('DATA_FILE_PATH', default='./data.yaml'))
 
 Time = int  # ms
 

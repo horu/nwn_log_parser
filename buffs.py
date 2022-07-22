@@ -1,4 +1,5 @@
 from actions import *
+from levels import Levels
 
 
 class BuffName:
@@ -7,41 +8,28 @@ class BuffName:
         self.short = short_name
 
 
-class CommonBuff:
+class Buff:
     @classmethod
-    def find_by_full_name(cls, name: str):
-        for buff in BUFFS:
-            if buff.buff_name.full == name:
-                return buff
+    def create_by_full_name(cls, name: str, levels: Levels):
+        cleric_levels = levels.get_level('cleric')
+        buffs = [
+            (BuffName('Prayer', 'P'), cleric_levels * ROUND_DURATION * 2),
+            (BuffName('Battletide', 'BT'), cleric_levels * ROUND_DURATION * 2),
+            (BuffName('Divine Power', 'DP'), cleric_levels * ROUND_DURATION * 2),
+            (BuffName('Divine Favor', 'DF'), TURN_DURATION * 2),
+            (BuffName('Greater Sanctuary', 'GS'), 36000),
+            (BuffName(ROD_OF_FAST_CAST, 'FC'), cleric_levels * TURN_DURATION),
+            (BuffName('Bless', 'B'), cleric_levels * TURN_DURATION),
+            (BuffName('Aid', 'A'), cleric_levels * TURN_DURATION),
+        ]
+
+        for buff_name, duration in buffs:
+            if buff_name.full == name:
+                return Buff(buff_name, duration)
         return None
 
     def __init__(self, buff_name: BuffName, duration: int):
+        self.timestamp = get_ts()
         self.buff_name = buff_name
         self.duration = duration
-
-
-BUFFS = [
-    CommonBuff(BuffName('Prayer', 'P'), CASTER_LEVEL * ROUND_DURATION * 2),
-    CommonBuff(BuffName('Battletide', 'BT'), CASTER_LEVEL * ROUND_DURATION * 2),
-    CommonBuff(BuffName('Divine Power', 'DP'), CASTER_LEVEL * ROUND_DURATION * 2),
-    CommonBuff(BuffName('Divine Favor', 'DF'), TURN_DURATION * 2),
-    CommonBuff(BuffName('Greater Sanctuary', 'GS'), 36000),
-    CommonBuff(BuffName(ROD_OF_FAST_CAST, 'FC'), CASTER_LEVEL * TURN_DURATION),
-    CommonBuff(BuffName('Bless', 'B'), CASTER_LEVEL * TURN_DURATION),
-    CommonBuff(BuffName('Aid', 'A'), CASTER_LEVEL * TURN_DURATION),
-]
-
-
-class Buff:
-    @classmethod
-    def create_by_full_name(cls, name: str):
-        common_buff = CommonBuff.find_by_full_name(name)
-        if common_buff:
-            return Buff(common_buff)
-        return None
-
-    def __init__(self, common_buff: CommonBuff):
-        self.timestamp = get_ts()
-        self.buff_name = common_buff.buff_name
-        self.duration = common_buff.duration
         logging.debug("CREATE BUFF: {}({}): {} ms".format(self.buff_name.full, self.buff_name.short, self.duration))
