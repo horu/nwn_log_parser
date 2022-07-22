@@ -17,13 +17,20 @@ parser:
     hp_list: []
     name: Alicia
   - classes: {}
-    hp_list: []
+    hp_list:
+    - 745
+    - 530
+    - 264
+    - 532
+    - 781
     name: Summoned Fire Elemental
   - classes: {}
     hp_list: []
     name: Weiland Nightingale
   - classes: {}
-    hp_list: []
+    experience: 384
+    hp_list:
+    - 2173
     name: Epic Giant Demon
   - classes: {}
     hp_list: []
@@ -101,7 +108,10 @@ parser:
     hp_list: []
     name: Zophiel
   - classes: {}
-    hp_list: []
+    experience: 300
+    hp_list:
+    - 1469
+    - 1350
     name: Someone
   - classes: {}
     hp_list: []
@@ -188,5 +198,160 @@ parser:
   - classes: {}
     hp_list: []
     name: Not Medusa
+  - classes: {}
+    hp_list: []
+    name: Holliday
+  - classes: {}
+    hp_list:
+    - 427
+    name: Kat C88
+  - classes: {}
+    experience: 307
+    hp_list:
+    - 2139
+    - 37
+    - 1637
+    - 1266
+    - 1254
+    name: Epic Undead Monk
+  - classes: {}
+    experience: 307
+    hp_list:
+    - 1543
+    - 1634
+    - 1767
+    - 1623
+    - 1230
+    - 1536
+    - 2170
+    - 976
+    - 1517
+    - 1529
+    name: Epic Skeleton Hypnotist
+  - classes: {}
+    hp_list:
+    - 2158
+    - 1320
+    - 1325
+    - 1329
+    - 2134
+    - 1392
+    - 3246
+    name: Majestic Mummy Warrior
+  - classes: {}
+    experience: 300
+    hp_list:
+    - 1350
+    - 1350
+    - 1350
+    - 2391
+    - 1164
+    - 1351
+    - 2085
+    - 1158
+    name: Epic Skeleton
+  - classes: {}
+    experience: 504
+    hp_list:
+    - 10435
+    name: XANASDEM GUARD CAPTAIN
+  - classes: {}
+    experience: 378
+    hp_list:
+    - 26323
+    name: EPIC SKELETON KING
+  - classes: {}
+    hp_list: []
+    name: Throne
+  - classes: {}
+    hp_list: []
+    name: Epic Diamond Golem
+  - classes: {}
+    experience: 378
+    hp_list:
+    - 7944
+    name: DUNGEON KEEPER
+  - classes: {}
+    experience: 459
+    hp_list:
+    - 10516
+    name: CELLS GUARD CAPTAIN
+  - classes: {}
+    hp_list: []
+    name: Epic Acid Imp
+  - classes: {}
+    experience: 112
+    hp_list:
+    - 686
+    - 686
+    name: Epic Fire Imp
+  - classes: {}
+    experience: 307
+    hp_list:
+    - 1385
+    - 1748
+    name: Epic Arcane Demon
+  - classes: {}
+    hp_list: []
+    name: Black Blade of Disaster
+  - classes: {}
+    experience: 369
+    hp_list:
+    - 5590
+    name: MOORE ASSISTANT
+  - classes: {}
+    hp_list: []
+    name: Summoned Blood Lich
+  - classes: {}
+    hp_list: []
+    name: Ancient Air Elemental
+  - classes: {}
+    hp_list: []
+    name: Shelgarn's Persistent Blade
+  - classes: {}
+    experience: 300
+    hp_list:
+    - 935
+    - 917
+    name: Epic Bonetroll Elite
+  - classes: {}
+    experience: 307
+    hp_list:
+    - 4389
+    - 4427
+    name: Moore Guardian
+  - classes: {}
+    experience: 1376
+    hp_list:
+    - 37372
+    name: LORD MOORE
+  - classes: {}
+    hp_list: []
+    name: Strong Negative Trap
+  - classes: {}
+    experience: 312
+    hp_list:
+    - 1416
+    name: Moore Commando Sergeant
+  - classes: {}
+    experience: 326
+    hp_list:
+    - 4231
+    - 172
+    - 513
+    name: Boiling Skeleton
+  - classes: {}
+    hp_list: []
+    name: Family Statue
+  - classes: {}
+    experience: 504
+    hp_list:
+    - 10581
+    name: LORD MOORE SON
+  - classes: {}
+    experience: 504
+    hp_list:
+    - 10582
+    name: ISNAR THE NECROMANCER
   player:
     name: Dunya Kulakova
