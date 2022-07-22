@@ -54,22 +54,23 @@ parser:
     hp_list: []
     name: Door
   - classes: {}
+    experience: 4
     hp_list:
     - 72
+    - 76
     name: Manticore
   - classes: {}
+    experience: 4
     hp_list:
     - 116
+    - 81
     name: Bandit Leader Dian
   - classes: {}
     hp_list: []
     name: 'No'
   - classes: {}
-    experience: 187
+    experience: 200
     hp_list:
-    - 126
-    - 255
-    - 1364
     - 1160
     - 2070
     - 140
@@ -77,9 +78,12 @@ parser:
     - 800
     - 467
     - 231
+    - 855
+    - 983
+    - 862
     name: Blackscale Lizardfolk Ranger
   - classes: {}
-    experience: 187
+    experience: 200
     hp_list:
     - 128
     - 678
@@ -353,5 +357,11 @@ parser:
     hp_list:
     - 10582
     name: ISNAR THE NECROMANCER
+  - classes: {}
+    hp_list: []
+    name: Lard Fryar
+  - classes: {}
+    hp_list: []
+    name: Dire Tiger
   player:
     name: Dunya Kulakova

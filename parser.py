@@ -1,4 +1,3 @@
-import typer
 
 from char import *
 
@@ -199,7 +198,6 @@ class Parser:
         # find player name by InitiativeRoll and Heal
         if self.player.name != name:
             self.player = self.get_char(name)
-            self.player.hp_list = [PLAYER_HP]
 
     def reset_statistic(self):
         for char in self.characters.values():

@@ -42,7 +42,6 @@ ROD_OF_FAST_CAST = 'Rod Of Fast Cast'
 
 LOG_LEVEL = os.environ.get('LOG_LEVEL', default='DEBUG')
 LOG_DIR = os.environ.get('LOG_DIR', default='{}/.local/share/Neverwinter Nights/logs/'.format(os.getenv('HOME')))
-PLAYER_HP = int(os.environ.get('PLAYER_HP'))
 HIPS = bool(os.environ.get('HIPS', default=False))
 DATA_FILE_PATH = pathlib.Path(os.environ.get('DATA_FILE_PATH', default='./data.yaml'))
 
