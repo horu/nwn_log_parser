@@ -449,4 +449,4 @@ class Debuff(Action):
 
     def __init__(self, g):
         super().__init__()
-        self.buff_name = g[0]
+        self.spell_name = g[0]

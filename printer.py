@@ -120,11 +120,9 @@ class Printer:
         self.ui.player_hp_bar.upgrade(player.name, cur_hp, min_hp, max_hp)
 
     def update_buffs_bar(self, player: Character) -> None:
-        for name, buff in player.buff_dict.items():
-            if buff:
-                self.ui.buffs_bar.update(name.short, buff.duration, buff.timestamp)
-            else:
-                self.ui.buffs_bar.hide(name.short)
+        for buff in player.buff_list.get_buffs():
+            if buff.buff_name:
+                self.ui.buffs_bar.update(buff.buff_name, buff.duration, buff.timestamp)
 
     def update_dpr_bar(self, char: Character) -> None:
         # Damage per round

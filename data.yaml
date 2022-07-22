@@ -3,9 +3,9 @@ parser:
   - classes:
       assasion: 1
       cleric: 15
-      monk: 19
+      monk: 20
     hp_list:
-    - 453
+    - 466
     name: Dunya Kulakova
   - classes: {}
     hp_list: []
@@ -58,32 +58,32 @@ parser:
     hp_list: []
     name: 'No'
   - classes: {}
-    experience: 200
+    experience: 187
     hp_list:
-    - 977
-    - 899
-    - 862
-    - 881
-    - 924
-    - 879
-    - 888
-    - 1007
-    - 874
-    - 865
+    - 126
+    - 255
+    - 1364
+    - 1160
+    - 2070
+    - 140
+    - 945
+    - 800
+    - 467
+    - 231
     name: Blackscale Lizardfolk Ranger
   - classes: {}
-    experience: 250
+    experience: 187
     hp_list:
-    - 850
-    - 973
-    - 987
-    - 798
-    - 965
-    - 818
-    - 974
-    - 804
-    - 893
-    - 1574
+    - 128
+    - 678
+    - 365
+    - 481
+    - 828
+    - 985
+    - 2354
+    - 51
+    - 153
+    - 510
     name: Blackscale Lizardfolk Hero
   - classes: {}
     experience: 250
@@ -94,5 +94,99 @@ parser:
   - classes: {}
     hp_list: []
     name: Summoned Helmed Horror
+  - classes: {}
+    hp_list: []
+    name: Zercer
+  - classes: {}
+    hp_list: []
+    name: Zophiel
+  - classes: {}
+    hp_list: []
+    name: Someone
+  - classes: {}
+    hp_list: []
+    name: Legendary Earth Elemental
+  - classes: {}
+    hp_list: []
+    name: Bloodstain
+  - classes: {}
+    hp_list: []
+    name: Obelisk
+  - classes: {}
+    hp_list: []
+    name: Epic Earth Elemental
+  - classes: {}
+    hp_list: []
+    name: Epic Mummy Warrior
+  - classes: {}
+    hp_list: []
+    name: Kraven Helfire
+  - classes: {}
+    experience: 5401
+    hp_list:
+    - 6176
+    name: BLACKSCALE CLAN CHIEFTAIN
+  - classes: {}
+    experience: 75
+    hp_list:
+    - 617
+    - 585
+    name: Kobold Slave
+  - classes: {}
+    experience: 2
+    hp_list:
+    - 162
+    name: Dire Bear
+  - classes: {}
+    experience: 2
+    hp_list:
+    - 275
+    name: Pack Leader
+  - classes: {}
+    experience: 379
+    hp_list:
+    - 394
+    - 612
+    - 632
+    name: Epic Eagle
+  - classes: {}
+    hp_list: []
+    name: Mindslash
+  - classes: {}
+    hp_list: []
+    name: Boshi
+  - classes: {}
+    hp_list: []
+    name: Woo Woodskin
+  - classes: {}
+    experience: 475
+    hp_list:
+    - 779
+    name: Epic Red Lizardfolk Mystic
+  - classes: {}
+    experience: 475
+    hp_list:
+    - 716
+    name: Epic Hobgoblin
+  - classes: {}
+    experience: 475
+    hp_list:
+    - 722
+    name: Epic Hobgoblin Warrior
+  - classes: {}
+    experience: 475
+    hp_list:
+    - 1500
+    - 1434
+    name: Epic Dire Bear
+  - classes: {}
+    hp_list: []
+    name: Epic Dire Jaguar
+  - classes: {}
+    hp_list: []
+    name: Suchka EsheTa
+  - classes: {}
+    hp_list: []
+    name: Not Medusa
   player:
     name: Dunya Kulakova

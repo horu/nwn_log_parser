@@ -104,7 +104,7 @@ class Character:
         self.initiative_roll: typing.Optional[InitiativeRoll] = None
 
         self.last_heal = Heal.explicit_create()
-        self.buff_dict: typing.Dict[BuffName, typing.Optional[Buff]] = {}
+        self.buff_list = BuffList()
 
         self.levels = Levels()
 
@@ -222,6 +222,9 @@ class Character:
         avg_hp = 0
         if self.hp_list:
             avg_hp = sum(self.hp_list) / len(self.hp_list)
+
+        if self.buff_list.is_buff_exists(SPELL_ENDURANCE):
+            avg_hp += self.levels.get_common_level()
         return int(avg_hp)
 
     def get_cur_hp(self) -> int:
@@ -244,38 +247,31 @@ class Character:
         if self.casting_spell and self.casting_spell.spell_name == cast.spell_name:
             self.casting_spell = None
 
-        buff = Buff.create_by_full_name(cast.spell_name, self.levels)
-        if buff:
-            self.buff_dict[buff.buff_name] = buff
+        self.buff_list.add_buff(cast.spell_name, self.levels)
 
     def cast_interruption(self, cast: CastInterruption) -> None:
         self.casting_spell = None
 
     def fast_cast_end(self, cast: FastCastEnd) -> None:
-        buff = Buff.create_by_full_name(cast.spell_name, self.levels)
-        if buff:
-            self.buff_dict[buff.buff_name] = buff
+        self.buff_list.add_buff(cast.spell_name, self.levels)
 
     def resting(self):
         self.reset_damage()
         self.clear_buffs()
 
     def item_usage(self, item_name: str):
-        buff = Buff.create_by_full_name(item_name, self.levels)
-        if buff:
-            self.buff_dict[buff.buff_name] = buff
+        self.buff_list.add_buff(item_name, self.levels)
 
     def debuff(self, debuff: Debuff):
-        common_buff = Buff.create_by_full_name(debuff.buff_name, self.levels)
-        if common_buff:
-            buff = self.buff_dict.get(common_buff.buff_name)
-            # ignore redebuff message
-            if not buff or abs(debuff.timestamp - buff.timestamp) > 1000:
-                self.buff_dict[common_buff.buff_name] = None
+        buff = self.buff_list.get_buff(debuff.spell_name)
+
+        # ignore redebuff message
+        if buff and abs(debuff.timestamp - buff.timestamp) > 2000:
+            buff.debuff()
 
     def clear_buffs(self):
-        for name in self.buff_dict.keys():
-            self.buff_dict[name] = None
+        for buff in self.buff_list.get_buffs():
+            buff.debuff()
 
     def add_heal(self, heal: Heal) -> None:
         self.last_heal = heal

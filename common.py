@@ -5,6 +5,7 @@ import typing
 
 ROUND_DURATION = 6000
 TURN_DURATION = ROUND_DURATION * 10
+HOUR_DURATION = TURN_DURATION * 2
 
 KNOCKDOWN_PVE_CD = 6000
 KNOCKDOWN_PVP_CD = 12000
@@ -46,6 +47,9 @@ HIPS = bool(os.environ.get('HIPS', default=False))
 DATA_FILE_PATH = pathlib.Path(os.environ.get('DATA_FILE_PATH', default='./data.yaml'))
 
 Time = int  # ms
+SpellName = str
+
+SPELL_ENDURANCE = 'Endurance'
 
 
 def get_ts() -> Time:

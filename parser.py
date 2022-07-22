@@ -198,7 +198,6 @@ class Parser:
     def set_player(self, name: str):
         # find player name by InitiativeRoll and Heal
         if self.player.name != name:
-            self.characters.clear()
             self.player = self.get_char(name)
             self.player.hp_list = [PLAYER_HP]
 
