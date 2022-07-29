@@ -189,7 +189,8 @@ class AttackDpsBar(Timer):
         self.box = QHBoxLayout()
 
         self.dpr = 0
-        self.dps_pb = create_progress_bar(get_progress_bar_style('#99ff7b06'), '%v Damage per round')
+        self.last_dpr_ts = 0
+        self.dps_pb = create_progress_bar(get_progress_bar_style('#99ca4b0c'), '%v Damage per round')
         self.box.addWidget(self.dps_pb)
 
         self.attack_pb = create_progress_bar(get_progress_bar_style('#9917b402'), '%v Attack base', inverted=True)
@@ -197,6 +198,7 @@ class AttackDpsBar(Timer):
 
     def update_dps(self, dpr: int, max_dpr: int, last_dpr_ts: Time):
         self.dpr = dpr
+        self.last_dpr_ts = last_dpr_ts
         self.dps_pb.setMaximum(max(max_dpr, 1))
         self._update(last_dpr_ts)
 
@@ -206,13 +208,13 @@ class AttackDpsBar(Timer):
         self.attack_pb.setMaximum(max_attack)
         self._update(last_attack_ts)
 
-    def _update(self, last_action: Time):
-        if self.update_timestamp(last_action):
+    def _update(self, last_action_ts: Time):
+        if self.get_start_timestamp() < last_action_ts and self.update_timestamp(last_action_ts):
             self.dps_pb.setVisible(True)
             self.attack_pb.setVisible(True)
 
     def tick(self, now: Time):
-        duration_without_attack = now - self.get_start_timestamp()
+        duration_without_attack = now - self.last_dpr_ts
         dpr = int(self.dpr * (ROUND_DURATION - duration_without_attack) / ROUND_DURATION)
         if dpr >= 0:
             self.dps_pb.setValue(dpr)

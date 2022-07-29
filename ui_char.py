@@ -22,6 +22,7 @@ class CharacterStat:
 
         self.received_damage = self._add_param('RD:', '#e35d02')
         self.special_attack = self._add_param('SA:', '#b0b0b0')
+        self.concealment = self._add_param('C:', '#31f9ff')
         self.experience = self._add_param('E:', '#ffff01')
 
     def _add_param(self, title: str, color: str = 'white') -> Param:
@@ -45,6 +46,9 @@ class CharacterStat:
 
     def set_special_attack(self, name: str, ab: int, dc: int, result: str) -> None:
         self.special_attack.value.setText('{:>2} {:>2}({:>2}/{:>4})'.format(name, ab, dc, result[:4]))
+
+    def set_concealment(self, concealment: int) -> None:
+        self.concealment.value.setText('{:>2}'.format(concealment))
 
     def set_experience(self, experience: int) -> None:
         self.experience.value.setText('{:>3}'.format(convert_long_int(experience)))

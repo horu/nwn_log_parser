@@ -62,6 +62,11 @@ class Attack(Action):
         self.roll = int(g[3])
         self.base = int(g[4])
         self.value = int(g[5])
+
+        # *target concealed: 70%*
+        m = re.match(r'target concealed: ([0-9]+)\%', self.result)
+        self.concealment = int(m.groups()[0]) if m else 0
+
         assert self.roll + self.base == self.value
 
     # attack is hit to target for any type

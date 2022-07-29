@@ -145,6 +145,10 @@ class Character:
                 return attack.value
         return 0
 
+    def get_concealment(self):
+        concalment = max([attack.concealment for attack in self.ac_attack_list]) if self.ac_attack_list else 0
+        return concalment
+
     # ab
     def add_ab(self, attack: Attack):
         append_fix_size(self.ab_attack_list, attack, AB_ATTACK_LIST_LIMIT)

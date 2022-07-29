@@ -1,8 +1,11 @@
 parser:
   characters:
   - classes: {}
+    hp_list: []
+    name: TEST m f s
+  - classes: {}
     hp_list:
-    - 304
+    - 318
     name: Belka Strelka
   - classes:
       assasion: 1
@@ -116,10 +119,8 @@ parser:
     hp_list: []
     name: Zophiel
   - classes: {}
-    experience: 212
+    experience: 206
     hp_list:
-    - 1469
-    - 1350
     - 336
     - 225
     - 376
@@ -127,6 +128,9 @@ parser:
     - 84
     - 371
     - 259
+    - 462
+    - 174
+    - 469
     name: Someone
   - classes: {}
     hp_list: []
@@ -387,18 +391,18 @@ parser:
     - 450
     name: Dondii
   - classes: {}
-    experience: 233
+    experience: 243
     hp_list:
-    - 659
-    - 360
-    - 348
-    - 348
-    - 386
     - 142
     - 664
     - 48
     - 655
     - 41
+    - 671
+    - 193
+    - 997
+    - 315
+    - 703
     name: Northern Orc
   - classes: {}
     experience: 114
@@ -424,10 +428,8 @@ parser:
     - 390
     name: Worg
   - classes: {}
-    experience: 165
+    experience: 60
     hp_list:
-    - 283
-    - 136
     - 35
     - 205
     - 213
@@ -436,6 +438,8 @@ parser:
     - 195
     - 232
     - 106
+    - 238
+    - 212
     name: Frost Lizard
   - classes: {}
     hp_list: []
@@ -471,19 +475,21 @@ parser:
     - 96
     name: Dom Whipchester
   - classes: {}
-    experience: 276
+    experience: 225
     hp_list:
-    - 423
-    - 432
-    - 549
     - 464
     - 507
     - 428
     - 516
     - 411
+    - 472
+    - 537
+    - 369
+    - 725
+    - 386
     name: Dread Worg
   - classes: {}
-    experience: 27
+    experience: 5
     hp_list:
     - 198
     - 204
@@ -491,6 +497,8 @@ parser:
     - 208
     - 179
     - 205
+    - 193
+    - 199
     name: Wildman Berzerker
   - classes: {}
     experience: 35
@@ -503,18 +511,18 @@ parser:
     - 210
     name: Wildman Hunter
   - classes: {}
-    experience: 115
+    experience: 45
     hp_list:
-    - 183
-    - 158
-    - 144
-    - 151
-    - 265
     - 28
     - 182
     - 120
     - 152
     - 161
+    - 199
+    - 161
+    - 155
+    - 151
+    - 145
     name: Wildman Lorekeeper
   - classes: {}
     experience: 191
@@ -529,9 +537,10 @@ parser:
     - 3
     name: Wildman Healer
   - classes: {}
-    experience: 361
+    experience: 168
     hp_list:
     - 24
+    - 399
     name: Wildman Chieftan
   - classes: {}
     hp_list: []
@@ -741,26 +750,25 @@ parser:
     - 109
     name: Ice Spider
   - classes: {}
-    experience: 446
+    experience: 225
     hp_list:
-    - 114
-    - 476
-    - 648
-    - 675
+    - 599
+    - 1082
+    - 1082
     - 603
-    - 113
-    - 540
-    - 753
+    - 610
+    - 749
+    - 603
+    - 742
+    - 664
+    - 679
     name: Cave Bear
   - classes: {}
     hp_list: []
     name: Budo Bennemein
   - classes: {}
-    experience: 233
+    experience: 93
     hp_list:
-    - 481
-    - 510
-    - 1195
     - 1195
     - 370
     - 383
@@ -768,28 +776,37 @@ parser:
     - 526
     - 539
     - 390
+    - 511
+    - 557
+    - 517
     name: Old Frost Giant
   - classes: {}
-    experience: 412
+    experience: 206
     hp_list:
     - 412
+    - 388
+    - 489
+    - 356
+    - 221
+    - 387
+    - 452
     name: Wildman War Leader
   - classes: {}
     hp_list: []
     name: Chest
   - classes: {}
-    experience: 318
+    experience: 168
     hp_list:
-    - 385
-    - 549
-    - 334
-    - 305
-    - 372
-    - 373
-    - 394
-    - 611
-    - 77
-    - 139
+    - 459
+    - 371
+    - 380
+    - 379
+    - 112
+    - 292
+    - 415
+    - 387
+    - 386
+    - 378
     name: Snow Bear
   - classes: {}
     hp_list: []
@@ -810,14 +827,24 @@ parser:
     - 226
     name: Wildman 'Mancer
   - classes: {}
-    experience: 488
+    experience: 225
     hp_list:
     - 286
+    - 208
+    - 276
+    - 284
+    - 439
+    - 303
     name: Wildman Magus
   - classes: {}
-    experience: 479
+    experience: 243
     hp_list:
     - 178
+    - 365
+    - 743
+    - 490
+    - 321
+    - 315
     name: Wildman War Shaman
   - classes: {}
     hp_list: []
@@ -876,9 +903,6 @@ parser:
   - classes: {}
     hp_list: []
     name: Baron Marrinsbane
-  - classes: {}
-    hp_list: []
-    name: TEST m f s
   - classes: {}
     hp_list: []
     name: Shrine of Vengeful Power
@@ -947,7 +971,9 @@ parser:
     - 197
     name: Soldier Spider
   - classes: {}
-    hp_list: []
+    experience: 3
+    hp_list:
+    - 58
     name: Cougar
   - classes: {}
     hp_list: []
@@ -968,21 +994,26 @@ parser:
     hp_list: []
     name: Elder Fire Elemental
   - classes: {}
-    experience: 276
+    experience: 262
     hp_list:
-    - 89
-    - 2281
-    - 1454
-    - 300
-    - 1349
-    - 1349
-    - 567
     - 992
     - 683
     - 191
+    - 1554
+    - 867
+    - 564
+    - 874
+    - 723
+    - 851
+    - 1529
     name: Northern Orc Mauler
   - classes: {}
-    hp_list: []
+    experience: 262
+    hp_list:
+    - 449
+    - 588
+    - 619
+    - 135
     name: Vampiric Worg
   - classes: {}
     experience: 17
@@ -990,12 +1021,16 @@ parser:
     - 106
     name: Northern Orc Witch Doctor
   - classes: {}
-    experience: 403
+    experience: 206
     hp_list:
     - 301
     - 391
     - 224
     - 127
+    - 513
+    - 193
+    - 592
+    - 74
     name: Mountain Giant Bezerker
   - classes: {}
     hp_list: []
@@ -1055,18 +1090,18 @@ parser:
     - 229
     name: Ice Spider Queen
   - classes: {}
-    experience: 243
+    experience: 206
     hp_list:
-    - 186
-    - 436
-    - 1268
-    - 98
-    - 438
-    - 606
-    - 214
-    - 335
-    - 710
     - 414
+    - 551
+    - 410
+    - 682
+    - 185
+    - 408
+    - 783
+    - 422
+    - 274
+    - 507
     name: Northern Orc War Shaman
   - classes: {}
     hp_list:
@@ -1079,12 +1114,18 @@ parser:
     hp_list: []
     name: Ancient Fire Elemental
   - classes: {}
-    experience: 361
+    experience: 243
     hp_list:
     - 460
     - 417
     - 331
     - 378
+    - 382
+    - 446
+    - 326
+    - 399
+    - 370
+    - 516
     name: Northern Orc Battle Magus
   - classes: {}
     hp_list: []
@@ -1092,5 +1133,217 @@ parser:
   - classes: {}
     hp_list: []
     name: Gabby
+  - classes: {}
+    hp_list: []
+    name: Master Fletcher
+  - classes: {}
+    hp_list: []
+    name: Plant - Sunflower
+  - classes: {}
+    experience: 4
+    hp_list:
+    - 42
+    - 132
+    - 45
+    - 133
+    name: Goblin
+  - classes: {}
+    hp_list: []
+    name: Plant - Petunia
+  - classes: {}
+    hp_list: []
+    name: Plant - Nasturtium
+  - classes: {}
+    hp_list: []
+    name: Olgar Fleshcarva
+  - classes: {}
+    hp_list:
+    - 533
+    name: Sir William Marshal
+  - classes: {}
+    experience: 337
+    hp_list:
+    - 1204
+    - 933
+    name: Wildman Overlord
+  - classes: {}
+    hp_list: []
+    name: unlimited
+  - classes: {}
+    experience: 206
+    hp_list:
+    - 466
+    - 549
+    - 512
+    - 500
+    - 684
+    - 333
+    - 478
+    - 505
+    - 502
+    - 506
+    name: Bloodmaw Ogre Hurler
+  - classes: {}
+    experience: 206
+    hp_list:
+    - 786
+    - 997
+    - 566
+    - 761
+    - 915
+    - 738
+    - 144
+    - 1184
+    - 429
+    - 793
+    name: Bloodmaw Ogre Berzerker
+  - classes: {}
+    experience: 3
+    hp_list:
+    - 57
+    - 55
+    - 55
+    - 95
+    name: Adult Deer
+  - classes: {}
+    experience: 3
+    hp_list:
+    - 57
+    name: Crag Cat
+  - classes: {}
+    experience: 187
+    hp_list:
+    - 295
+    - 266
+    - 423
+    - 423
+    - 304
+    - 292
+    name: Drider Invader
+  - classes: {}
+    experience: 227
+    hp_list:
+    - 440
+    - 440
+    - 898
+    - 152
+    - 350
+    - 256
+    - 623
+    - 513
+    - 557
+    - 444
+    name: Risen Trodorian Hero
+  - classes: {}
+    experience: 225
+    hp_list:
+    - 205
+    - 183
+    - 177
+    - 300
+    - 13
+    - 190
+    - 218
+    name: Legendary Mystic Spider
+  - classes: {}
+    experience: 187
+    hp_list:
+    - 434
+    - 437
+    name: Air Spider Queen
+  - classes: {}
+    experience: 243
+    hp_list:
+    - 570
+    - 539
+    - 603
+    name: Warrior Spider
+  - classes: {}
+    experience: 30
+    hp_list:
+    - 137
+    - 188
+    - 255
+    - 205
+    name: Ancient Umber Hulk
+  - classes: {}
+    experience: 457
+    hp_list:
+    - 813
+    name: Nocturne Legion War Captain
+  - classes: {}
+    hp_list: []
+    name: Drow Chest
+  - classes: {}
+    experience: 2000
+    hp_list:
+    - 0
+    name: the wizard
+  - classes: {}
+    hp_list:
+    - 0
+    name: the mayor then haha
+  - classes: {}
+    hp_list: []
+    name: Gate
+  - classes: {}
+    experience: 132
+    hp_list: []
+    name: Bloodmaw Ogre
+  - classes: {}
+    experience: 450
+    hp_list:
+    - 1763
+    name: Warchief Krarg Bloodspitter
+  - classes: {}
+    experience: 375
+    hp_list:
+    - 744
+    - 573
+    - 638
+    name: Nocturne Legion Deathand
+  - classes: {}
+    experience: 450
+    hp_list:
+    - 852
+    - 857
+    name: Nocturne Legion Grand Necromaster
+  - classes: {}
+    experience: 337
+    hp_list:
+    - 384
+    - 419
+    - 418
+    name: Nocturne Legion Shock Trooper
+  - classes: {}
+    experience: 300
+    hp_list:
+    - 586
+    - 821
+    - 641
+    - 351
+    name: Umber Hulk Ravager
+  - classes: {}
+    experience: 874
+    hp_list: []
+    name: The Nocturne Ravager
+  - classes: {}
+    hp_list: []
+    name: 10 AC - Undead - Chaotic Evil
+  - classes: {}
+    hp_list: []
+    name: 65 AC DUMMY - Chaotic Evil - Boss Damage Reduction
+  - classes: {}
+    hp_list: []
+    name: 75 AC DUMMY
+  - classes: {}
+    hp_list: []
+    name: 65 AC DUMMY
+  - classes: {}
+    hp_list: []
+    name: 60 AC DUMMY
+  - classes: {}
+    hp_list: []
+    name: 10 AC DUMMY - DPS TEST
   player:
-    name: Belka Strelka
+    name: TEST m f s

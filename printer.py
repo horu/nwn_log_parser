@@ -181,6 +181,7 @@ class Printer:
         stat.set_saving_throw(FORTITUDE, char.fortitude, char.last_fortitude_dc)
         stat.set_saving_throw(WILL, char.will, char.last_will_dc)
         stat.set_received_damage(sum_rd, last_rd, last_ad)
+        stat.set_concealment(char.get_concealment())
         stat.set_experience(char.get_experience_value())
 
         last_kd = char.last_knockdown
