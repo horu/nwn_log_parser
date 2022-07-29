@@ -183,6 +183,30 @@ class CastingBar(TemporaryProgressBar):
         self.update_timestamp(event_ts)
 
 
+class CalledShotBar(TemporaryProgressBar):
+    def __init__(self, limb, ):
+        color = '#99bd00ff'
+        if limb == ARM:
+            color = '#99ffffff'
+
+        super(CalledShotBar, self).__init__(
+            10, CALLED_SHOT_DURATION,
+            get_progress_bar_style(color),
+            '%v ms CalledShot: {}'.format(limb),
+            max_value=CALLED_SHOT_DURATION,
+        )
+
+
+class CalledShotArmBar(CalledShotBar):
+    def __init__(self):
+        super(CalledShotArmBar, self).__init__(ARM)
+
+
+class CalledShotLegBar(CalledShotBar):
+    def __init__(self):
+        super(CalledShotLegBar, self).__init__(LEG)
+
+
 class AttackDpsBar(Timer):
     def __init__(self):
         super(AttackDpsBar, self).__init__(10, ROUND_DURATION)

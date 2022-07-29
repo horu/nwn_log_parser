@@ -136,6 +136,16 @@ class Printer:
             min_ab = char.get_min_ab_attack_base()
             self.ui.attack_damage_bar.update_attack(last_ab.base, min_ab, max_ab, last_ab.timestamp)
 
+    def update_called_shot_bar(self, char: Character) -> None:
+        # Called shot duration
+        for cs in reversed(char.called_shot_list):
+            if cs.s_attack.is_success():
+                if cs.limb == ARM:
+                    self.ui.called_shot_arm_bar.update_timestamp(cs.timestamp)
+                else:
+                    self.ui.called_shot_leg_bar.update_timestamp(cs.timestamp)
+                break
+
     def update_knockdown_bar(self, char: Character) -> None:
         # Knockdown cooldown
         last_kd = char.last_knockdown
@@ -145,7 +155,6 @@ class Printer:
         else:
             self.ui.knockdown_bar.hide()
             self.ui.knockdown_miss_bar.update_timestamp(last_kd.timestamp)
-        return
 
     def update_stunning_fist_bar(self, char: Character) -> None:
         # Stunning fist duration
@@ -234,6 +243,7 @@ class Printer:
                 self.update_stealth_mode_cd_bar(player)
             elif action_type == SpecialAttack:
                 self.update_knockdown_bar(player)
+                self.update_called_shot_bar(player)
                 self.update_stealth_mode_cd_bar(player)
             elif action_type == SavingThrow:
                 self.update_stunning_fist_bar(player)

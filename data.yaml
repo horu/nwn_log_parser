@@ -1348,5 +1348,17 @@ parser:
   - classes: {}
     hp_list: []
     name: 10 AC DUMMY - DPS TEST
+  - classes: {}
+    hp_list: []
+    name: 10 AC DUMMY
+  - classes: {}
+    hp_list: []
+    name: TRAINER
+  - classes: {}
+    hp_list: []
+    name: 10 AC DUMMY - Chaotic Evil - Boss Damage Reduction
+  - classes: {}
+    hp_list: []
+    name: TEST monk rogue
   player:
     name: TEST m a

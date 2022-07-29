@@ -55,6 +55,12 @@ class UserInterface:
         self.stunning_fist_bar = StunningFistBar()
         self.main_form.addRow(self.stunning_fist_bar.pb)
 
+        self.called_shot_arm_bar = CalledShotArmBar()
+        self.main_form.addRow(self.called_shot_arm_bar.pb)
+
+        self.called_shot_leg_bar = CalledShotLegBar()
+        self.main_form.addRow(self.called_shot_leg_bar.pb)
+
         self.stealth_cooldown_bar = StealthCooldownBar()
         self.main_form.addRow(self.stealth_cooldown_bar.pb)
 
