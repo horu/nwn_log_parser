@@ -107,6 +107,7 @@ class Parser:
             experience = self.experience_list.pop(0) if self.experience_list else None
             target.on_killed(action, experience, self.unique_death)
             self.unique_death = None
+            self.player.on_target_killed(target.name)
             return action
 
         action: DamageReduction = DamageReduction.create(line)

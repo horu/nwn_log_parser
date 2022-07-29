@@ -119,6 +119,11 @@ class Character:
             return self.last_caused_damage.target_name
         return self.name
 
+    def on_target_killed(self, target_name: str):
+        if target_name == self.get_target_name():
+            self.called_shot_list.clear()
+            self.stunning_fist_list.clear()
+
     # ac
     def add_ac(self, attack: Attack):
         append_fix_size(self.ac_attack_list, attack, AC_ATTACK_LIST_LIMIT)

@@ -145,6 +145,9 @@ class Printer:
                 else:
                     self.ui.called_shot_leg_bar.update(cs.timestamp)
                 break
+        if not char.called_shot_list:
+            self.ui.called_shot_arm_bar.hide()
+            self.ui.called_shot_leg_bar.hide()
 
     def update_knockdown_bar(self, char: Character) -> None:
         # Knockdown cooldown
@@ -161,7 +164,9 @@ class Printer:
         for sf in reversed(char.stunning_fist_list):
             if sf.is_success():
                 self.ui.stunning_fist_bar.update_timestamp(sf.timestamp)
-                break
+                return
+        if not char.stunning_fist_list:
+            self.ui.stunning_fist_bar.hide()
 
     def update_stealth_mode_cd_bar(self, player: Character) -> None:
         # Stealth mode cooldown
@@ -251,3 +256,6 @@ class Printer:
                 self.update_stealth_mode_cd_bar(player)
             elif action_type == CastBegin or action_type == CastEnd or action_type == CastInterruption:
                 self.update_casting_bar(player)
+            elif action_type == Death:
+                self.update_called_shot_bar(player)
+                self.update_stunning_fist_bar(player)

@@ -1,12 +1,12 @@
 parser:
   characters:
   - classes: {}
+    hp_list:
+    - 346
+    name: Belka Strelka
+  - classes: {}
     hp_list: []
     name: TEST m a
-  - classes: {}
-    hp_list:
-    - 318
-    name: Belka Strelka
   - classes: {}
     hp_list: []
     name: TEST m f s
@@ -16,6 +16,7 @@ parser:
       monk: 20
     hp_list:
     - 466
+    - 343
     name: Dunya Kulakova
   - classes: {}
     hp_list: []
@@ -122,10 +123,8 @@ parser:
     hp_list: []
     name: Zophiel
   - classes: {}
-    experience: 206
+    experience: 210
     hp_list:
-    - 336
-    - 225
     - 376
     - 391
     - 84
@@ -134,6 +133,8 @@ parser:
     - 462
     - 174
     - 469
+    - 1078
+    - 687
     name: Someone
   - classes: {}
     hp_list: []
@@ -560,7 +561,7 @@ parser:
     - 270
     name: Minotaur Striker
   - classes: {}
-    experience: 50
+    experience: 5
     hp_list:
     - 118
     - 101
@@ -568,6 +569,7 @@ parser:
     - 24
     - 86
     - 96
+    - 84
     name: Minotaur Shaman
   - classes: {}
     hp_list: []
@@ -1363,5 +1365,127 @@ parser:
   - classes: {}
     hp_list: []
     name: TEST m r sf
+  - classes: {}
+    experience: 4
+    hp_list:
+    - 41
+    - 83
+    name: Drow Assassin
+  - classes: {}
+    experience: 4
+    hp_list:
+    - 93
+    name: Drow Mage
+  - classes: {}
+    experience: 5
+    hp_list:
+    - 68
+    name: Drow Militia
+  - classes: {}
+    hp_list: []
+    name: Summoned Dire Spider
+  - classes: {}
+    hp_list: []
+    name: Drow Cleric Guard
+  - classes: {}
+    experience: 5
+    hp_list:
+    - 85
+    - 90
+    - 116
+    - 91
+    name: Drow Battle Mage
+  - classes: {}
+    experience: 5
+    hp_list:
+    - 71
+    - 97
+    - 101
+    - 97
+    - 101
+    - 99
+    name: Mohrg
+  - classes: {}
+    experience: 4
+    hp_list:
+    - 79
+    name: Ogre Berserker
+  - classes: {}
+    hp_list: []
+    name: Gypsy Mage
+  - classes: {}
+    experience: 210
+    hp_list:
+    - 675
+    - 740
+    - 434
+    - 482
+    - 750
+    - 567
+    - 645
+    - 774
+    - 752
+    - 558
+    name: Blackblood Claw
+  - classes: {}
+    hp_list: []
+    name: WARNING - Keep to the roads for safety!
+  - classes: {}
+    experience: 500
+    hp_list:
+    - 608
+    name: Riverclaw
+  - classes: {}
+    experience: 420
+    hp_list:
+    - 1101
+    - 1119
+    - 1151
+    name: Blackblood Grinder
+  - classes: {}
+    experience: 420
+    hp_list:
+    - 3024
+    - 4176
+    name: Blackblood Chanter
+  - classes: {}
+    hp_list: []
+    name: Summoned Water Elemental
+  - classes: {}
+    hp_list: []
+    name: Dark Rift
+  - classes: {}
+    experience: 350
+    hp_list:
+    - 614
+    - 888
+    - 547
+    - 670
+    - 586
+    - 746
+    - 969
+    - 608
+    - 978
+    - 471
+    name: Blackblood Pelter
+  - classes: {}
+    hp_list: []
+    name: Invisible Object
+  - classes: {}
+    hp_list: []
+    name: Inequitous Idol
+  - classes: {}
+    experience: 423
+    hp_list:
+    - 1285
+    name: The Black Hound
+  - classes: {}
+    hp_list: []
+    name: Raided Hafling Merchant Caravan
+  - classes: {}
+    experience: 350
+    hp_list:
+    - 1009
+    name: Blackblood Gnasher
   player:
-    name: TEST m a
+    name: Belka Strelka

@@ -221,6 +221,10 @@ class CalledShotBar(TemporaryProgressBar):
                 self._update_label()
                 break
 
+    def hide(self):
+        self.timestamps.clear()
+        super(CalledShotBar, self).hide()
+
 
 class CalledShotArmBar(CalledShotBar):
     def __init__(self):
