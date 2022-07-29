@@ -70,6 +70,11 @@ Attempting to fast cast 17 spells.
 [CHAT WINDOW TEXT] [Thu Jul 21 14:54:58] XP DEBT: You must pay 15550 XP, before you can start earn XP again
 [CHAT WINDOW TEXT] [Wed Jul 20 22:55:50] Casting spell Bless1 at postion 15 on item with metamagic: None
 [CHAT WINDOW TEXT] [Tue Jul 19 14:40:28] * Bless wore off *
+
+# TODO add unique
+UNIQUE CREATURE KILL!
+[CHAT WINDOW TEXT] [Thu Jul 28 07:43:41] Experience Points Gained:  14
+[CHAT WINDOW TEXT] [Thu Jul 28 07:43:41] TEST·CHAR killed Dire Tiger
 TEST END
 
 """

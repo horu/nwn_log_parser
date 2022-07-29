@@ -1,5 +1,9 @@
 parser:
   characters:
+  - classes: {}
+    hp_list:
+    - 304
+    name: Belka Strelka
   - classes:
       assasion: 1
       cleric: 15
@@ -60,7 +64,7 @@ parser:
     - 76
     name: Manticore
   - classes: {}
-    experience: 4
+    experience: 70
     hp_list:
     - 116
     - 81
@@ -112,10 +116,17 @@ parser:
     hp_list: []
     name: Zophiel
   - classes: {}
-    experience: 300
+    experience: 212
     hp_list:
     - 1469
     - 1350
+    - 336
+    - 225
+    - 376
+    - 391
+    - 84
+    - 371
+    - 259
     name: Someone
   - classes: {}
     hp_list: []
@@ -147,14 +158,18 @@ parser:
     - 585
     name: Kobold Slave
   - classes: {}
-    experience: 2
+    experience: 50
     hp_list:
     - 162
+    - 104
     name: Dire Bear
   - classes: {}
-    experience: 2
+    experience: 18
     hp_list:
     - 275
+    - 258
+    - 259
+    - 252
     name: Pack Leader
   - classes: {}
     experience: 379
@@ -361,7 +376,721 @@ parser:
     hp_list: []
     name: Lard Fryar
   - classes: {}
-    hp_list: []
+    experience: 14
+    hp_list:
+    - 123
+    - 120
     name: Dire Tiger
+  - classes: {}
+    hp_list:
+    - 296
+    - 450
+    name: Dondii
+  - classes: {}
+    experience: 233
+    hp_list:
+    - 659
+    - 360
+    - 348
+    - 348
+    - 386
+    - 142
+    - 664
+    - 48
+    - 655
+    - 41
+    name: Northern Orc
+  - classes: {}
+    experience: 114
+    hp_list:
+    - 275
+    - 404
+    - 356
+    - 326
+    - 195
+    name: Northern Orc Slasher
+  - classes: {}
+    experience: 59
+    hp_list:
+    - 299
+    - 278
+    - 313
+    - 459
+    - 399
+    - 310
+    - 277
+    - 340
+    - 187
+    - 390
+    name: Worg
+  - classes: {}
+    experience: 165
+    hp_list:
+    - 283
+    - 136
+    - 35
+    - 205
+    - 213
+    - 234
+    - 206
+    - 195
+    - 232
+    - 106
+    name: Frost Lizard
+  - classes: {}
+    hp_list: []
+    name: DruT2
+  - classes: {}
+    experience: 155
+    hp_list:
+    - 314
+    - 307
+    - 319
+    - 146
+    - 198
+    - 242
+    - 289
+    - 283
+    - 454
+    - 34
+    name: Frost Giant Battle Maiden
+  - classes: {}
+    experience: 107
+    hp_list:
+    - 273
+    - 240
+    - 367
+    - 254
+    - 480
+    - 193
+    - 376
+    - 275
+    name: Frost Giant Berzerker
+  - classes: {}
+    hp_list:
+    - 96
+    name: Dom Whipchester
+  - classes: {}
+    experience: 276
+    hp_list:
+    - 423
+    - 432
+    - 549
+    - 464
+    - 507
+    - 428
+    - 516
+    - 411
+    name: Dread Worg
+  - classes: {}
+    experience: 27
+    hp_list:
+    - 198
+    - 204
+    - 224
+    - 208
+    - 179
+    - 205
+    name: Wildman Berzerker
+  - classes: {}
+    experience: 35
+    hp_list:
+    - 204
+    - 272
+    - 164
+    - 202
+    - 188
+    - 210
+    name: Wildman Hunter
+  - classes: {}
+    experience: 115
+    hp_list:
+    - 183
+    - 158
+    - 144
+    - 151
+    - 265
+    - 28
+    - 182
+    - 120
+    - 152
+    - 161
+    name: Wildman Lorekeeper
+  - classes: {}
+    experience: 191
+    hp_list:
+    - 205
+    - 136
+    - 118
+    name: Summoned Dire Bear
+  - classes: {}
+    experience: 7
+    hp_list:
+    - 3
+    name: Wildman Healer
+  - classes: {}
+    experience: 361
+    hp_list:
+    - 24
+    name: Wildman Chieftan
+  - classes: {}
+    hp_list: []
+    name: Rand Thorson
+  - classes: {}
+    experience: 300
+    hp_list:
+    - 311
+    name: Ancient Dire Bear
+  - classes: {}
+    experience: 235
+    hp_list:
+    - 264
+    - 270
+    name: Minotaur Striker
+  - classes: {}
+    experience: 50
+    hp_list:
+    - 118
+    - 101
+    - 102
+    - 24
+    - 86
+    - 96
+    name: Minotaur Shaman
+  - classes: {}
+    hp_list: []
+    name: Summoned Skeleton Chieftain
+  - classes: {}
+    experience: 235
+    hp_list:
+    - 277
+    name: Minotaur Chieftain
+  - classes: {}
+    experience: 35
+    hp_list:
+    - 96
+    - 93
+    name: Minotaur Berserker
+  - classes: {}
+    experience: 80
+    hp_list:
+    - 206
+    - 208
+    - 212
+    - 200
+    - 202
+    - 211
+    - 319
+    name: Ogre High Mage
+  - classes: {}
+    experience: 192
+    hp_list:
+    - 148
+    - 139
+    - 181
+    - 372
+    - 165
+    - 229
+    - 346
+    name: Human Mercenary
+  - classes: {}
+    experience: 24
+    hp_list:
+    - 110
+    - 123
+    - 107
+    - 121
+    - 110
+    - 111
+    - 124
+    - 116
+    name: Halfling Mercenary
+  - classes: {}
+    experience: 24
+    hp_list:
+    - 178
+    - 60
+    - 166
+    - 194
+    - 173
+    - 167
+    - 189
+    - 171
+    - 177
+    - 166
+    name: Dwarf Mercenary
+  - classes: {}
+    experience: 35
+    hp_list:
+    - 81
+    - 78
+    - 79
+    - 74
+    - 74
+    name: Elf Mercenary
+  - classes: {}
+    hp_list: []
+    name: Summoned Greater Air Elemental
+  - classes: {}
+    hp_list: []
+    name: Segeth
+  - classes: {}
+    experience: 129
+    hp_list:
+    - 88
+    - 41
+    - 89
+    name: Battle Horror
+  - classes: {}
+    experience: 15
+    hp_list:
+    - 69
+    name: Ogre Mage
+  - classes: {}
+    experience: 30
+    hp_list:
+    - 221
+    - 160
+    - 99
+    - 24
+    - 91
+    name: Legendary Wolf
+  - classes: {}
+    hp_list: []
+    name: Summoned Greater Fire Elemental
+  - classes: {}
+    experience: 259
+    hp_list:
+    - 360
+    - 470
+    - 237
+    - 577
+    - 208
+    - 278
+    - 472
+    - 279
+    - 310
+    - 361
+    name: Legendary Bear
+  - classes: {}
+    hp_list: []
+    name: Plucker
+  - classes: {}
+    experience: 33
+    hp_list:
+    - 128
+    - 91
+    - 123
+    - 20
+    - 90
+    - 166
+    - 25
+    - 99
+    - 100
+    - 95
+    name: Legendary Eagle
+  - classes: {}
+    experience: 439
+    hp_list:
+    - 591
+    - 419
+    - 508
+    - 533
+    - 481
+    - 505
+    - 381
+    - 211
+    - 102
+    - 578
+    name: Legendary Tiger
+  - classes: {}
+    hp_list: []
+    name: Summoned Dire Boar
+  - classes: {}
+    hp_list: []
+    name: Dread Guard
+  - classes: {}
+    hp_list: []
+    name: Summoned Greater Earth Elemental
+  - classes: {}
+    hp_list: []
+    name: Aroojin Dragonovski Soulfirefury
+  - classes: {}
+    experience: 187
+    hp_list:
+    - 203
+    name: Elder Wolf
+  - classes: {}
+    hp_list: []
+    name: Nature Lass
+  - classes: {}
+    experience: 17
+    hp_list:
+    - 134
+    - 35
+    name: Frost Giant
+  - classes: {}
+    hp_list: []
+    name: Summoned Greater Water Elemental
+  - classes: {}
+    hp_list: []
+    name: Card i
+  - classes: {}
+    experience: 8
+    hp_list:
+    - 109
+    name: Ice Spider
+  - classes: {}
+    experience: 446
+    hp_list:
+    - 114
+    - 476
+    - 648
+    - 675
+    - 603
+    - 113
+    - 540
+    - 753
+    name: Cave Bear
+  - classes: {}
+    hp_list: []
+    name: Budo Bennemein
+  - classes: {}
+    experience: 233
+    hp_list:
+    - 481
+    - 510
+    - 1195
+    - 1195
+    - 370
+    - 383
+    - 540
+    - 526
+    - 539
+    - 390
+    name: Old Frost Giant
+  - classes: {}
+    experience: 412
+    hp_list:
+    - 412
+    name: Wildman War Leader
+  - classes: {}
+    hp_list: []
+    name: Chest
+  - classes: {}
+    experience: 318
+    hp_list:
+    - 385
+    - 549
+    - 334
+    - 305
+    - 372
+    - 373
+    - 394
+    - 611
+    - 77
+    - 139
+    name: Snow Bear
+  - classes: {}
+    hp_list: []
+    name: To the Mines
+  - classes: {}
+    hp_list: []
+    name: Summoned Solar
+  - classes: {}
+    hp_list:
+    - 89
+    - 192
+    - 1068
+    - 734
+    name: Gnorby Gnatureboy
+  - classes: {}
+    experience: 7
+    hp_list:
+    - 226
+    name: Wildman 'Mancer
+  - classes: {}
+    experience: 488
+    hp_list:
+    - 286
+    name: Wildman Magus
+  - classes: {}
+    experience: 479
+    hp_list:
+    - 178
+    name: Wildman War Shaman
+  - classes: {}
+    hp_list: []
+    name: Summoned Death Slaad
+  - classes: {}
+    experience: 233
+    hp_list:
+    - 491
+    - 370
+    - 467
+    - 583
+    - 265
+    - 369
+    - 235
+    name: Ancient White Dragon
+  - classes: {}
+    experience: 382
+    hp_list:
+    - 686
+    - 287
+    - 429
+    - 479
+    - 492
+    - 625
+    - 444
+    - 484
+    - 519
+    - 501
+    name: Frost Giant Warlord
+  - classes: {}
+    hp_list: []
+    name: Woof
+  - classes: {}
+    experience: 361
+    hp_list:
+    - 110
+    - 58
+    - 795
+    - 288
+    - 529
+    - 586
+    - 667
+    - 645
+    - 649
+    - 301
+    name: Mountain Stume
+  - classes: {}
+    experience: 89
+    hp_list:
+    - 265
+    - 284
+    name: Frozen Wolf
+  - classes: {}
+    hp_list: []
+    name: UNIQUE
+  - classes: {}
+    hp_list: []
+    name: Baron Marrinsbane
+  - classes: {}
+    hp_list: []
+    name: TEST m f s
+  - classes: {}
+    hp_list: []
+    name: Shrine of Vengeful Power
+  - classes: {}
+    hp_list:
+    - 0
+    name: 'myself '
+  - classes: {}
+    hp_list: []
+    name: Summoned Elder Earth Elemental
+  - classes: {}
+    hp_list: []
+    name: Pleo Master
+  - classes: {}
+    hp_list: []
+    name: Summoned Elder Fire Elemental
+  - classes: {}
+    hp_list:
+    - 168
+    name: Summoned Lich
+  - classes: {}
+    experience: 38
+    hp_list:
+    - 721
+    - 199
+    name: Durel White Dragon
+  - classes: {}
+    experience: 73
+    hp_list:
+    - 103
+    - 104
+    - 100
+    - 102
+    - 117
+    - 99
+    - 101
+    - 113
+    - 103
+    - 105
+    name: Iron Golem
+  - classes: {}
+    hp_list: []
+    name: Summoned Elder Air Elemental
+  - classes: {}
+    experience: 136
+    hp_list:
+    - 257
+    - 261
+    - 234
+    - 237
+    - 234
+    - 236
+    name: Elder Earth Elemental
+  - classes: {}
+    experience: 4
+    hp_list:
+    - 84
+    - 129
+    name: Grizzly Bear
+  - classes: {}
+    hp_list: []
+    name: Brown Bear
+  - classes: {}
+    experience: 17
+    hp_list:
+    - 197
+    name: Soldier Spider
+  - classes: {}
+    hp_list: []
+    name: Cougar
+  - classes: {}
+    hp_list: []
+    name: Panther
+  - classes: {}
+    hp_list: []
+    name: Barrr
+  - classes: {}
+    hp_list: []
+    name: Elder Air Elemental
+  - classes: {}
+    hp_list: []
+    name: Bongo Delfogo
+  - classes: {}
+    hp_list: []
+    name: Elder Water Elemental
+  - classes: {}
+    hp_list: []
+    name: Elder Fire Elemental
+  - classes: {}
+    experience: 276
+    hp_list:
+    - 89
+    - 2281
+    - 1454
+    - 300
+    - 1349
+    - 1349
+    - 567
+    - 992
+    - 683
+    - 191
+    name: Northern Orc Mauler
+  - classes: {}
+    hp_list: []
+    name: Vampiric Worg
+  - classes: {}
+    experience: 17
+    hp_list:
+    - 106
+    name: Northern Orc Witch Doctor
+  - classes: {}
+    experience: 403
+    hp_list:
+    - 301
+    - 391
+    - 224
+    - 127
+    name: Mountain Giant Bezerker
+  - classes: {}
+    hp_list: []
+    name: Summoned Dire Wolf
+  - classes: {}
+    hp_list: []
+    name: Isa V
+  - classes: {}
+    experience: 25
+    hp_list:
+    - 195
+    - 195
+    name: Adult White Dragon
+  - classes: {}
+    hp_list: []
+    name: Tarador Nightsoul
+  - classes: {}
+    experience: 105
+    hp_list:
+    - 71
+    name: Lizardfolk Barbarian
+  - classes: {}
+    experience: 300
+    hp_list:
+    - 530
+    - 186
+    name: Lizardman Hero
+  - classes: {}
+    hp_list:
+    - 180
+    - 26
+    name: Ratlips "McGee" Fritz
+  - classes: {}
+    hp_list: []
+    name: Vothug
+  - classes: {}
+    hp_list:
+    - 453
+    name: Corbin Rage Machine
+  - classes: {}
+    hp_list:
+    - 123
+    - 111
+    name: vile vintini
+  - classes: {}
+    hp_list: []
+    name: feron
+  - classes: {}
+    hp_list: []
+    name: Mia Moops
+  - classes: {}
+    experience: 123
+    hp_list:
+    - 169
+    - 28
+    - 169
+    - 229
+    name: Ice Spider Queen
+  - classes: {}
+    experience: 243
+    hp_list:
+    - 186
+    - 436
+    - 1268
+    - 98
+    - 438
+    - 606
+    - 214
+    - 335
+    - 710
+    - 414
+    name: Northern Orc War Shaman
+  - classes: {}
+    hp_list:
+    - 25
+    name: Ancient Earth Elemental
+  - classes: {}
+    hp_list: []
+    name: Ancient Water Elemental
+  - classes: {}
+    hp_list: []
+    name: Ancient Fire Elemental
+  - classes: {}
+    experience: 361
+    hp_list:
+    - 460
+    - 417
+    - 331
+    - 378
+    name: Northern Orc Battle Magus
+  - classes: {}
+    hp_list: []
+    name: Oak Tree
+  - classes: {}
+    hp_list: []
+    name: Gabby
   player:
-    name: Dunya Kulakova
+    name: Belka Strelka

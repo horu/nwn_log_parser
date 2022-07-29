@@ -450,3 +450,18 @@ class Debuff(Action):
     def __init__(self, g):
         super().__init__()
         self.spell_name = g[0]
+
+
+"""
+UNIQUE CREATURE KILL!
+"""
+
+
+class UniqueDeath(Action):
+    @classmethod
+    def create(cls, string):
+        p = r'UNIQUE CREATURE KILL'
+        return Action.base_create(string, p, cls)
+
+    def __init__(self, g):
+        super().__init__()

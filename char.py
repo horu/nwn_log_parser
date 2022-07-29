@@ -206,12 +206,14 @@ class Character:
     def add_damage_absorption(self, absorption: DamageAbsorption) -> None:
         self.last_received_damage.damage_absorption_list.append(absorption)
 
-    def on_killed(self, death: Death, experience: typing.Optional[Experience]) -> None:
-        if not self.experience or not experience or self.experience.value == experience.value:
+    def on_killed(self, death: Death,
+                  experience: typing.Optional[Experience],
+                  unique: typing.Optional[UniqueDeath]) -> None:
+        if not unique:
             hp = self.sum_received_damage
             logging.debug('HP: {}'.format(hp))
             append_fix_size(self.hp_list, hp, HP_LIST_LIMIT)
-        elif self.experience.value != experience.value:
+        else:
             logging.debug('UNIQUE CHAR DETECTED: {}(HP {})'.format(self.name, self.sum_received_damage))
         if experience:
             self.experience = experience

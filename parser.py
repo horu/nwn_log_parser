@@ -13,6 +13,7 @@ class Parser:
 
         self.experience_list: typing.List[Experience] = []
         self.round_ts = 0
+        self.unique_death: typing.Optional[UniqueDeath] = None
 
     def pop_actions(self) -> typing.Iterable[Action]:
         while self.last_actions:
@@ -97,7 +98,8 @@ class Parser:
         if action:
             target = self.get_char(action.target_name)
             experience = self.experience_list.pop(0) if self.experience_list else None
-            target.on_killed(action, experience)
+            target.on_killed(action, experience, self.unique_death)
+            self.unique_death = None
             return action
 
         action: DamageReduction = DamageReduction.create(line)
@@ -190,6 +192,11 @@ class Parser:
         action: FastCastEnd = FastCastEnd.create(line)
         if action:
             self.player.fast_cast_end(action)
+            return action
+
+        action: UniqueDeath = UniqueDeath.create(line)
+        if action:
+            self.unique_death = action
             return action
 
         return None
