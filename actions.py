@@ -169,6 +169,10 @@ class Damage(Action):
         self.value = int(g[2])
         self.damage_absorption_list: typing.List[DamageAbsorption] = []
 
+    def get_absorption_sum(self):
+        absorb = sum([ad.value for ad in self.damage_absorption_list])
+        return absorb
+
 
 class Death(Action):
     @classmethod

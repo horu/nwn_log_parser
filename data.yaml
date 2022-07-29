@@ -1345,5 +1345,8 @@ parser:
   - classes: {}
     hp_list: []
     name: 10 AC DUMMY - DPS TEST
+  - classes: {}
+    hp_list: []
+    name: TEST m a
   player:
     name: TEST m f s

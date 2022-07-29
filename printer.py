@@ -25,9 +25,8 @@ def print_wide_char(char: Character) -> list:
     min_ac = char.get_min_hit_ac()
 
     stats = char.stats_storage.char_stats
-    sum_rd = stats[char.last_received_damage.damager_name].received_damage.sum
-    last_rd = char.last_received_damage.value
-    last_ad = sum([ad.value for ad in char.last_received_damage.damage_absorption_list])
+    last_rd = char.get_last_received_damage(None)
+    sum_rd = stats[last_rd.damager_name].received_damage.sum
 
     sum_cd = stats[char.last_caused_damage.target_name].caused_damage.sum
     last_cd = char.last_caused_damage.value
@@ -46,7 +45,7 @@ def print_wide_char(char: Character) -> list:
         'AB: {:d}({:d})'.format(char.get_max_ab_attack_base(), char.get_last_ab_attack_base()),
         'FT: {:d}({:d})'.format(char.fortitude, char.last_fortitude_dc),
         'WL: {:d}({:d})'.format(char.will, char.last_will_dc),
-        'RD: {}({}/{})'.format(convert_damage(sum_rd), convert_damage(last_rd), last_ad),
+        'RD: {}({}/{})'.format(convert_damage(sum_rd), convert_damage(last_rd.value), last_rd.get_absorption_sum()),
         'CD: {}({})'.format(convert_damage(sum_cd), convert_damage(last_cd)),
         'DPR: {}({})'.format(
             convert_damage(storage.caused_dpr.max_dpr), convert_damage(storage.caused_dpr.last_dpr)),
@@ -171,16 +170,15 @@ class Printer:
         self.wide_mode = not self.wide_mode
         self.wide_printer.chars_to_print_ts = 0
 
-    def update_char_stat(self, stat: CharacterStat, char: Character) -> None:
-        sum_rd = char.stats_storage.char_stats[char.last_received_damage.damager_name].received_damage.sum
-        last_rd = char.last_received_damage.value
-        last_ad = sum([ad.value for ad in char.last_received_damage.damage_absorption_list])
+    def update_char_stat(self, stat: CharacterStat, char: Character, damager_name: str) -> None:
+        sum_rd = char.stats_storage.char_stats[damager_name].received_damage.sum
+        last_rd = char.get_last_received_damage(damager_name)
 
         stat.set_ac(char.get_max_miss_ac(), char.get_min_hit_ac(), char.get_last_hit_ac_attack_value())
         stat.set_ab(char.get_max_ab_attack_base(), char.get_last_ab_attack_base())
         stat.set_saving_throw(FORTITUDE, char.fortitude, char.last_fortitude_dc)
         stat.set_saving_throw(WILL, char.will, char.last_will_dc)
-        stat.set_received_damage(sum_rd, last_rd, last_ad)
+        stat.set_received_damage(sum_rd, last_rd.value, last_rd.get_absorption_sum())
         stat.set_concealment(char.get_concealment())
         stat.set_experience(char.get_experience_value())
 
@@ -212,9 +210,9 @@ class Printer:
                 break
 
         self.update_player_hp_bar(player)
-        self.update_char_stat(self.ui.player_stat, player)
+        self.update_char_stat(self.ui.player_stat, player, target.name)
         self.update_target_hp_bar(target)
-        self.update_char_stat(self.ui.target_stat, target)
+        self.update_char_stat(self.ui.target_stat, target, player.name)
 
         for action in parser.pop_actions():
             action_type = action.get_type()

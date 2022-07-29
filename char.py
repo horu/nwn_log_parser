@@ -9,8 +9,8 @@ from levels import Levels
 AB_ATTACK_LIST_LIMIT = 12
 HP_LIST_LIMIT = 10
 AC_ATTACK_LIST_LIMIT = 30
-DAMAGE_LIST_LIMIT = 20
-MAX_DPR_TIMEOUT = 60000
+DAMAGE_LIST_TIMEOUT = ROUND_DURATION  # ms
+MAX_DPR_TIMEOUT = TURN_DURATION
 
 
 class ValueStatistic:
@@ -86,7 +86,7 @@ class Character:
         self.stunning_fist_list: typing.List[StunningFirst] = []
 
         self.last_caused_damage = Damage.explicit_create()
-        self.last_received_damage = Damage.explicit_create()
+        self.received_damage_list: typing.List[Damage] = []
         self.sum_received_damage = 0
 
         self.death: typing.Optional[Death] = None
@@ -203,12 +203,19 @@ class Character:
             self.reset_damage()
 
         self.sum_received_damage += damage.value
-        self.last_received_damage = damage
+        append_fix_time_window(self.received_damage_list, damage, DAMAGE_LIST_TIMEOUT)
         self.stats_storage.increase(damage.damager_name, 'received_damage', 'sum', damage.value)
         self.stats_storage.increase(damage.damager_name, 'received_damage', 'count', 1)
 
+    def get_last_received_damage(self, damager_name: typing.Optional[str]):
+        for damage in reversed(self.received_damage_list):
+            if damager_name is None or damage.damager_name == damager_name:
+                return damage
+        return Damage.explicit_create()
+
     def add_damage_absorption(self, absorption: DamageAbsorption) -> None:
-        self.last_received_damage.damage_absorption_list.append(absorption)
+        if self.received_damage_list:
+            self.received_damage_list[-1].damage_absorption_list.append(absorption)
 
     def on_killed(self, death: Death,
                   experience: typing.Optional[Experience],
