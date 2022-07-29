@@ -1360,5 +1360,8 @@ parser:
   - classes: {}
     hp_list: []
     name: TEST monk rogue
+  - classes: {}
+    hp_list: []
+    name: TEST m r sf
   player:
     name: TEST m a

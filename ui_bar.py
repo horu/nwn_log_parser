@@ -192,9 +192,34 @@ class CalledShotBar(TemporaryProgressBar):
         super(CalledShotBar, self).__init__(
             10, CALLED_SHOT_DURATION,
             get_progress_bar_style(color),
-            '%v ms CalledShot: {}'.format(limb),
+            '%v ms',
             max_value=CALLED_SHOT_DURATION,
         )
+
+        self.timestamps: typing.List[Time] = []
+        self.limb = limb
+        self._update_label()
+
+    def _update_label(self):
+        count = len(self.timestamps)
+        self.pb.setFormat('%v ms CalledShot: {} X {}'.format(self.limb, count))
+
+    def update(self, ts: Time):
+        if ts not in self.timestamps:
+            self.timestamps.append(ts)
+        self.timestamps.sort()
+
+        self._update_label()
+        self.update_timestamp(self.timestamps[-1])
+
+    def tick(self, now: Time):
+        super(CalledShotBar, self).tick(now)
+
+        for i, ts in enumerate(self.timestamps):
+            if now - ts > CALLED_SHOT_DURATION:
+                del self.timestamps[i]
+                self._update_label()
+                break
 
 
 class CalledShotArmBar(CalledShotBar):

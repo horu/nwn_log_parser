@@ -141,9 +141,9 @@ class Printer:
         for cs in reversed(char.called_shot_list):
             if cs.s_attack.is_success():
                 if cs.limb == ARM:
-                    self.ui.called_shot_arm_bar.update_timestamp(cs.timestamp)
+                    self.ui.called_shot_arm_bar.update(cs.timestamp)
                 else:
-                    self.ui.called_shot_leg_bar.update_timestamp(cs.timestamp)
+                    self.ui.called_shot_leg_bar.update(cs.timestamp)
                 break
 
     def update_knockdown_bar(self, char: Character) -> None:
