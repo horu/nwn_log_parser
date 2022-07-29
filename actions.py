@@ -19,8 +19,11 @@ class Action:
 
         return None
 
-    def __init__(self):
-        self.timestamp = get_ts()
+    def __init__(self, ts: typing.Optional[int] = None):
+        if ts is not None:
+            self.timestamp = ts
+        else:
+            self.timestamp = get_ts()
 
     def __str__(self):
         return '{}: {}'.format(self.__class__.__name__, str(self.__dict__))
@@ -83,7 +86,7 @@ class Attack(Action):
 class SpecialAttack(Attack):
     @classmethod
     def create(cls, string):
-        p = r'\[CHAT WINDOW TEXT\] \[.+\] (.+) attempts ([^:]+) on ([^:]+) \: \*(.+)\* \: \(([0-9]+) \+ ([0-9]+) \= ([0-9]+)'
+        p = r'\[CHAT WINDOW TEXT\] \[.+\] (.+) attempts (.+) on ([^:]+) \: \*(.+)\* \: \(([0-9]+) \+ ([0-9]+) \= ([0-9]+)'
         return Action.base_create(string, p, cls)
 
     @classmethod
@@ -108,15 +111,16 @@ class SpecialAttack(Attack):
 
 
 class Knockdown(Action):
+    @classmethod
+    def create(cls, s_attack: SpecialAttack):
+        if KNOCKDOWN in s_attack.type:
+            return Knockdown(s_attack)
+        return None
+
     def __init__(self, s_attack: SpecialAttack):
         super().__init__()
         self.s_attack = s_attack
 
-    def get_cooldown(self):
-        value = KNOCKDOWN_PVE_CD - (get_ts() - self.s_attack.timestamp)
-        if value > 0:
-            return value
-        return 0
 
 """
 [CHAT WINDOW TEXT] [Fri Jul  8 20:25:39] Dunya Kulakova attempts Stunning Fist on TRAINER : *failed* : (15 + 41 = 56)
@@ -125,6 +129,12 @@ class Knockdown(Action):
 
 
 class StunningFirst(Action):
+    @classmethod
+    def create(cls, s_attack: SpecialAttack):
+        if STUNNING_FIST in s_attack.type:
+            return StunningFirst(s_attack)
+        return None
+
     def __init__(self, s_attack: SpecialAttack):
         super().__init__()
         self.s_attack = s_attack
@@ -132,6 +142,29 @@ class StunningFirst(Action):
 
     def is_success(self) -> bool:  # ms
         return self.throw and self.throw.result == FAILURE
+
+
+"""
+[CHAT WINDOW TEXT] [Fri Jul 29 17:27:04] TEST m a attempts Called Shot: Leg on TEST m f s : *hit* : (14 + 61 = 75)
+[CHAT WINDOW TEXT] [Fri Jul 29 17:28:39] TEST m a attempts Called Shot: Arm on TEST m f s : *critical hit* : (20 + 61 = 81 : Threat Roll: 19 + 61 = 80)
+"""
+
+
+class CalledShot(Action):
+    @classmethod
+    def create(cls, s_attack: SpecialAttack):
+        if CALLED_SHOT in s_attack.type:
+            m = re.match(r'Called Shot: ([LegArm]{3})', s_attack.type)
+            assert m is not None
+            g = m.groups()
+            return CalledShot(s_attack, g[0])
+
+        return None
+
+    def __init__(self, s_attack: SpecialAttack, limb: str):
+        super().__init__()
+        self.s_attack = s_attack
+        self.limb = limb
 
 
 class SavingThrow(Action):

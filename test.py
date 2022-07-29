@@ -71,10 +71,13 @@ Attempting to fast cast 17 spells.
 [CHAT WINDOW TEXT] [Wed Jul 20 22:55:50] Casting spell Bless1 at postion 15 on item with metamagic: None
 [CHAT WINDOW TEXT] [Tue Jul 19 14:40:28] * Bless wore off *
 
+[CHAT WINDOW TEXT] [Fri Jul 29 17:27:04] TEST CHAR attempts Called Shot: Leg on Dire Tiger : *hit* : (14 + 61 = 75)
+[CHAT WINDOW TEXT] [Fri Jul 29 17:28:39] TEST CHAR attempts Called Shot: Arm on Dire Tiger : *critical hit* : (20 + 61 = 81 : Threat Roll: 19 + 61 = 80)
+
 # TODO add unique
 UNIQUE CREATURE KILL!
 [CHAT WINDOW TEXT] [Thu Jul 28 07:43:41] Experience Points Gained:  14
-[CHAT WINDOW TEXT] [Thu Jul 28 07:43:41] TEST·CHAR killed Dire Tiger
+[CHAT WINDOW TEXT] [Thu Jul 28 07:43:41] TEST CHAR killed Dire Tiger
 TEST END
 
 """

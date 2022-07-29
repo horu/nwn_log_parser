@@ -84,6 +84,7 @@ class Character:
 
         self.last_knockdown = Knockdown(SpecialAttack.explicit_create())
         self.stunning_fist_list: typing.List[StunningFirst] = []
+        self.called_shot_list: typing.List[CalledShot] = []
 
         self.last_caused_damage = Damage.explicit_create()
         self.received_damage_list: typing.List[Damage] = []
@@ -186,6 +187,9 @@ class Character:
 
     def add_stunning_fist(self, sf: StunningFirst) -> None:
         append_fix_time_window(self.stunning_fist_list, sf, STUNNING_FIST_DURATION)
+
+    def add_called_shot(self, cs: CalledShot) -> None:
+        append_fix_time_window(self.called_shot_list, cs, CALLED_SHOT_DURATION)
 
     def add_caused_damage(self, damage: Damage) -> None:
         self.stats_storage.caused_dpr.add_damage(damage)

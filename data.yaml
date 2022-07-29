@@ -2,11 +2,14 @@ parser:
   characters:
   - classes: {}
     hp_list: []
-    name: TEST m f s
+    name: TEST m a
   - classes: {}
     hp_list:
     - 318
     name: Belka Strelka
+  - classes: {}
+    hp_list: []
+    name: TEST m f s
   - classes:
       assasion: 1
       cleric: 15
@@ -1345,8 +1348,5 @@ parser:
   - classes: {}
     hp_list: []
     name: 10 AC DUMMY - DPS TEST
-  - classes: {}
-    hp_list: []
-    name: TEST m a
   player:
-    name: TEST m f s
+    name: TEST m a

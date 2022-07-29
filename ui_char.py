@@ -44,8 +44,8 @@ class CharacterStat:
         self.received_damage.value.setText('{:>4}({:>3}/{:>3})'.format(
             convert_long_int(damage), convert_long_int(last_damage), convert_long_int(damage_absorb)))
 
-    def set_special_attack(self, name: str, ab: int, dc: int, result: str) -> None:
-        self.special_attack.value.setText('{:>2} {:>2}({:>2}/{:>4})'.format(name, ab, dc, result[:4]))
+    def set_special_attack(self, name: str, ab: int, special_option: str, result: str) -> None:
+        self.special_attack.value.setText('{:>2} {:>2}({:>2}/{:>4})'.format(name, ab, special_option, result[:4]))
 
     def set_concealment(self, concealment: int) -> None:
         self.concealment.value.setText('{:>2}'.format(concealment))

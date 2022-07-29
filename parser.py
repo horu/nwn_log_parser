@@ -73,14 +73,21 @@ class Parser:
             if action.attacker_name == self.player.name:
                 self.player.start_fight(action)
 
-            attacker = self.get_char(action.attacker_name)
-            if KNOCKDOWN in action.type:
-                attacker.last_knockdown = Knockdown(action)
-            elif STUNNING_FIST in action.type:
-                attacker.add_stunning_fist(StunningFirst(action))
-
             target = self.get_char(action.target_name)
             target.add_ac(action)
+
+            attacker = self.get_char(action.attacker_name)
+            s_action = Knockdown.create(action)
+            if s_action:
+                attacker.last_knockdown = s_action
+
+            s_action = StunningFirst.create(action)
+            if s_action:
+                attacker.add_stunning_fist(s_action)
+
+            s_action = CalledShot.create(action)
+            if s_action:
+                attacker.add_called_shot(s_action)
             return action
 
         action: Damage = Damage.create(line)

@@ -183,13 +183,16 @@ class Printer:
         stat.set_experience(char.get_experience_value())
 
         last_kd = char.last_knockdown
-        last_sf = char.stunning_fist_list[-1] if char.stunning_fist_list else None
-        if not last_sf or last_kd.timestamp > last_sf.timestamp:
-            dc = last_kd.s_attack.value
-            stat.set_special_attack(SHORT_KNOCKDOWN, last_kd.s_attack.value, dc, last_kd.s_attack.result)
-        elif last_sf:
+        last_sf = char.stunning_fist_list[-1] if char.stunning_fist_list else Action(0)
+        last_cs = char.called_shot_list[-1] if char.called_shot_list else Action(0)
+        if last_kd.timestamp > last_cs.timestamp and last_kd.timestamp > last_sf.timestamp:
+            stat.set_special_attack(SHORT_KNOCKDOWN, last_kd.s_attack.value, '', last_kd.s_attack.result)
+        elif last_sf.timestamp > last_cs.timestamp and last_sf.timestamp > last_kd.timestamp:
             dc = last_sf.throw.dc if last_sf.throw else 0
-            stat.set_special_attack(SHORT_STUNNING_FIST, last_sf.s_attack.value, dc, last_sf.s_attack.result)
+            stat.set_special_attack(SHORT_STUNNING_FIST, last_sf.s_attack.value, str(dc), last_sf.s_attack.result)
+        elif last_cs.timestamp > last_sf.timestamp and last_cs.timestamp > last_kd.timestamp:
+            limb = SHORT_ARM if last_cs.limb == ARM else SHORT_LEG
+            stat.set_special_attack(SHORT_CALLED_SHOT, last_cs.s_attack.value, limb, last_cs.s_attack.result)
 
     def print(self, parser: Parser) -> None:
         if self.wide_mode:
