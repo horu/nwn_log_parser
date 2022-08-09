@@ -82,32 +82,22 @@ parser:
     hp_list: []
     name: 'No'
   - classes: {}
-    experience: 300
+    experience: 245
     hp_list:
-    - 360
-    - 904
-    - 294
-    - 953
-    - 585
-    - 946
-    - 739
-    - 866
-    - 974
-    - 0
+    - 315
+    - 939
+    - 862
+    - 860
+    - 864
     name: Blackscale Lizardfolk Ranger
   - classes: {}
-    experience: 300
+    experience: 245
     hp_list:
-    - 15
-    - 15
-    - 15
-    - 15
-    - 34
-    - 1117
-    - 1117
-    - 116
-    - 1051
-    - 694
+    - 798
+    - 1007
+    - 663
+    - 983
+    - 815
     name: Blackscale Lizardfolk Hero
   - classes: {}
     experience: 250
@@ -1975,5 +1965,8 @@ parser:
   - classes: {}
     hp_list: []
     name: Majestic Fire Elemental
+  - classes: {}
+    hp_list: []
+    name: Deva the Trent
   player:
     name: Belka Strelka

@@ -7,7 +7,7 @@ from buffs import *
 from levels import Levels
 
 AB_ATTACK_LIST_LIMIT = 12
-HP_LIST_LIMIT = 5
+HP_LIST_LIMIT = 10
 AC_ATTACK_LIST_LIMIT = 30
 DAMAGE_LIST_TIMEOUT = ROUND_DURATION  # ms
 MAX_DPR_TIMEOUT = TURN_DURATION
@@ -281,8 +281,8 @@ class Character:
         self.reset_damage()
         self.clear_buffs()
 
-    def item_usage(self, item_name: str):
-        self.buff_list.add_buff(item_name, self.levels)
+    def item_usage(self, usage: Usage):
+        self.buff_list.add_buff(usage.item, self.levels)
 
     def debuff(self, debuff: Debuff):
         buff = self.buff_list.get_buff(debuff.spell_name)

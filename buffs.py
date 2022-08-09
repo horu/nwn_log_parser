@@ -19,6 +19,12 @@ class Buff:
             ('Aid', 'A', cleric_levels * TURN_DURATION),
             # do not show this buffs
             (SPELL_ENDURANCE, '', cleric_levels * HOUR_DURATION),
+
+            # items
+            ('''spell sequencer''', 'FW', 10 * HOUR_DURATION),
+            ('''Shar's Belt of Priestly Might and Warding''', 'MC', 5 * HOUR_DURATION),
+            ('''Belt of Brute Strength''', 'BS', 10 * HOUR_DURATION),
+            ('''Sorcerer's Cloak''', 'II', 7 * TURN_DURATION),
         ]
 
         for spell_name, buff_name, duration in buffs:

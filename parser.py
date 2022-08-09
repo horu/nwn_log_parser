@@ -145,6 +145,8 @@ class Parser:
             if action.item == ITEM_POTION_OF_HEAL and user != self.player:
                 # for user we get Heal action
                 user.reset_damage()
+            else:
+                user.item_usage(action)
             return action
         
         action: Heal = Heal.create(line)

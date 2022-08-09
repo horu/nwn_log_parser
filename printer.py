@@ -233,12 +233,15 @@ class Printer:
 
         for action in parser.pop_actions():
             action_type = action.get_type()
-            if (action_type == CastEnd or
+            if (
+                    action_type == CastEnd or
                     action_type == FastCastEnd or
                     action_type == RodOfFastCast or
+                    action_type == Usage or
                     action_type == Resting or
                     action_type == Debuff or
-                    action_type == Death):
+                    action_type == Death
+            ):
                 self.update_buffs_bar(player)
 
             if action_type == Damage:
