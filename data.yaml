@@ -82,22 +82,32 @@ parser:
     hp_list: []
     name: 'No'
   - classes: {}
-    experience: 245
+    experience: 150
     hp_list:
-    - 159
-    - 1109
-    - 728
-    - 714
-    - 883
+    - 2138
+    - 2138
+    - 38
+    - 1234
+    - 523
+    - 1299
+    - 49
+    - 886
+    - 878
+    - 836
     name: Blackscale Lizardfolk Ranger
   - classes: {}
-    experience: 262
+    experience: 150
     hp_list:
-    - 186
-    - 323
-    - 995
-    - 824
-    - 864
+    - 1624
+    - 285
+    - 1659
+    - 1659
+    - 806
+    - 962
+    - 1487
+    - 618
+    - 458
+    - 956
     name: Blackscale Lizardfolk Hero
   - classes: {}
     experience: 250
@@ -1984,5 +1994,29 @@ parser:
   - classes: {}
     hp_list: []
     name: Chair
+  - classes: {}
+    hp_list: []
+    name: Wojakowiec
+  - classes: {}
+    hp_list: []
+    name: Krampus
+  - classes: {}
+    hp_list: []
+    name: Woja Mag Guild Outcast
+  - classes: {}
+    hp_list: []
+    name: Perem
+  - classes: {}
+    hp_list: []
+    name: Itzazs Nekk
+  - classes: {}
+    hp_list: []
+    name: Lafoguita
+  - classes: {}
+    hp_list: []
+    name: Henrietta
+  - classes: {}
+    hp_list: []
+    name: Ancient Vrock
   player:
     name: Dunya Kulakova

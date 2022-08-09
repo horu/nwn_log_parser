@@ -247,7 +247,7 @@ class AttackDpsBar(Timer):
         self.dps_pb = create_progress_bar(get_progress_bar_style('#99ca4b0c'), '%v Damage per round')
         self.box.addWidget(self.dps_pb)
 
-        self.attack_pb = create_progress_bar(get_progress_bar_style('#99c975fb'), '%v Attack base', inverted=True)
+        self.attack_pb = create_progress_bar(get_progress_bar_style('#99d59e5b'), '%v Attack base', inverted=True)
         self.box.addWidget(self.attack_pb)
 
     def update_dps(self, dpr: int, max_dpr: int, last_dpr_ts: Time):
