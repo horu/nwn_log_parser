@@ -4,19 +4,20 @@ from ui_common import *
 from common import *
 
 
-def get_progress_bar_style(color: str, additional_chunk: str = '') -> str:
+def get_progress_bar_style(color: str, border_color: str = None, additional_chunk: str = '', ) -> str:
     style = "QProgressBar{{" \
             "background-color: rgba(0,0,0,0%); " \
             "min-height: 14px; " \
             "max-height: 14px; " \
-            "border-radius: 5px;" \
+            "border-radius: 0px;" \
+            "border: 1px solid {};" \
             "text-align: center; " \
             "}}" \
             "QProgressBar::chunk{{ " \
             "background-color: {}; " \
             "color: white;" \
             "{}" \
-            "}}".format(color, additional_chunk)
+            "}}".format(border_color if border_color else color, color, additional_chunk)
     return style
 
 
@@ -246,7 +247,7 @@ class AttackDpsBar(Timer):
         self.dps_pb = create_progress_bar(get_progress_bar_style('#99ca4b0c'), '%v Damage per round')
         self.box.addWidget(self.dps_pb)
 
-        self.attack_pb = create_progress_bar(get_progress_bar_style('#9917b402'), '%v Attack base', inverted=True)
+        self.attack_pb = create_progress_bar(get_progress_bar_style('#99c975fb'), '%v Attack base', inverted=True)
         self.box.addWidget(self.attack_pb)
 
     def update_dps(self, dpr: int, max_dpr: int, last_dpr_ts: Time):
@@ -281,7 +282,7 @@ class BuffBar(TemporaryProgressBar):
     def __init__(self, name: str, duration: Time):
         super(BuffBar, self).__init__(
             10, duration,
-            get_progress_bar_style('#99c975fb'),
+            get_progress_bar_style('#9938bf43', border_color='#99d59e5b'),
             BuffBar.get_label(name, duration),
             cur_value=duration,
             max_value=duration,

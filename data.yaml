@@ -1,5 +1,13 @@
 parser:
   characters:
+  - classes:
+      assasion: 1
+      cleric: 15
+      monk: 20
+    hp_list:
+    - 466
+    - 343
+    name: Dunya Kulakova
   - classes: {}
     hp_list:
     - 491
@@ -10,14 +18,6 @@ parser:
   - classes: {}
     hp_list: []
     name: TEST m f s
-  - classes:
-      assasion: 1
-      cleric: 15
-      monk: 20
-    hp_list:
-    - 466
-    - 343
-    name: Dunya Kulakova
   - classes: {}
     hp_list: []
     name: Ichilphrion
@@ -84,20 +84,20 @@ parser:
   - classes: {}
     experience: 245
     hp_list:
-    - 315
-    - 939
-    - 862
-    - 860
-    - 864
+    - 159
+    - 1109
+    - 728
+    - 714
+    - 883
     name: Blackscale Lizardfolk Ranger
   - classes: {}
-    experience: 245
+    experience: 262
     hp_list:
-    - 798
-    - 1007
-    - 663
-    - 983
-    - 815
+    - 186
+    - 323
+    - 995
+    - 824
+    - 864
     name: Blackscale Lizardfolk Hero
   - classes: {}
     experience: 250
@@ -147,33 +147,38 @@ parser:
     hp_list: []
     name: Kraven Helfire
   - classes: {}
-    experience: 5428
+    experience: 5427
     hp_list:
     - 6176
     - 6332
     - 5866
+    - 6475
     name: BLACKSCALE CLAN CHIEFTAIN
   - classes: {}
-    experience: 75
+    experience: 175
     hp_list:
     - 617
     - 585
+    - 529
+    - 571
     name: Kobold Slave
   - classes: {}
     experience: 2
     hp_list:
-    - 162
     - 104
     - 162
     - 156
+    - 116
+    - 153
     name: Dire Bear
   - classes: {}
-    experience: 18
+    experience: 2
     hp_list:
     - 275
     - 258
     - 259
     - 252
+    - 273
     name: Pack Leader
   - classes: {}
     experience: 379
@@ -1873,9 +1878,11 @@ parser:
     hp_list: []
     name: Gab C88
   - classes: {}
-    experience: 159
+    experience: 245
     hp_list:
     - 760
+    - 778
+    - 766
     name: Blackscale Monstrosity
   - classes: {}
     hp_list: []
@@ -1968,5 +1975,14 @@ parser:
   - classes: {}
     hp_list: []
     name: Deva the Trent
+  - classes: {}
+    hp_list: []
+    name: Kosh
+  - classes: {}
+    hp_list: []
+    name: Zerc Rainbows
+  - classes: {}
+    hp_list: []
+    name: Chair
   player:
-    name: Belka Strelka
+    name: Dunya Kulakova
