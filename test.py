@@ -73,6 +73,7 @@ Attempting to fast cast 17 spells.
 
 [CHAT WINDOW TEXT] [Fri Jul 29 17:27:04] TEST CHAR attempts Called Shot: Leg on Dire Tiger : *hit* : (14 + 61 = 75)
 [CHAT WINDOW TEXT] [Fri Jul 29 17:28:39] TEST CHAR attempts Called Shot: Arm on Dire Tiger : *critical hit* : (20 + 61 = 81 : Threat Roll: 19 + 61 = 80)
+[CHAT WINDOW TEXT] [Fri Jul  8 20:16:56] Sneak Attack : TEST CHAR attacks Dire Tiger : *critical hit* : (19 + 49 = 68 : Threat Roll: 10 + 49 = 59)
 
 # TODO add unique
 UNIQUE CREATURE KILL!

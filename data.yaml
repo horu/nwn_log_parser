@@ -2,7 +2,7 @@ parser:
   characters:
   - classes: {}
     hp_list:
-    - 416
+    - 491
     name: Belka Strelka
   - classes: {}
     hp_list: []
@@ -82,32 +82,32 @@ parser:
     hp_list: []
     name: 'No'
   - classes: {}
-    experience: 262
+    experience: 300
     hp_list:
-    - 1601
-    - 1408
-    - 411
-    - 1170
-    - 274
-    - 560
-    - 1115
-    - 180
-    - 320
-    - 901
+    - 360
+    - 904
+    - 294
+    - 953
+    - 585
+    - 946
+    - 739
+    - 866
+    - 974
+    - 0
     name: Blackscale Lizardfolk Ranger
   - classes: {}
-    experience: 262
+    experience: 300
     hp_list:
-    - 319
-    - 1388
-    - 604
-    - 2803
-    - 59
-    - 434
-    - 1031
-    - 1444
-    - 506
-    - 831
+    - 15
+    - 15
+    - 15
+    - 15
+    - 34
+    - 1117
+    - 1117
+    - 116
+    - 1051
+    - 694
     name: Blackscale Lizardfolk Hero
   - classes: {}
     experience: 250
@@ -125,10 +125,8 @@ parser:
     hp_list: []
     name: Zophiel
   - classes: {}
-    experience: 3
+    experience: 337
     hp_list:
-    - 1078
-    - 687
     - 393
     - 644
     - 308
@@ -137,6 +135,8 @@ parser:
     - 161
     - 324
     - 253
+    - 126
+    - 126
     name: Someone
   - classes: {}
     hp_list: []
@@ -157,10 +157,11 @@ parser:
     hp_list: []
     name: Kraven Helfire
   - classes: {}
-    experience: 5457
+    experience: 5428
     hp_list:
     - 6176
     - 6332
+    - 5866
     name: BLACKSCALE CLAN CHIEFTAIN
   - classes: {}
     experience: 75
@@ -174,6 +175,7 @@ parser:
     - 162
     - 104
     - 162
+    - 156
     name: Dire Bear
   - classes: {}
     experience: 18
@@ -200,18 +202,33 @@ parser:
     hp_list: []
     name: Woo Woodskin
   - classes: {}
-    experience: 475
+    experience: 337
     hp_list:
     - 779
+    - 756
+    - 773
+    - 808
     name: Epic Red Lizardfolk Mystic
   - classes: {}
-    experience: 475
+    experience: 337
     hp_list:
     - 716
+    - 217
+    - 137
+    - 692
     name: Epic Hobgoblin
   - classes: {}
-    experience: 475
+    experience: 337
     hp_list:
+    - 0
+    - 336
+    - 336
+    - 482
+    - 411
+    - 307
+    - 307
+    - 442
+    - 442
     - 722
     name: Epic Hobgoblin Warrior
   - classes: {}
@@ -270,7 +287,7 @@ parser:
     - 3246
     name: Majestic Mummy Warrior
   - classes: {}
-    experience: 300
+    experience: 356
     hp_list:
     - 1350
     - 1350
@@ -280,6 +297,7 @@ parser:
     - 1351
     - 2085
     - 1158
+    - 1112
     name: Epic Skeleton
   - classes: {}
     experience: 504
@@ -1571,7 +1589,7 @@ parser:
     - 37
     name: Shadow Fiend
   - classes: {}
-    experience: 187
+    experience: 210
     hp_list:
     - 578
     - 493
@@ -1581,6 +1599,8 @@ parser:
     - 869
     - 891
     - 868
+    - 880
+    - 359
     name: Blackscale Lizardfolk Slasher
   - classes: {}
     experience: 30
@@ -1592,18 +1612,18 @@ parser:
     - 689
     name: Blackscale Lizardofolk Marauder
   - classes: {}
-    experience: 150
+    experience: 175
     hp_list:
-    - 154
-    - 852
-    - 878
-    - 884
-    - 871
-    - 863
-    - 904
     - 844
     - 861
     - 865
+    - 856
+    - 861
+    - 853
+    - 979
+    - 731
+    - 364
+    - 911
     name: Blackscale Lizardfolk Warrior
   - classes: {}
     experience: 4
@@ -1729,18 +1749,18 @@ parser:
     - 3121
     name: Mrozomag
   - classes: {}
-    experience: 187
+    experience: 210
     hp_list:
-    - 541
-    - 1311
-    - 517
-    - 536
-    - 539
-    - 541
-    - 597
-    - 613
-    - 557
-    - 556
+    - 618
+    - 604
+    - 473
+    - 524
+    - 691
+    - 410
+    - 1015
+    - 131
+    - 497
+    - 515
     name: Blackscale Lizardfolk Mystic
   - classes: {}
     experience: 30
@@ -1825,5 +1845,135 @@ parser:
     - 36
     - 36
     name: Stume
+  - classes: {}
+    hp_list: []
+    name: Nova Sol
+  - classes: {}
+    hp_list:
+    - 838
+    name: Summoned Air Elemental
+  - classes: {}
+    hp_list: []
+    name: Rak Leader of Black Magic
+  - classes: {}
+    experience: 375
+    hp_list:
+    - 815
+    - 1704
+    - 996
+    - 145
+    - 666
+    name: Rakshasa Blue
+  - classes: {}
+    hp_list: []
+    name: 'Statue, Wyvern '
+  - classes: {}
+    experience: 200
+    hp_list:
+    - 651
+    - 581
+    name: Black Magic Slave
+  - classes: {}
+    hp_list: []
+    name: Paul Bunyan
+  - classes: {}
+    hp_list: []
+    name: Lantares
+  - classes: {}
+    hp_list: []
+    name: Gab C88
+  - classes: {}
+    experience: 159
+    hp_list:
+    - 760
+    name: Blackscale Monstrosity
+  - classes: {}
+    hp_list: []
+    name: All Vistors Must Report to Barracks
+  - classes: {}
+    experience: 337
+    hp_list:
+    - 1282
+    - 1310
+    - 1310
+    - 1310
+    - 1241
+    name: Epic Troll
+  - classes: {}
+    experience: 225
+    hp_list:
+    - 375
+    - 375
+    - 375
+    - 1058
+    - 104
+    - 906
+    - 166
+    - 753
+    name: Epic Troll Berserk
+  - classes: {}
+    experience: 337
+    hp_list:
+    - 531
+    - 542
+    - 544
+    name: Epic Green Lizardfolk Warrior
+  - classes: {}
+    experience: 337
+    hp_list:
+    - 771
+    - 180
+    - 753
+    - 1297
+    - 561
+    - 352
+    name: Legendary Occult
+  - classes: {}
+    experience: 337
+    hp_list:
+    - 156
+    - 42
+    - 657
+    - 657
+    name: Epic Goblin
+  - classes: {}
+    experience: 361
+    hp_list:
+    - 0
+    - 655
+    name: Epic Goblin Manipulator
+  - classes: {}
+    hp_list: []
+    name: Majestic Water Elemental
+  - classes: {}
+    hp_list: []
+    name: Majestic Air Elemental
+  - classes: {}
+    experience: 75
+    hp_list:
+    - 375
+    - 375
+    - 375
+    name: Legendary Skeleton Chieftain
+  - classes: {}
+    experience: 337
+    hp_list:
+    - 583
+    - 562
+    name: Epic Vampire Rogue
+  - classes: {}
+    experience: 75
+    hp_list:
+    - 350
+    - 350
+    name: Legendary Skeleton Warrior
+  - classes: {}
+    experience: 337
+    hp_list:
+    - 1356
+    name: Epic Vampire Priest
+  - classes: {}
+    hp_list: []
+    name: Majestic Fire Elemental
   player:
     name: Belka Strelka
