@@ -107,9 +107,10 @@ class Timer:
 
 
 class TemporaryProgressBar(Timer):
-    def __init__(self, tick_ms: Time, timeout: Time, *args, **kwargs):
+    def __init__(self, name: str, tick_ms: Time, timeout: Time, *args, **kwargs):
         super(TemporaryProgressBar, self).__init__(tick_ms, timeout)
         self.pb = create_progress_bar(*args, **kwargs)
+        self.name = name
 
     def update_timestamp(self, ts: Time):
         if super(TemporaryProgressBar, self).update_timestamp(ts):
@@ -118,9 +119,28 @@ class TemporaryProgressBar(Timer):
     def end(self):
         self.pb.setVisible(False)
 
+    def update_label(self) -> None:
+        duration = self.pb.value()
+
+        minutes = int(duration / 60000)
+        seconds = int(duration % 60000 / 1000)
+        milliseconds = int(duration % 1000 / 100)
+
+        minutes_str = ''
+        seconds_str = str(seconds)
+        milliseconds_str = '.{:0>1d}'.format(milliseconds)
+        if minutes:
+            minutes_str = '{}:'.format(minutes)
+            seconds_str = '{:0>2d}'.format(seconds)
+            milliseconds_str = ''
+
+        label = '{}{}{} {}'.format(minutes_str, seconds_str, milliseconds_str, self.name)
+        self.pb.setFormat(label)
+
     def tick(self, now: Time):
         value = self.get_timeout() - (now - self._start_timestamp)
         self.pb.setValue(value)
+        self.update_label()
 
     def hide(self):
         self.update_timestamp(0)
@@ -129,6 +149,7 @@ class TemporaryProgressBar(Timer):
 class KnockdownBar(TemporaryProgressBar):
     def __init__(self):
         super(KnockdownBar, self).__init__(
+            'Knockdown',
             10, KNOCKDOWN_PVE_CD,
             get_progress_bar_style('#99bd00ff'),
             '%v ms Knockdown',
@@ -139,9 +160,9 @@ class KnockdownBar(TemporaryProgressBar):
 class KnockdownMissBar(TemporaryProgressBar):
     def __init__(self):
         super(KnockdownMissBar, self).__init__(
+            'Knockdown',
             10, KNOCKDOWN_PVE_CD,
             get_progress_bar_style('#99bd00ff', additional_chunk='width: 10px; margin: 0.5px;'),
-            '%v ms Knockdown',
             max_value=KNOCKDOWN_PVE_CD,
         )
 
@@ -149,9 +170,9 @@ class KnockdownMissBar(TemporaryProgressBar):
 class StunningFistBar(TemporaryProgressBar):
     def __init__(self):
         super(StunningFistBar, self).__init__(
+            'Stunning fist',
             10, STUNNING_FIST_DURATION,
             get_progress_bar_style('#99ffffff'),
-            '%v ms Stunning fist',
             max_value=STUNNING_FIST_DURATION,
         )
 
@@ -159,9 +180,9 @@ class StunningFistBar(TemporaryProgressBar):
 class StealthCooldownBar(TemporaryProgressBar):
     def __init__(self):
         super(StealthCooldownBar, self).__init__(
+            'Stealth cooldown',
             10, STEALTH_MODE_CD,
             get_progress_bar_style('#ff3472ff'),
-            '%v ms Stealth cooldown',
             max_value=STEALTH_MODE_CD,
         )
 
@@ -173,14 +194,14 @@ class StealthCooldownBar(TemporaryProgressBar):
 class CastingBar(TemporaryProgressBar):
     def __init__(self):
         super(CastingBar, self).__init__(
+            'Spell',
             10, CAST_TIME,
             get_progress_bar_style('#990017ff'),
-            '%v ms',
             max_value=CAST_TIME,
         )
 
     def update(self, spell_name: str, event_ts: Time):
-        self.pb.setFormat('%v ms {}'.format(spell_name))
+        self.name = spell_name
         self.update_timestamp(event_ts)
 
 
@@ -191,9 +212,9 @@ class CalledShotBar(TemporaryProgressBar):
             color = '#99ffffff'
 
         super(CalledShotBar, self).__init__(
+            'CalledShot',
             10, CALLED_SHOT_DURATION,
             get_progress_bar_style(color),
-            '%v ms',
             max_value=CALLED_SHOT_DURATION,
         )
 
@@ -203,7 +224,7 @@ class CalledShotBar(TemporaryProgressBar):
 
     def _update_label(self):
         count = len(self.timestamps)
-        self.pb.setFormat('%v ms CalledShot: {} X {}'.format(self.limb, count))
+        self.name = 'CalledShot: {} X {}'.format(self.limb, count)
 
     def update(self, ts: Time):
         if ts not in self.timestamps:
@@ -281,24 +302,12 @@ class AttackDpsBar(Timer):
 class BuffBar(TemporaryProgressBar):
     def __init__(self, name: str, duration: Time):
         super(BuffBar, self).__init__(
+            name,
             10, duration,
             get_progress_bar_style('#9938bf43', border_color='#99d59e5b'),
-            BuffBar.get_label(name, duration),
             cur_value=duration,
             max_value=duration,
         )
-        self.name = name
-
-    @classmethod
-    def get_label(cls, name: str, duration: Time) -> str:
-        label = '{} {}:{:0>2d}'.format(name, int(duration / 60000), int(duration % 60000 / 1000))
-        return label
-
-    def tick(self, now: Time):
-        super(BuffBar, self).tick(now)
-        value = self.get_timeout() - (now - self._start_timestamp)
-        label = BuffBar.get_label(self.name, value)
-        self.pb.setFormat(label)
 
 
 class BuffsBox:
